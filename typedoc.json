@@ -8,6 +8,6 @@
     "**/*.test.ts",
     "**/node_modules/**"
   ],
-  "theme": "default",
+  "theme": "material",
   "sort": ["source-order"]
 } 
