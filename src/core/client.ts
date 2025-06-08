@@ -3,6 +3,7 @@ import { Observations } from '../lib/observations';
 import { Regions } from '../lib/regions';
 import { RegionSpeciesLists } from '../lib/regionSpeciesLists';
 import { Species } from '../lib/species';
+import { Users } from '../lib/users';
 import type {
   ObservationClientOptions,
   PasswordGrantOptions,
@@ -22,6 +23,7 @@ export class ObservationClient {
   public readonly regions: Regions;
   public readonly locations: Locations;
   public readonly regionSpeciesLists: RegionSpeciesLists;
+  public readonly users: Users;
 
   constructor(options?: ObservationClientOptions) {
     this.options = options;
@@ -30,6 +32,7 @@ export class ObservationClient {
     this.regions = new Regions(this);
     this.locations = new Locations(this);
     this.regionSpeciesLists = new RegionSpeciesLists(this);
+    this.users = new Users(this);
   }
 
   /**
@@ -224,17 +227,24 @@ export class ObservationClient {
 
   public async publicRequest<T>(
     endpoint: string,
-    params: Record<string, string | number> = {}
+    options: RequestInit & { params?: Record<string, string | number> } = {}
   ): Promise<T> {
-    const urlParams = new URLSearchParams();
-    for (const key in params) {
-      urlParams.set(key, String(params[key]));
+    const { params, ...fetchOptions } = options;
+    const url = new URL(`${API_BASE_URL}/${endpoint}`);
+
+    if (params) {
+      for (const key in params) {
+        url.searchParams.set(key, String(params[key]));
+      }
     }
 
-    const response = await fetch(
-      `${API_BASE_URL}/${endpoint}?${urlParams.toString()}`,
-      { headers: { 'Accept-Language': this.language } }
-    );
+    const response = await fetch(url.toString(), {
+      ...fetchOptions,
+      headers: {
+        ...fetchOptions.headers,
+        'Accept-Language': this.language,
+      },
+    });
 
     if (!response.ok) {
       throw new Error(`API request failed: ${await response.text()}`);

@@ -12,11 +12,21 @@ export interface UserDetail {
   avatar: string | null;
 }
 
+export interface User extends UserDetail {
+  email: string;
+  permalink: string;
+  country: string;
+  url: string;
+  is_mail_allowed: boolean;
+  consider_email_confirmed: boolean;
+}
+
 export interface LocationDetail {
   id: number;
   name: string;
   country_code: string;
   permalink: string;
+  determination_requirements?: string;
 }
 
 export interface Point {
@@ -220,4 +230,22 @@ export interface RegionSpecies {
   sort_order_rank: number;
   sort_order_taxonomy: number;
   determination_requirements?: string;
+}
+
+export interface TermContent {
+  content: string;
+  created: string;
+  permalink: string;
+  title?: string;
+}
+
+export interface Terms {
+  tos: TermContent;
+  privacy: TermContent;
+  'faq-obsidentify': TermContent;
+}
+
+export interface UserStats {
+  total: [number, number];
+  [date: string]: [number, number];
 } 
