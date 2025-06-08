@@ -1,18 +1,25 @@
 import type { ObservationClient } from '../core/client';
-import type { CountryList } from '../types';
+import type { Country, Paginated } from '../types';
 
 export class Countries {
-  private client: ObservationClient;
+  #client: ObservationClient;
 
+  /**
+   * @internal
+   */
   constructor(client: ObservationClient) {
-    this.client = client;
+    this.#client = client;
   }
 
   /**
-   * Fetches a list of all supported countries.
-   * @returns A promise that resolves to the list of countries.
+   * Fetches a paginated list of all countries.
+   * The names of the countries will be returned in the language set on the client (default: 'en').
+   * This is a public endpoint and does not require authentication.
+   *
+   * @returns A promise that resolves to a paginated list of country objects.
+   * @throws {ApiError} If the request fails.
    */
-  public async list(): Promise<CountryList> {
-    return this.client.publicRequest<CountryList>('countries/');
+  public async list(): Promise<Paginated<Country>> {
+    return this.#client.publicRequest<Paginated<Country>>('countries/');
   }
 } 

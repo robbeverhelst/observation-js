@@ -1,29 +1,36 @@
 import type { ObservationClient } from '../core/client';
-import type { RegionSpecies, RegionSpeciesList } from '../types';
+import type { Paginated, RegionSpeciesList, Species } from '../types';
 
 export class RegionSpeciesLists {
-  private client: ObservationClient;
+  #client: ObservationClient;
 
+  /**
+   * @internal
+   */
   constructor(client: ObservationClient) {
-    this.client = client;
+    this.#client = client;
   }
 
   /**
-   * Fetches the available combinations of region and species group.
-   * @returns A promise that resolves to a list of region species lists.
+   * Fetches a list of all available species lists for regions.
+   *
+   * @returns A promise that resolves to a paginated list of region species lists.
    */
-  public async list(): Promise<RegionSpeciesList[]> {
-    return this.client.publicRequest<RegionSpeciesList[]>('region-lists/');
+  async list(): Promise<RegionSpeciesList[]> {
+    return this.#client.publicRequest<RegionSpeciesList[]>(
+      'region-lists/'
+    );
   }
 
   /**
-   * Fetches the species in a specific region list.
-   * @param listId The ID of the region list.
-   * @returns A promise that resolves to a list of species for the given list.
+   * Fetches the species for a specific region species list.
+   *
+   * @param id - The ID of the region species list.
+   * @returns A promise that resolves to an array of species in the list.
    */
-  public async getSpecies(listId: number): Promise<RegionSpecies[]> {
-    return this.client.publicRequest<RegionSpecies[]>(
-      `region-lists/${listId}/species/`
+  async getSpecies(id: number): Promise<Species[]> {
+    return this.#client.publicRequest<Species[]>(
+      `region-lists/${id}/species/`
     );
   }
 } 

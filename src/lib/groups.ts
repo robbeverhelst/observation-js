@@ -1,75 +1,95 @@
 import type { ObservationClient } from '../core/client';
 import type {
-  Challenge,
-  ChallengeTemplate,
   Group,
+  GroupMember,
   GroupSummary,
-  Observation,
   Paginated,
+  User,
+  Observation,
+  ChallengeTemplate,
+  Challenge,
 } from '../types';
 
 export class Groups {
-  private client: ObservationClient;
+  #client: ObservationClient;
 
+  /**
+   * @internal
+   */
   constructor(client: ObservationClient) {
-    this.client = client;
+    this.#client = client;
   }
 
   /**
    * Fetches the groups for the current authenticated user.
-   * @returns A paginated list of groups.
+   *
+   * @returns A promise that resolves to a paginated list of the user's groups.
+   * @throws {AuthenticationError} If the request is not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   public async list(): Promise<Paginated<Group>> {
-    return this.client.request<Paginated<Group>>('user/groups/');
+    return this.#client.request<Paginated<Group>>('user/groups/');
   }
 
   /**
-   * Fetches the details of a specific group.
-   * The user must be a member of the group.
-   * @param groupId The ID of the group.
-   * @returns The group object.
+   * Fetches the details of a specific group by its ID.
+   * The authenticated user must be a member of the group.
+   *
+   * @param groupId The unique identifier of the group.
+   * @returns A promise that resolves to the group object.
+   * @throws {AuthenticationError} If the user is not a member or not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   public async get(groupId: number): Promise<Group> {
-    return this.client.request<Group>(`groups/${groupId}/`);
+    return this.#client.request<Group>(`groups/${groupId}`);
   }
 
   /**
    * Fetches a public summary of a group using an invite code.
-   * @param groupId The ID of the group.
-   * @param inviteCode The invite code.
-   * @returns The group summary.
+   * This does not require authentication.
+   *
+   * @param groupId The unique identifier of the group.
+   * @param inviteCode The invite code for the group.
+   * @returns A promise that resolves to the group's public summary.
+   * @throws {ApiError} If the group or invite code is invalid.
    */
   public async getSummary(
     groupId: number,
     inviteCode: string
   ): Promise<GroupSummary> {
-    return this.client.publicRequest<GroupSummary>(
+    return this.#client.publicRequest<GroupSummary>(
       `groups/${groupId}/summary/${inviteCode}/`
     );
   }
 
   /**
    * Creates a new group.
-   * @param name The name of the group.
-   * @param photo The group's photo.
-   * @returns The newly created group object.
+   *
+   * @param name The name of the new group.
+   * @param photo The group's photo/avatar as a Blob or Buffer.
+   * @returns A promise that resolves to the newly created group object.
+   * @throws {AuthenticationError} If the request is not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   public async create(name: string, photo: Blob | Buffer): Promise<Group> {
     const formData = new FormData();
     formData.append('name', name);
     formData.append('photo', new Blob([photo]));
-    return this.client.request<Group>('groups/create/', {
+    return this.#client.request<Group>('groups/create/', {
       method: 'POST',
       body: formData,
     });
   }
 
   /**
-   * Updates an existing group.
-   * The user must be an admin of the group.
-   * @param groupId The ID of the group to update.
-   * @param data The data to update.
-   * @returns The updated group object.
+   * Updates an existing group's details.
+   * The authenticated user must be an admin of the group.
+   *
+   * @param groupId The unique identifier of the group to update.
+   * @param data An object containing the data to update (name and/or photo).
+   * @returns A promise that resolves to the updated group object.
+   * @throws {AuthenticationError} If the user is not an admin or not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   public async update(
     groupId: number,
@@ -78,7 +98,7 @@ export class Groups {
     const formData = new FormData();
     if (data.name) formData.append('name', data.name);
     if (data.photo) formData.append('photo', new Blob([data.photo]));
-    return this.client.request<Group>(`groups/${groupId}/`, {
+    return this.#client.request<Group>(`groups/${groupId}`, {
       method: 'PATCH',
       body: formData,
     });
@@ -86,86 +106,117 @@ export class Groups {
 
   /**
    * Deletes a group.
-   * The user must be an admin of the group.
-   * @param groupId The ID of the group to delete.
+   * The authenticated user must be an admin of the group.
+   *
+   * @param groupId The unique identifier of the group to delete.
+   * @returns A promise that resolves when the group is successfully deleted.
+   * @throws {AuthenticationError} If the user is not an admin or not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   public async delete(groupId: number): Promise<void> {
-    await this.client.request<void>(`groups/${groupId}/`, {
+    await this.#client.request<void>(`groups/${groupId}`, {
       method: 'DELETE',
     });
   }
 
   /**
    * Renews the invite code for a group.
-   * The user must be an admin of the group.
-   * @param groupId The ID of the group.
-   * @returns The updated group object with a new invite link.
+   * The authenticated user must be an admin of the group.
+   *
+   * @param groupId The unique identifier of the group.
+   * @returns A promise that resolves to the updated group object with a new invite link.
+   * @throws {AuthenticationError} If the user is not an admin or not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   public async renewInviteCode(groupId: number): Promise<Group> {
-    return this.client.request<Group>(`groups/${groupId}/renew-invite-code/`, {
+    return this.#client.request<Group>(`groups/${groupId}/renew-invite-code/`, {
       method: 'POST',
     });
   }
 
   /**
    * Joins a group using an invite code.
-   * @param groupId The ID of the group to join.
-   * @param inviteCode The invite code.
+   *
+   * @param groupId The unique identifier of the group to join.
+   * @param inviteCode The invite code for the group.
+   * @returns A promise that resolves when the user has successfully joined the group.
+   * @throws {AuthenticationError} If the request is not authenticated.
+   * @throws {ApiError} If the invite code is invalid or the request fails.
    */
   public async join(groupId: number, inviteCode: string): Promise<void> {
-    await this.client.request<void>(`groups/${groupId}/join/${inviteCode}/`, {
+    await this.#client.request<void>(`groups/${groupId}/join/${inviteCode}/`, {
       method: 'POST',
     });
   }
 
   /**
    * Leaves a group.
-   * @param groupId The ID of the group to leave.
+   * The authenticated user must be a member of the group.
+   *
+   * @param groupId The unique identifier of the group to leave.
+   * @returns A promise that resolves when the user has successfully left the group.
+   * @throws {AuthenticationError} If the user is not a member or not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   public async leave(groupId: number): Promise<void> {
-    await this.client.request<void>(`groups/${groupId}/leave/`, {
+    await this.#client.request<void>(`groups/${groupId}/leave/`, {
       method: 'POST',
     });
   }
 
   /**
    * Removes a member from a group.
-   * The user must be an admin of the group.
-   * @param groupId The ID of the group.
-   * @param memberId The ID of the member to remove.
+   * The authenticated user must be an admin of the group.
+   *
+   * @param groupId The unique identifier of the group.
+   * @param memberId The unique identifier of the member to remove.
+   * @returns A promise that resolves when the member is successfully removed.
+   * @throws {AuthenticationError} If the user is not an admin or not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   public async removeMember(groupId: number, memberId: number): Promise<void> {
-    await this.client.request<void>(`groups/${groupId}/members/${memberId}/`, {
+    await this.#client.request<void>(`groups/${groupId}/members/${memberId}/`, {
       method: 'DELETE',
     });
   }
 
   /**
-   * Fetches the available group challenge templates.
-   * @returns A paginated list of challenge templates.
+   * Fetches the available challenge templates that can be used to create group challenges.
+   *
+   * @returns A promise that resolves to a paginated list of challenge templates.
+   * @throws {AuthenticationError} If the request is not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   public async listChallengeTemplates(): Promise<Paginated<ChallengeTemplate>> {
-    return this.client.request<Paginated<ChallengeTemplate>>(
+    return this.#client.request<Paginated<ChallengeTemplate>>(
       'groups/challenge-templates/'
     );
   }
 
   /**
    * Fetches the challenges for a specific group.
-   * @param groupId The ID of the group.
-   * @returns A paginated list of challenges.
+   * The authenticated user must be a member of the group.
+   *
+   * @param groupId The unique identifier of the group.
+   * @returns A promise that resolves to a paginated list of challenges for the group.
+   * @throws {AuthenticationError} If the user is not a member or not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   public async listChallenges(groupId: number): Promise<Paginated<Challenge>> {
-    return this.client.request<Paginated<Challenge>>(
+    return this.#client.request<Paginated<Challenge>>(
       `groups/${groupId}/challenges/`
     );
   }
 
   /**
-   * Creates a new challenge for a group.
-   * @param groupId The ID of the group.
-   * @param data The challenge details.
-   * @returns The newly created challenge.
+   * Creates a new challenge for a group from a template.
+   * The authenticated user must be an admin of the group.
+   *
+   * @param groupId The unique identifier of the group.
+   * @param data An object containing the challenge details (template ID, start, and end times).
+   * @returns A promise that resolves to the newly created challenge.
+   * @throws {AuthenticationError} If the user is not an admin or not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   public async createChallenge(
     groupId: number,
@@ -175,7 +226,7 @@ export class Groups {
       end_date_time: string;
     }
   ): Promise<Challenge> {
-    return this.client.request<Challenge>(`groups/${groupId}/challenges/`, {
+    return this.#client.request<Challenge>(`groups/${groupId}/challenges/`, {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -183,17 +234,21 @@ export class Groups {
 
   /**
    * Updates an existing group challenge.
-   * @param groupId The ID of the group.
-   * @param challengeId The ID of the challenge to update.
-   * @param data The data to update.
-   * @returns The updated challenge.
+   * The authenticated user must be an admin of the group.
+   *
+   * @param groupId The unique identifier of the group.
+   * @param challengeId The unique identifier of the challenge to update.
+   * @param data An object containing the data to update (start and/or end times).
+   * @returns A promise that resolves to the updated challenge.
+   * @throws {AuthenticationError} If the user is not an admin or not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   public async updateChallenge(
     groupId: number,
     challengeId: number,
     data: { start_date_time?: string; end_date_time?: string }
   ): Promise<Challenge> {
-    return this.client.request<Challenge>(
+    return this.#client.request<Challenge>(
       `groups/${groupId}/challenges/${challengeId}/`,
       {
         method: 'PATCH',
@@ -204,14 +259,19 @@ export class Groups {
 
   /**
    * Deletes a group challenge.
-   * @param groupId The ID of the group.
-   * @param challengeId The ID of the challenge to delete.
+   * The authenticated user must be an admin of the group.
+   *
+   * @param groupId The unique identifier of the group.
+   * @param challengeId The unique identifier of the challenge to delete.
+   * @returns A promise that resolves when the challenge is successfully deleted.
+   * @throws {AuthenticationError} If the user is not an admin or not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   public async deleteChallenge(
     groupId: number,
     challengeId: number
   ): Promise<void> {
-    await this.client.request<void>(
+    await this.#client.request<void>(
       `groups/${groupId}/challenges/${challengeId}/`,
       {
         method: 'DELETE',
@@ -221,13 +281,18 @@ export class Groups {
 
   /**
    * Fetches observations for a specific group.
-   * @param groupId The ID of the group.
-   * @returns A list of observations. Note: This is not a standard paginated response.
+   * The authenticated user must be a member of the group.
+   *
+   * @param groupId The unique identifier of the group.
+   * @returns A promise that resolves to a list of observations.
+   *   Note: This response is not paginated in the standard way.
+   * @throws {AuthenticationError} If the user is not a member or not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   public async getObservations(
     groupId: number
   ): Promise<{ next: string | null; previous: string | null; results: Observation[] }> {
-    return this.client.request<{
+    return this.#client.request<{
       next: string | null;
       previous: string | null;
       results: Observation[];

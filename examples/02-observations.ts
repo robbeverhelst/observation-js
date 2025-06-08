@@ -1,52 +1,50 @@
-import { ObservationClient } from '../src/index';
+import { ObservationClient, ApiError } from '../src';
 
 // This example demonstrates how to fetch a single observation by its ID.
-// NOTE: This is an authenticated endpoint and requires a valid access token.
-// You must first obtain a token using one of the authentication flows.
-// You will also need a real, valid observation ID to test this.
+// This is an authenticated endpoint and requires a valid access token.
 
-/*
+// The access token is passed as a command-line argument.
+const accessToken = process.argv[2] || null;
+
+// A hardcoded observation ID for demonstration purposes.
+// This observation is for a "Fuut" (Great Crested Grebe).
+// Replace with a different ID if you want to test with another observation.
+const observationId = 25488439;
+
 const main = async () => {
-  // 1. Initialize the client.
-  const client = new ObservationClient();
-
-  // 2. Set your access token.
-  // Replace "YOUR_ACCESS_TOKEN" with a valid token.
-  const accessToken = process.env.WAARNEMING_NL_ACCESS_TOKEN || 'YOUR_ACCESS_TOKEN';
-  if (accessToken === 'YOUR_ACCESS_TOKEN') {
-    console.error('Please set your access token in the script or via the WAARNEMING_NL_ACCESS_TOKEN environment variable.');
+  if (!accessToken) {
+    console.log(
+      'Access token is required. Please provide it as a command-line argument.'
+    );
+    console.log(
+      'Skipping example. Set WAARNEMING_NL_ACCESS_TOKEN to run this.'
+    );
     return;
   }
+
+  const client = new ObservationClient();
   client.setAccessToken(accessToken);
 
-  // 3. Define the ID of the observation you want to fetch.
-  // Replace with a real observation ID.
-  const observationId = 12345;
-
-  console.log(`Fetching observation with ID: ${observationId}...`);
+  console.log(`--- Fetching details for observation ID: ${observationId} ---`);
 
   try {
-    // 4. Fetch the observation.
     const observation = await client.observations.get(observationId);
-
-    console.log('--- Observation Found! ---');
-    console.log(`ID: ${observation.id}`);
-    console.log(`Species: ${observation.species_detail.name}`);
-    console.log(`Date: ${observation.date}`);
-    console.log(`Observer: ${observation.user_detail.name}`);
-    console.log(`Location: ${observation.location_detail.name}`);
-    console.log(`Notes: ${observation.notes || 'N/A'}`);
-    console.log(`Permalink: ${observation.permalink}`);
-    console.log('--------------------------');
+    console.log('Observation found:');
+    console.log(`- Species: ${observation.species?.name}`);
+    console.log(`- Observer: ${observation.user.name}`);
+    console.log(`- Date: ${observation.date}`);
+    console.log(`- Location: ${observation.location?.name}`);
+    console.log(`- URL: ${observation.url}`);
   } catch (error) {
-    console.error('An error occurred:', error);
+    console.error('Failed to fetch observation:');
+    if (error instanceof ApiError) {
+      console.error(`- Status: ${error.response.status}`);
+      console.error(`- Body:`, error.body);
+    } else {
+      console.error(error);
+    }
+    process.exit(1);
   }
 };
 
-main();
-*/
-
-console.log(
-  'This script is a commented-out example for fetching a single observation.'
-);
-console.log('Please read the comments in the file to learn how to use it.'); 
+main(); 

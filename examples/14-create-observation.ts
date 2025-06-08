@@ -1,100 +1,70 @@
-/*
-import { ObservationClient } from '../src';
-import path from 'path';
+import { ObservationClient, ApiError } from '../src';
+import { join } from 'path';
 
-// This example demonstrates how to create and update observations.
-// It requires authentication and will modify data, so it is commented out by default.
+// This example demonstrates how to create an observation with a photo.
+// This is an authenticated endpoint that will create real data.
 
-async function main() {
-  // 1. --- AUTHENTICATION ---
-  // Ensure you have a valid access token.
-  const accessToken = process.env.WAARNEMING_NL_ACCESS_TOKEN;
+// The access token is passed as a command-line argument.
+const accessToken = process.argv[2] || null;
+
+const main = async () => {
   if (!accessToken) {
-    console.error(
-      'Error: WAARNEMING_NL_ACCESS_TOKEN environment variable not set.'
+    console.log(
+      'Access token is required. Please provide it as a command-line argument.'
+    );
+    console.log(
+      'Skipping example. Set WAARNEMING_NL_ACCESS_TOKEN to run this.'
     );
     return;
   }
 
   const client = new ObservationClient();
   client.setAccessToken(accessToken);
-  let createdObservationId: number | null = null;
+
+  console.log('--- Creating a new observation with a photo ---');
 
   try {
-    // 2. --- CREATE A SIMPLE OBSERVATION ---
-    console.log('--- Creating a simple observation ---');
-    const simpleObservation = await client.observations.create({
-      species: 1583, // Witkeelgors (White-throated Sparrow)
-      date: '2023-10-27',
-      point: 'POINT(5.4 51.4)', // A point in the Netherlands
-      notes: 'A simple test observation from observation-js.',
-      is_certain: true,
-    });
-    createdObservationId = simpleObservation.id;
-    console.log(
-      `Successfully created observation ID: ${simpleObservation.id} for species: ${simpleObservation.species_detail.name}`
-    );
-    console.log(`Notes: "${simpleObservation.notes}"`);
-
-    // 3. --- UPDATE THE OBSERVATION ---
-    console.log('\n--- Updating the observation notes ---');
-    const updatedObservation = await client.observations.update(
-      createdObservationId,
-      {
-        notes: 'The notes have been updated!',
-      }
-    );
-    console.log(
-      `Successfully updated observation ID: ${updatedObservation.id}`
-    );
-    console.log(`New Notes: "${updatedObservation.notes}"`);
-
-    // 4. --- CREATE OBSERVATION WITH ASYNC UPLOAD ---
-    console.log('\n--- Creating observation with async photo upload ---');
-    // First, upload the media file to get a temporary name
-    const imagePath = path.join(__dirname, 'robin.jpeg');
+    // 1. Get the photo file to upload.
+    // This example uses a picture of a European Robin.
+    const imagePath = join(__dirname, 'robin.jpeg');
     const imageBlob = Bun.file(imagePath);
-    const mediaResponse = await client.media.upload(imageBlob);
-    console.log(`Uploaded media, temporary name: ${mediaResponse.name}`);
-    // Then, create the observation using the temporary name
-    const asyncObs = await client.observations.create({
-      species: 13, // Roodborst (European Robin)
-      date: '2023-10-27',
-      point: 'POINT(5.4 51.4)',
-      upload_media: [mediaResponse.name],
-    });
-    console.log(
-      `Successfully created observation ID: ${asyncObs.id} with photo.`
-    );
-    console.log('Photo URL:', asyncObs.photos[0]);
+    console.log(`Using image: ${imagePath}`);
 
-    // 5. --- CREATE OBSERVATION WITH SYNC UPLOAD ---
-    console.log('\n--- Creating observation with sync photo upload ---');
-    const syncObs = await client.observations.create(
+    // 2. Create the observation with a synchronous photo upload.
+    const observation = await client.observations.create(
       {
-        species: 13, // Roodborst (European Robin)
-        date: '2023-10-27',
-        point: 'POINT(5.4 51.4)',
+        // Species ID 13 is for "Roodborst" (European Robin)
+        species_id: 13,
+        date: new Date().toISOString().split('T')[0], // Today's date
+        point: {
+          type: 'Point',
+          coordinates: [5.4, 51.4], // A point in the Netherlands
+        },
+        notes:
+          'A test observation of a European Robin, created by the observation-js library.',
       },
       {
         upload_photos: [imageBlob], // Upload the blob directly
       }
     );
-    console.log(
-      `Successfully created observation ID: ${syncObs.id} with photo.`
-    );
-    console.log('Photo URL:', syncObs.photos[0]);
 
-    // 6. --- DELETE AN OBSERVATION ---
-    if (createdObservationId) {
-      console.log(`\n--- Deleting observation ID: ${createdObservationId} ---`);
-      await client.observations.delete(createdObservationId);
-      console.log(`Observation ${createdObservationId} deleted successfully.`);
-    }
+    console.log('--- Observation Created Successfully! ---');
+    console.log(`- Observation ID: ${observation.id}`);
+    console.log(`- Species: ${observation.species?.name}`);
+    console.log(`- See it online: ${observation.url}`);
+    console.log(
+      '- NOTE: This observation was created as a real record. You may want to delete it from the website.'
+    );
   } catch (error) {
-    console.error('An error occurred:', error);
+    console.error('Failed to create observation:');
+    if (error instanceof ApiError) {
+      console.error(`- Status: ${error.response.status}`);
+      console.error(`- Body:`, error.body);
+    } else {
+      console.error(error);
+    }
+    process.exit(1);
   }
-}
+};
 
 main().catch(console.error);
-*/

@@ -10,7 +10,14 @@ async function main() {
 
     if (badges.results.length > 0) {
       console.log('First badge:', badges.results[0].name);
-      console.table(badges.results.slice(0, 5));
+      console.table(
+        badges.results.slice(0, 5).map((badge) => ({
+          ID: badge.id,
+          Name: badge.name,
+          Type: badge.type,
+          Color: badge.background_color,
+        }))
+      );
 
       const firstBadgeId = badges.results[0].id;
       console.log(

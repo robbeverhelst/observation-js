@@ -1,16 +1,19 @@
 # observation-js
 
 [![npm version](https://badge.fury.io/js/observation-js.svg)](https://badge.fury.io/js/observation-js)
+[![CI](https://github.com/RobbeVerhelst/observation-js/actions/workflows/ci.yml/badge.svg)](https://github.com/RobbeVerhelst/observation-js/actions/workflows/ci.yml)
 
 A fully-typed TypeScript client for the [waarneming.nl](https://waarneming.nl/api/docs/) API. This library provides an easy-to-use interface for interacting with the API, handling both public (unauthenticated) and private (authenticated) endpoints.
 
 ## Features
 
-- ✅ Fully typed with TypeScript for a great developer experience.
-- ✅ Handles both public and authenticated API endpoints.
-- ✅ Built-in support for the OAuth2 Authorization Code Grant flow.
-- ✅ Resource-based architecture for a clean and intuitive API (`client.species`, `client.observations`, etc.).
-- ✅ Multi-language support for API responses.
+- ✅ **Fully Typed**: Written in TypeScript for a great developer experience with auto-completion and type safety.
+- ✅ **Comprehensive API Coverage**: Implements a wide range of API resources, including Observations, Species, Users, Locations, and more.
+- ✅ **Modern & Simple**: Uses a clean, resource-based architecture (`client.species`, `client.observations`, etc.).
+- ✅ **Authentication Handled**: Built-in support for the OAuth2 Authorization Code Grant and Password Grant flows.
+- ✅ **Custom Error Handling**: Throws detailed, custom errors to simplify debugging.
+- ✅ **Multi-language Support**: Easily fetch API responses in different languages.
+- ✅ **Powered by Bun**: Built and tested with the modern [Bun](https://bun.sh/) runtime.
 
 For a detailed list of implemented API endpoints, please see the [FEATURES.md](./FEATURES.md) file.
 
@@ -27,9 +30,9 @@ npm install observation-js
 yarn add observation-js
 ```
 
-## Usage
+## Getting Started
 
-### Initializing the Client
+### 1. Initializing the Client
 
 The client can be initialized without any options for accessing public, unauthenticated endpoints.
 
@@ -39,7 +42,7 @@ import { ObservationClient } from 'observation-js';
 const client = new ObservationClient();
 ```
 
-For authenticated endpoints, you'll need to provide your OAuth2 client credentials.
+For authenticated endpoints, you'll need to provide your OAuth2 client credentials, which you can get by registering your application on waarneming.nl.
 
 ```typescript
 const client = new ObservationClient({
@@ -49,25 +52,52 @@ const client = new ObservationClient({
 });
 ```
 
-### Setting the Language
+### 2. Authenticating a User
 
-The API can return language-specific data (e.g., common names for species). You can set the desired language for all subsequent requests.
+This library supports the OAuth2 **Authorization Code Grant**.
+
+First, redirect the user to the authorization URL:
 
 ```typescript
-// For results in Dutch
-client.setLanguage('nl');
+const scopes = ['read_observations', 'write_observations'];
+const state = 'a-random-string-for-security'; // Generate and store this securely
+const authUrl = client.getAuthorizationUrl(state, scopes);
 
-// For results in English (default)
-client.setLanguage('en');
+// Redirect your user to authUrl
+console.log('Redirect user to:', authUrl);
 ```
 
-### Examples
+After the user authorizes your application, they will be redirected back to your `redirectUri` with a `code` and the `state` in the query parameters. You can then exchange this code for an access token:
 
-#### Get details for a single species
+```typescript
+// On your callback page
+const urlParams = new URLSearchParams(window.location.search);
+const code = urlParams.get('code');
+const returnedState = urlParams.get('state');
+
+if (code && returnedState === state) {
+  try {
+    const tokenResponse = await client.getAccessToken(code);
+    console.log('Access Token:', tokenResponse.access_token);
+
+    // Securely store the token and use it for authenticated requests
+    client.setAccessToken(tokenResponse.access_token);
+  } catch (error) {
+    console.error('Error getting access token:', error);
+  }
+}
+```
+
+### 3. Making API Calls
+
+Once the client is initialized (and authenticated, if needed), you can start making API calls.
 
 ```typescript
 async function getSpeciesDetails(id: number) {
   try {
+    // Set language for results (optional, defaults to 'en')
+    client.setLanguage('nl');
+
     const species = await client.species.get(id);
     console.log(`Successfully fetched: ${species.name} (${species.scientific_name})`);
     console.log(`Group: ${species.group_name}`);
@@ -80,49 +110,36 @@ async function getSpeciesDetails(id: number) {
 getSpeciesDetails(2);
 ```
 
-#### Search for a species
+## Error Handling
+
+The library throws custom errors to help you handle different failure scenarios:
+
+- `ObservationError`: The base error class for all errors from this library.
+- `ApiError`: Thrown for general API errors (e.g., server errors, invalid requests). It contains the `response` and `body` from the API for inspection.
+- `AuthenticationError`: A subclass of `ApiError`, specifically for authentication issues (e.g., invalid token, insufficient permissions).
 
 ```typescript
-async function searchSpecies(query: string) {
+import { ApiError, AuthenticationError } from 'observation-js';
+
+async function getMyObservations() {
   try {
-    const searchResult = await client.species.search({ q: query });
-    console.log(`Found ${searchResult.count} result(s).`);
-    for (const species of searchResult.results) {
-      console.log(`- ${species.name} (ID: ${species.id})`);
+    const observations = await client.observations.list(); // Example authenticated request
+  } catch (error) {
+    if (error instanceof AuthenticationError) {
+      console.error('Authentication failed!', error.body);
+      // Handle re-authentication or token refresh here
+    } else if (error instanceof ApiError) {
+      console.error(`API Error: ${error.message}`, error.response.status, error.body);
+    } else {
+      console.error('A generic error occurred:', error);
     }
-  } catch (error) {
-    console.error('Error searching for species:', error);
   }
 }
-
-// Search for "witkeelgors"
-searchSpecies('witkeelgors');
 ```
 
-#### Fetching an observation (Authenticated)
+## Examples
 
-Fetching private resources, like a specific observation by ID, requires a valid access token.
-
-```typescript
-async function getObservation(id: number, accessToken: string) {
-  // First, set the access token on the client
-  client.setAccessToken(accessToken);
-
-  try {
-    const observation = await client.observations.get(id);
-    console.log('--- Observation Found! ---');
-    console.log(`ID: ${observation.id}`);
-    console.log(`Species: ${observation.species_detail.name}`);
-    console.log(`Date: ${observation.date}`);
-    console.log(`Observer: ${observation.user_detail.name}`);
-  } catch (error) {
-    console.error('An error occurred:', error);
-  }
-}
-
-// Example usage (replace with a real ID and token)
-// getObservation(12345, 'YOUR_VALID_ACCESS_TOKEN');
-```
+For more detailed, runnable examples of how to use the various API resources, please see the files in the [`/examples`](./examples) directory of this repository.
 
 ## License
 

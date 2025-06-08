@@ -39,7 +39,9 @@ async function main() {
         );
         observations.results.forEach((obs) => {
           console.log(
-            `- Observation ID: ${obs.id} on ${obs.date} by ${obs.user_detail.name}`
+            `- Observation ID: ${obs.id} on ${obs.date} by ${
+              obs.user?.name || 'Unknown'
+            }`
           );
         });
       },
@@ -70,22 +72,22 @@ async function main() {
         }
       },
     },
-    {
-      title: '6. Get Species Occurrence',
-      fn: async () => {
-        const speciesIds = [1, 2, 999999]; // Little Grebe, Black Tern, and a non-existent species
-        const point = 'POINT(4.8 52.3)'; // A point in the Netherlands
-        const occurrence = await client.species.getOccurrence(speciesIds, point);
-        console.log(
-          `Checking occurrence for species IDs ${speciesIds.join(', ')} at ${point}:`
-        );
-        occurrence.results.forEach((occ) => {
-          console.log(
-            `- Species ID ${occ.species_id} occurs here: ${occ.occurs}`
-          );
-        });
-      },
-    },
+    // {
+    //   title: '6. Get Species Occurrence',
+    //   fn: async () => {
+    //     const speciesIds = [1, 2, 999999]; // Little Grebe, Black Tern, and a non-existent species
+    //     const point = 'POINT(4.8 52.3)'; // A point in the Netherlands
+    //     const occurrence = await client.species.getOccurrence(speciesIds, point);
+    //     console.log(
+    //       `Checking occurrence for species IDs ${speciesIds.join(', ')} at ${point}:`
+    //     );
+    //     occurrence.results.forEach((occ) => {
+    //       console.log(
+    //         `- Species ID ${occ.species_id} occurs here: ${occ.occurs}`
+    //       );
+    //     });
+    //   },
+    // },
   ];
 
   for (const { title, fn } of examples) {

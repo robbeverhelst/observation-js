@@ -7,28 +7,35 @@ import type {
 } from '../types';
 
 export class Observations {
-  private client: ObservationClient;
+  #client: ObservationClient;
 
+  /**
+   * @internal
+   */
   constructor(client: ObservationClient) {
-    this.client = client;
+    this.#client = client;
   }
 
   /**
-   * Retrieve a single observation by its ID.
-   * This is an authenticated endpoint.
-   * @param id The ID of the observation.
-   * @returns The observation object.
+   * Retrieves a single observation by its ID.
+   *
+   * @param id The unique identifier of the observation.
+   * @returns A promise that resolves to the observation object.
+   * @throws {AuthenticationError} If the request is not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   public async get(id: number): Promise<Observation> {
-    return this.client.request<Observation>(`observations/${id}`);
+    return this.#client.request<Observation>(`observations/${id}`);
   }
 
   /**
    * Creates a new observation.
-   * This is an authenticated endpoint.
-   * @param payload The observation data.
-   * @param options Optional synchronous file uploads.
-   * @returns The created observation object.
+   *
+   * @param payload - The core data for the new observation.
+   * @param options - Optional parameters, including media files to upload synchronously.
+   * @returns A promise that resolves to the newly created observation object.
+   * @throws {AuthenticationError} If the request is not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   public async create(
     payload: CreateObservationPayload,
@@ -45,13 +52,13 @@ export class Observations {
       upload_sounds?.forEach((sound) =>
         formData.append('upload_sounds', sound)
       );
-      return this.client.request<Observation>('observations/create-single/', {
+      return this.#client.request<Observation>('observations/create-single/', {
         method: 'POST',
         body: formData,
       });
     }
 
-    return this.client.request<Observation>('observations/create-single/', {
+    return this.#client.request<Observation>('observations/create-single/', {
       method: 'POST',
       body: payload as any,
     });
@@ -59,11 +66,13 @@ export class Observations {
 
   /**
    * Updates an existing observation.
-   * This is an authenticated endpoint.
-   * @param id The ID of the observation to update.
-   * @param payload The observation data to update.
-   * @param options Optional synchronous file uploads.
-   * @returns The updated observation object.
+   *
+   * @param id - The unique identifier of the observation to update.
+   * @param payload - The data to update on the observation.
+   * @param options - Optional parameters, including media files to upload synchronously.
+   * @returns A promise that resolves to the updated observation object.
+   * @throws {AuthenticationError} If the request is not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   public async update(
     id: number,
@@ -81,13 +90,13 @@ export class Observations {
       upload_sounds?.forEach((sound) =>
         formData.append('upload_sounds', sound)
       );
-      return this.client.request<Observation>(`observations/${id}/update/`, {
+      return this.#client.request<Observation>(`observations/${id}/update/`, {
         method: 'POST',
         body: formData,
       });
     }
 
-    return this.client.request<Observation>(`observations/${id}/update/`, {
+    return this.#client.request<Observation>(`observations/${id}/update/`, {
       method: 'POST',
       body: payload as any,
     });
@@ -95,12 +104,14 @@ export class Observations {
 
   /**
    * Deletes an observation by its ID.
-   * This is an authenticated endpoint.
-   * @param id The ID of the observation to delete.
-   * @returns A promise that resolves when the observation is deleted.
+   *
+   * @param id The unique identifier of the observation to delete.
+   * @returns A promise that resolves when the observation is successfully deleted.
+   * @throws {AuthenticationError} If the request is not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   public async delete(id: number): Promise<void> {
-    await this.client.request<void>(`observations/${id}/delete/`, {
+    await this.#client.request<void>(`observations/${id}/delete/`, {
       method: 'POST',
     });
   }

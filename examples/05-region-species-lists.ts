@@ -1,4 +1,4 @@
-import { ObservationClient } from '../src';
+import { ObservationClient, ApiError } from '../src';
 
 async function main() {
   const client = new ObservationClient();
@@ -14,7 +14,7 @@ async function main() {
 
       const firstListId = lists[0].id;
       console.log(
-        `\\n--- Fetching species for the first list (ID: ${firstListId}) ---`
+        `\n--- Fetching species for the first list (ID: ${firstListId}) ---`
       );
 
       const species = await client.regionSpeciesLists.getSpecies(firstListId);
@@ -25,12 +25,15 @@ async function main() {
           name: s.name,
           scientific_name: s.scientific_name,
           rarity: s.rarity,
-          native: s.native,
         }))
       );
     }
   } catch (error) {
     console.error('Error fetching region species lists:', error);
+    if (error instanceof ApiError) {
+      console.error(`- Status: ${error.response.status}`);
+      console.error(`- Body:`, error.body);
+    }
   }
 }
 

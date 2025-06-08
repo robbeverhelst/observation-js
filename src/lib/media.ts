@@ -2,19 +2,25 @@ import type { ObservationClient } from '../core/client';
 import type { MediaUploadResponse } from '../types';
 
 export class Media {
-  private client: ObservationClient;
+  #client: ObservationClient;
 
+  /**
+   * @internal
+   */
   constructor(client: ObservationClient) {
-    this.client = client;
+    this.#client = client;
   }
 
   /**
-   * Upload a media file (photo or sound) to get a temporary name.
-   * This temporary name can be used when creating or updating an observation.
-   * This is an authenticated endpoint.
-   * @param media The media file (Blob) to upload.
-   * @param options Optional parameters.
-   * @returns The response from the media upload endpoint.
+   * Uploads a media file (photo or sound) to get a temporary name.
+   * This temporary name can then be used when creating or updating an observation.
+   *
+   * @param media The media file (as a Blob) to upload.
+   * @param options - Optional parameters.
+   * @param options.identify - If `true`, the system will attempt to identify the species in the media.
+   * @returns A promise that resolves to the media upload response, containing the temporary name.
+   * @throws {AuthenticationError} If the request is not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   public async upload(
     media: Blob,
@@ -23,10 +29,10 @@ export class Media {
     const formData = new FormData();
     formData.append('media', media);
 
-    return this.client.request<MediaUploadResponse>('media-upload/', {
+    return this.#client.request<MediaUploadResponse>('media-upload/', {
       method: 'POST',
       body: formData,
-      params: options,
+      params: options as any,
     });
   }
 } 

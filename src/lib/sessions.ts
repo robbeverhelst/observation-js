@@ -10,13 +10,19 @@ import type {
 export class Sessions {
   #client: ObservationClient;
 
+  /**
+   * @internal
+   */
   constructor(client: ObservationClient) {
     this.#client = client;
   }
 
   /**
-   * List sessions for the current user.
-   * @returns A paginated list of sessions.
+   * Fetches a list of observation sessions for the authenticated user.
+   *
+   * @returns A promise that resolves to a paginated list of sessions.
+   * @throws {AuthenticationError} If the request is not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   async list(): Promise<Paginated<Session>> {
     return this.#client.request<Paginated<Session>>('/api/v2/user/sessions/', {
@@ -25,9 +31,12 @@ export class Sessions {
   }
 
   /**
-   * Create a new session.
+   * Creates a new observation session.
+   *
    * @param payload - The data for the new session.
-   * @returns The created session.
+   * @returns A promise that resolves to the newly created session object.
+   * @throws {AuthenticationError} If the request is not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   async create(payload: CreateSessionPayload): Promise<Session> {
     return this.#client.request<Session>('/api/v2/sessions/', {
@@ -38,9 +47,13 @@ export class Sessions {
   }
 
   /**
-   * Update an existing session.
-   * @param payload - The data to update the session with. A session will be created if a session with the given uuid does not exist.
-   * @returns The updated session.
+   * Updates an existing observation session.
+   * If a session with the given UUID does not exist, a new one will be created.
+   *
+   * @param payload - The data to update the session with, including its UUID.
+   * @returns A promise that resolves to the updated or created session object.
+   * @throws {AuthenticationError} If the request is not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   async update(payload: UpdateSessionPayload): Promise<Session> {
     return this.#client.request<Session>('/api/v2/sessions/', {
@@ -51,9 +64,12 @@ export class Sessions {
   }
 
   /**
-   * List observations of a session.
-   * @param uuid - The UUID of the session.
-   * @returns A paginated list of observations for the session.
+   * Fetches the observations associated with a specific session.
+   *
+   * @param uuid - The unique identifier (UUID) of the session.
+   * @returns A promise that resolves to a paginated list of observations for the session.
+   * @throws {AuthenticationError} If the request is not authenticated.
+   * @throws {ApiError} If the request fails.
    */
   async listObservations(uuid: string): Promise<Paginated<Observation>> {
     return this.#client.request<Paginated<Observation>>(

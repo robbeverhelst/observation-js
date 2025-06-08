@@ -4,104 +4,122 @@ import type {
   Paginated,
   Species as SpeciesData,
   SpeciesGroup,
-  SpeciesGroupAttributes,
-  SpeciesOccurrence,
-} from '../types.js';
+  SpeciesSearchParams,
+} from '../types';
 
 export class Species {
-  private client: ObservationClient;
+  #client: ObservationClient;
 
+  /**
+   * @internal
+   */
   constructor(client: ObservationClient) {
-    this.client = client;
+    this.#client = client;
   }
 
   /**
-   * Retrieve details for a single species.
+   * Retrieves a single species by its ID.
+   * The name of the species will be returned in the language set on the client (default: 'en').
    * This is a public endpoint and does not require authentication.
-   * @param id The ID of the species.
-   * @returns The species object.
+   *
+   * @param id The unique identifier of the species.
+   * @returns A promise that resolves to the species object.
+   * @throws {ApiError} If the request fails.
    */
   public async get(id: number): Promise<SpeciesData> {
-    return this.client.publicRequest<SpeciesData>(`species/${id}`);
+    const request = this.#client.hasAccessToken()
+      ? this.#client.request
+      : this.#client.publicRequest;
+    return request<SpeciesData>(`species/${id}`);
   }
 
   /**
-   * Search for species.
-   * @param params The search parameters.
-   * @returns A list of species matching the search criteria.
+   * Searches for species based on a query string and other filters.
+   * This is a public endpoint and does not require authentication.
+   *
+   * @param params - The search parameters, including the search query and filters.
+   * @returns A promise that resolves to a paginated list of matching species.
+   * @throws {ApiError} If the request fails.
    */
   public async search(
-    params: Record<string, string | number>
+    params: SpeciesSearchParams = {}
   ): Promise<Paginated<SpeciesData>> {
-    return this.client.publicRequest<Paginated<SpeciesData>>(
-      'species/search/',
+    const request = this.#client.hasAccessToken()
+      ? this.#client.request
+      : this.#client.publicRequest;
+    return request<Paginated<SpeciesData>>('species/search/', {
+      params: params as Record<string, string | number>,
+    });
+  }
+
+  /**
+   * Retrieves observations for a single species.
+   * This is a public endpoint and does not require authentication.
+   *
+   * @param id The unique identifier of the species.
+   * @param params - Optional query parameters to filter the observations.
+   * @returns A promise that resolves to a paginated list of observations for the species.
+   * @throws {ApiError} If the request fails.
+   */
+  public async getObservations(
+    id: number,
+    params: Record<string, string | number> = {}
+  ): Promise<Paginated<Observation>> {
+    const request = this.#client.hasAccessToken()
+      ? this.#client.request
+      : this.#client.publicRequest;
+    return request<Paginated<Observation>>(
+      `species/${id}/observations/`,
       { params }
     );
   }
 
   /**
-   * Check the occurrence of one or more species at a specific point.
+   * Retrieves species occurrence data for a given set of species IDs at a specific location.
    * This is a public endpoint and does not require authentication.
-   * @param speciesIds An array of species IDs.
-   * @param point A WKT point string, e.g., "POINT(4.8 52.3)".
-   * @returns An object containing an array of species occurrence objects.
+   *
+   * @param ids - An array of species IDs.
+   * @param point - The location, formatted as a WKT point string (e.g., 'POINT(4.895168 52.370216)').
+   * @returns A promise that resolves to a list of species occurrences.
+   * @throws {ApiError} If the request fails.
    */
   public async getOccurrence(
-    speciesIds: number[],
+    ids: number[],
     point: string
-  ): Promise<{ results: SpeciesOccurrence[] }> {
-    const params = new URLSearchParams();
-    speciesIds.forEach((id) => params.append('species_id', String(id)));
-    params.set('point', point);
-
-    // This endpoint has a unique parameter structure, so we build the request manually
-    const response = await fetch(
-      `${this.client.getApiBaseUrl()}/species-occurrence/?${params.toString()}`
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to fetch species occurrence: ${await response.text()}`
-      );
-    }
-    return (await response.json()) as { results: SpeciesOccurrence[] };
-  }
-
-  /**
-   * Retrieve a list of observations for a specific species.
-   * This is a public endpoint and does not require authentication.
-   * @param speciesId The ID of the species.
-   * @param options Pagination options.
-   * @returns A paginated list of observation objects.
-   */
-  public async getObservations(
-    speciesId: number,
-    options: { limit?: number; offset?: number } = {}
-  ): Promise<Paginated<Observation>> {
-    return this.client.publicRequest<Paginated<Observation>>(
-      `species/${speciesId}/observations/`,
-      { params: options }
+  ): Promise<Paginated<any>> {
+    const params = {
+      species_id: ids.join(','),
+      point,
+    };
+    return this.#client.publicRequest<Paginated<any>>(
+      'species-occurrence',
+      {
+        params,
+      }
     );
   }
 
   /**
-   * Retrieve a list of all species groups.
+   * Retrieves a list of all species groups.
+   * The names of the groups will be returned in the language set on the client (default: 'en').
    * This is a public endpoint and does not require authentication.
-   * @returns An array of species group objects.
+   *
+   * @returns A promise that resolves to a list of species group objects.
+   * @throws {ApiError} If the request fails.
    */
   public async listGroups(): Promise<SpeciesGroup[]> {
-    return this.client.publicRequest<SpeciesGroup[]>(`species-groups/`);
+    return this.#client.publicRequest('species-groups/');
   }
 
   /**
-   * Retrieve the possible attribute values for a given species group.
+   * Retrieves the specific observation field attributes for a given species group.
    * This is a public endpoint and does not require authentication.
-   * @param id The ID of the species group.
-   * @returns An object containing the attributes for the species group.
+   *
+   * @param id The unique identifier of the species group.
+   * @returns A promise that resolves to the attributes for the species group.
+   * @throws {ApiError} If the request fails.
    */
-  public async getGroupAttributes(id: number): Promise<SpeciesGroupAttributes> {
-    return this.client.publicRequest<SpeciesGroupAttributes>(
-      `species-groups/${id}/attributes/`
-    );
+  public async getGroupAttributes(id: number): Promise<any> {
+    return this.#client.publicRequest(`species-groups/${id}/attributes/`);
   }
-} 
+}

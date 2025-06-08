@@ -1,47 +1,56 @@
-import { ObservationClient } from '../src';
+import { ObservationClient, ApiError } from '../src';
 
-async function main() {
+// This example demonstrates how to list the observation exports for a user.
+// This is an authenticated endpoint and requires a valid access token.
+
+// The access token is passed as a command-line argument.
+const accessToken = process.argv[2] || null;
+
+const main = async () => {
+  if (!accessToken) {
+    console.log(
+      'Access token is required. Please provide it as a command-line argument.'
+    );
+    console.log(
+      'Skipping example. Set WAARNEMING_NL_ACCESS_TOKEN to run this.'
+    );
+    return;
+  }
+
   const client = new ObservationClient();
+  client.setAccessToken(accessToken);
 
-  console.log(
-    '--- Note: All export endpoints require authentication. ---'
-  );
-  console.log(
-    '--- Please uncomment the code below and provide a valid access token. ---'
-  );
-
-  /*
-  // 1. Set the access token
-  client.setAccessToken('YOUR_ACCESS_TOKEN');
+  console.log('--- Fetching observation exports for the current user ---');
 
   try {
-    // 2. Start an export of your observations
-    console.log('\\n--- Starting a new user observations export ---');
-    const startResponse = await client.exports.start({
-      type: 'USER_OBSERVATIONS',
-      export_format: 'csv',
-    });
-    console.log('Successfully started export:', startResponse);
-    const newExportId = startResponse.id;
-
-    // 3. List all current exports
-    console.log('\\n--- Listing all exports ---');
     const exports = await client.exports.list();
-    console.log(`Found ${exports.count} total exports.`);
-    console.table(exports.results);
 
-    // 4. Get details for the newly created export
-    if (newExportId) {
-      console.log(`\\n--- Getting details for export ID: ${newExportId} ---`);
-      // Note: The export might take time to process.
-      // You may need to poll the `get` endpoint until `is_ready` is true.
-      const exportDetails = await client.exports.get(newExportId);
-      console.log('Export details:', exportDetails);
+    if (exports.count === 0) {
+      console.log('No exports found for this user.');
+      return;
     }
+
+    console.log(`Found ${exports.count} export(s):`);
+    console.table(
+      exports.results.map((exp) => ({
+        ID: exp.id,
+        Description: exp.description,
+        'Is Ready?': exp.is_ready,
+        'File Size': exp.filesize ? `${exp.filesize} bytes` : 'N/A',
+        'Download URL': exp.is_ready ? exp.download_url : 'Processing...',
+        'Expires At': exp.expires,
+      }))
+    );
   } catch (error) {
-    console.error('An error occurred:', error);
+    console.error('Failed to fetch exports:');
+    if (error instanceof ApiError) {
+      console.error(`- Status: ${error.response.status}`);
+      console.error(`- Body:`, error.body);
+    } else {
+      console.error(error);
+    }
+    process.exit(1);
   }
-  */
-}
+};
 
 main().catch(console.error); 

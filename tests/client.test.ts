@@ -9,14 +9,17 @@ const mockSpecies: Species = {
   id: 2,
   name: 'Dodaars',
   scientific_name: 'Tachybaptus ruficollis',
-  authority: '(Pallas, 1764)',
   group: 1,
   group_name: 'Vogels',
-  status: 'inheems',
-  rarity: 'algemeen',
+  status: 0,
+  rarity: 1,
+  rarity_text: 'algemeen',
   type: 'S',
-  photo: 'https://waarneming.nl/media/photo/123.jpg',
-  permalink: 'https://waarneming.nl/species/2/',
+  url: 'https://waarneming.nl/species/2/',
+  photos: [],
+  sounds: [],
+  name_vernacular: null,
+  name_vernacular_language: null,
 };
 
 // Restore all spies after each test

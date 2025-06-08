@@ -1,26 +1,25 @@
-import { ObservationClient } from '../src';
+import { ObservationClient } from '../src/index';
 
 async function main() {
   const client = new ObservationClient();
 
-  // --- Note: You must replace these with a valid group ID and invite code ---
-  const groupId = 1; // Replace with a real group ID
-  const inviteCode = 'f1508fdf-5d98-4f4e-a89b-ba13f0fc79b7'; // Replace with a real invite code
-
-  console.log(
-    `--- Fetching public summary for Group ID: ${groupId} (unauthenticated) ---`
-  );
+  console.log('--- Fetching all public groups (unauthenticated) ---');
   try {
-    const summary = await client.groups.getSummary(groupId, inviteCode);
-    console.log('Successfully fetched group summary:');
-    console.log(JSON.stringify(summary, null, 2));
+    const groups = await client.groups.list();
+    console.log(`Successfully fetched ${groups.count} groups.`);
+    if (groups.count > 0) {
+      console.log('First 5 groups:');
+      groups.results.slice(0, 5).forEach((group) => {
+        console.log(`- ${group.name} (ID: ${group.id})`);
+      });
+    }
   } catch (error) {
-    console.error('Error fetching group summary:', error);
+    console.error('Error fetching groups:', error);
   }
 
   console.log(
-    '\\n--- Note: Most group endpoints require authentication and group membership and are not demonstrated here. ---'
+    '\n--- Note: Most group endpoints require authentication and group membership and are not demonstrated here. ---',
   );
 }
 
-main().catch(console.error); 
+main(); 
