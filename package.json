@@ -50,6 +50,6 @@
   "author": "Robbe Verhelst",
   "license": "MIT",
   "dependencies": {
-    "form-data-encoder": "^3.0.1"
+    "form-data-encoder": "^4.1.0"
   }
 }
