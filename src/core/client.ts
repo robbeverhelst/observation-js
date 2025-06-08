@@ -1,5 +1,6 @@
 import { Badges } from '../lib/badges';
 import { Countries } from '../lib/countries';
+import { Exports } from '../lib/exports';
 import { Groups } from '../lib/groups';
 import { Locations } from '../lib/locations';
 import { Observations } from '../lib/observations';
@@ -30,6 +31,7 @@ export class ObservationClient {
   public readonly countries: Countries;
   public readonly badges: Badges;
   public readonly groups: Groups;
+  public readonly exports: Exports;
 
   constructor(options?: ObservationClientOptions) {
     this.options = options;
@@ -42,6 +44,7 @@ export class ObservationClient {
     this.countries = new Countries(this);
     this.badges = new Badges(this);
     this.groups = new Groups(this);
+    this.exports = new Exports(this);
   }
 
   /**
