@@ -132,4 +132,17 @@ export interface SpeciesGroupAttributes extends SpeciesGroup {
 export interface SpeciesOccurrence {
   species_id: number;
   occurs: 'yes' | 'no' | 'unknown';
+}
+
+export interface Region {
+  id: number;
+  type: number;
+  name: string;
+  continent?: number;
+  iso?: string;
+}
+
+export interface RegionType {
+  id: number;
+  name: string;
 } 
