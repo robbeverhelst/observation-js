@@ -1,3 +1,4 @@
+import { Countries } from '../lib/countries';
 import { Locations } from '../lib/locations';
 import { Observations } from '../lib/observations';
 import { Regions } from '../lib/regions';
@@ -24,6 +25,7 @@ export class ObservationClient {
   public readonly locations: Locations;
   public readonly regionSpeciesLists: RegionSpeciesLists;
   public readonly users: Users;
+  public readonly countries: Countries;
 
   constructor(options?: ObservationClientOptions) {
     this.options = options;
@@ -33,6 +35,7 @@ export class ObservationClient {
     this.locations = new Locations(this);
     this.regionSpeciesLists = new RegionSpeciesLists(this);
     this.users = new Users(this);
+    this.countries = new Countries(this);
   }
 
   /**
