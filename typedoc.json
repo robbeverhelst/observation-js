@@ -5,6 +5,7 @@
   "plugin": ["typedoc-material-theme"],
   "name": "observation-js Documentation",
   "readme": "README.md",
+  "themeColor": "#4285F4",
   "exclude": [
     "**/*.test.ts",
     "**/node_modules/**"

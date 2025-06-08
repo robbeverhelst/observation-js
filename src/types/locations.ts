@@ -25,7 +25,7 @@ export namespace GeoJSON {
   export interface Feature<G extends Geometry | null = Geometry> {
     type: 'Feature';
     geometry: G;
-    properties: Record<string, any> | null;
+    properties: Record<string, unknown> | null;
   }
 
   export interface FeatureCollection<G extends Geometry | null = Geometry> {
