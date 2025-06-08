@@ -657,4 +657,42 @@ export interface CreateSessionPayload {
   notes: string;
 }
 
-export type UpdateSessionPayload = CreateSessionPayload; 
+export type UpdateSessionPayload = CreateSessionPayload;
+
+export interface TransectObservationList {
+  id?: number;
+  species_group: number;
+  all_species_counted: 0 | 1 | 2;
+  all_individuals_counted: 0 | 1 | 2;
+  notes?: string;
+  project?: number | null;
+}
+
+export interface Transect {
+  id: number;
+  uuid: string;
+  type: 'point' | 'transect';
+  observation_lists: TransectObservationList[];
+  location_detail: LocationDetail;
+  start_date: string;
+  start_time: string;
+  end_date: string;
+  end_time: string;
+  geom: GeoJSON.Point | GeoJSON.LineString;
+  notes: string;
+  permalink: string;
+}
+
+export interface CreateTransectPayload {
+  uuid: string;
+  type: 'point' | 'transect';
+  observation_lists: Omit<TransectObservationList, 'id'>[];
+  start_date: string;
+  start_time: string;
+  end_date: string;
+  end_time: string;
+  geom: GeoJSON.Point | GeoJSON.LineString;
+  notes: string;
+}
+
+export type UpdateTransectPayload = CreateTransectPayload; 
