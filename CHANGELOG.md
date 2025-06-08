@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/RobbeVerhelst/observation-js/compare/v1.2.0...v1.2.1) (2025-06-08)
+
+
+### Bug Fixes
+
+* update README ([642c3db](https://github.com/RobbeVerhelst/observation-js/commit/642c3db84b4798508be743a7a4fcc836ad167840))
+
 # [1.2.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.1.1...v1.2.0) (2025-06-08)
 
 
