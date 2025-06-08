@@ -9,6 +9,5 @@
     "**/*.test.ts",
     "**/node_modules/**"
   ],
-  "theme": "material",
   "sort": ["source-order"]
 } 
