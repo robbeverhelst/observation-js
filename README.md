@@ -1,7 +1,9 @@
 # observation-js
 
-[![npm version](https://badge.fury.io/js/observation-js.svg)](https://badge.fury.io/js/observation-js)
+[![npm version](https://img.shields.io/npm/v/observation-js.svg)](https://www.npmjs.com/package/observation-js)
 [![CI](https://github.com/RobbeVerhelst/observation-js/actions/workflows/ci.yml/badge.svg)](https://github.com/RobbeVerhelst/observation-js/actions/workflows/ci.yml)
+[![Documentation](https://img.shields.io/badge/documentation-brightgreen.svg)](https://robbeverhelst.github.io/observation-js/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A fully-typed TypeScript client for the [waarneming.nl](https://waarneming.nl/api/docs/) API. This library provides an easy-to-use interface for interacting with the API, handling both public (unauthenticated) and private (authenticated) endpoints.
 
@@ -14,8 +16,6 @@ A fully-typed TypeScript client for the [waarneming.nl](https://waarneming.nl/ap
 - ✅ **Custom Error Handling**: Throws detailed, custom errors to simplify debugging.
 - ✅ **Multi-language Support**: Easily fetch API responses in different languages.
 - ✅ **Powered by Bun**: Built and tested with the modern [Bun](https://bun.sh/) runtime.
-
-For a detailed list of implemented API endpoints, please see the [FEATURES.md](./FEATURES.md) file.
 
 ## Installation
 
@@ -139,7 +139,7 @@ async function getMyObservations() {
 
 ## Examples
 
-For more detailed, runnable examples of how to use the various API resources, please see the files in the [`/examples`](./examples) directory of this repository.
+For more detailed, runnable examples of how to use the various API resources, please see the files in the [`/examples`](https://github.com/RobbeVerhelst/observation-js/tree/main/examples) directory of this repository.
 
 ## License
 
