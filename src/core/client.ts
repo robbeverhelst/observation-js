@@ -1,3 +1,4 @@
+import { Locations } from '../lib/locations';
 import { Observations } from '../lib/observations';
 import { Regions } from '../lib/regions';
 import { Species } from '../lib/species';
@@ -18,12 +19,14 @@ export class ObservationClient {
   public readonly observations: Observations;
   public readonly species: Species;
   public readonly regions: Regions;
+  public readonly locations: Locations;
 
   constructor(options?: ObservationClientOptions) {
     this.options = options;
     this.observations = new Observations(this);
     this.species = new Species(this);
     this.regions = new Regions(this);
+    this.locations = new Locations(this);
   }
 
   /**
@@ -184,16 +187,25 @@ export class ObservationClient {
 
   public async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit & { params?: Record<string, string | number> } = {}
   ): Promise<T> {
     if (!this.accessToken) {
       throw new Error('Access token is not set. Please authenticate first.');
     }
 
-    const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
-      ...options,
+    const { params, ...fetchOptions } = options;
+    const url = new URL(`${API_BASE_URL}/${endpoint}`);
+
+    if (params) {
+      for (const key in params) {
+        url.searchParams.set(key, String(params[key]));
+      }
+    }
+
+    const response = await fetch(url.toString(), {
+      ...fetchOptions,
       headers: {
-        ...options.headers,
+        ...fetchOptions.headers,
         Authorization: `Bearer ${this.accessToken}`,
         'Content-Type': 'application/json',
         'Accept-Language': this.language,
