@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/RobbeVerhelst/observation-js/compare/v1.0.1...v1.0.2) (2025-06-08)
+
+
+### Bug Fixes
+
+* downgrade TypeDoc version and enhance exports in index.ts ([254a0fc](https://github.com/RobbeVerhelst/observation-js/commit/254a0fc26b162b9b72254694b8568f3d108d9a0a))
+
 ## [1.0.1](https://github.com/RobbeVerhelst/observation-js/compare/v1.0.0...v1.0.1) (2025-06-08)
 
 
