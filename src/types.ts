@@ -499,4 +499,69 @@ export interface Language {
   code: string;
   name_en: string;
   name_native: string;
+}
+
+export interface LookupValue<T extends string | number> {
+  id: T;
+  name: string;
+  is_active: boolean;
+}
+
+export interface CountingMethodValue extends LookupValue<number> {
+  is_default?: boolean;
+}
+
+export interface Lookups {
+  validation_status: LookupValue<string>[];
+  rarity: LookupValue<number>[];
+  counting_method: CountingMethodValue[];
+  obscurity: LookupValue<number>[];
+  species_type: LookupValue<string>[];
+  species_status: LookupValue<number>[];
+}
+
+export interface ModelCoverage {
+  image: string;
+  description: string;
+}
+
+export interface NiaSpecies {
+  id: number;
+  scientific_name: string;
+  name: string;
+  group: number;
+  type: string;
+  rarity?: number;
+  status?: number;
+}
+
+export interface NiaLifeStage {
+  species_id: number;
+  id: number;
+  text: string;
+  is_active: boolean;
+  is_default?: boolean;
+}
+
+export interface NiaMorph {
+  probability: number;
+  token: string;
+}
+
+export interface NiaPrediction {
+  probability: number;
+  taxon: {
+    id: string;
+    name: string;
+  };
+  morphs?: NiaMorph[];
+}
+
+export interface NiaResponse {
+  predictions: NiaPrediction[];
+  model_coverage: ModelCoverage;
+  location?: string; // Deprecated
+  location_detail?: LocationDetail;
+  species?: NiaSpecies[];
+  life_stages?: NiaLifeStage[];
 } 

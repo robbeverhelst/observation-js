@@ -4,6 +4,8 @@ import { Exports } from '../lib/exports';
 import { Groups } from '../lib/groups';
 import { Languages } from '../lib/languages';
 import { Locations } from '../lib/locations';
+import { Lookups } from '../lib/lookups';
+import { Nia } from '../lib/nia';
 import { Observations } from '../lib/observations';
 import { Regions } from '../lib/regions';
 import { RegionSpeciesLists } from '../lib/regionSpeciesLists';
@@ -34,6 +36,8 @@ export class ObservationClient {
   public readonly groups: Groups;
   public readonly exports: Exports;
   public readonly languages: Languages;
+  public readonly lookups: Lookups;
+  public readonly nia: Nia;
 
   constructor(options?: ObservationClientOptions) {
     this.options = options;
@@ -48,6 +52,8 @@ export class ObservationClient {
     this.groups = new Groups(this);
     this.exports = new Exports(this);
     this.languages = new Languages(this);
+    this.lookups = new Lookups(this);
+    this.nia = new Nia(this);
   }
 
   /**
@@ -218,57 +224,97 @@ export class ObservationClient {
       throw new Error('Access token is not set. Please authenticate first.');
     }
 
-    const { params, ...fetchOptions } = options;
-    const url = new URL(`${API_BASE_URL}/${endpoint}`);
-
-    if (params) {
-      for (const key in params) {
-        url.searchParams.set(key, String(params[key]));
-      }
+    const url = new URL(
+      endpoint.startsWith('/')
+        ? `https://waarneming.nl${endpoint}`
+        : `${this.getApiBaseUrl()}/${endpoint}`
+    );
+    if (options.params) {
+      Object.entries(options.params).forEach(([key, value]) =>
+        url.searchParams.append(key, String(value))
+      );
     }
 
-    const response = await fetch(url.toString(), {
-      ...fetchOptions,
+    const fetchOptions: RequestInit = {
+      ...options,
       headers: {
-        ...fetchOptions.headers,
         Authorization: `Bearer ${this.accessToken}`,
-        'Content-Type': 'application/json',
         'Accept-Language': this.language,
+        Accept: 'application/json',
+        ...options.headers,
       },
-    });
+    };
+
+    if (options.body) {
+      if (options.body instanceof FormData) {
+        fetchOptions.body = options.body;
+        delete (fetchOptions.headers as Record<string, string>)['Content-Type'];
+      } else {
+        fetchOptions.body = JSON.stringify(options.body);
+        (fetchOptions.headers as Record<string, string>)['Content-Type'] =
+          'application/json';
+      }
+    } else if (options.method === 'POST' || options.method === 'PUT') {
+      // Ensure content-type is set for empty body on POST/PUT
+      (fetchOptions.headers as Record<string, string>)['Content-Type'] =
+        'application/json';
+    }
+
+    const response = await fetch(url.toString(), fetchOptions);
 
     if (!response.ok) {
       throw new Error(`API request failed: ${await response.text()}`);
     }
 
-    return (await response.json()) as T;
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return response.json() as Promise<T>;
+    }
+
+    // For non-JSON responses (like file downloads), return the raw response
+    return response as unknown as T;
   }
 
   public async publicRequest<T>(
     endpoint: string,
     options: RequestInit & { params?: Record<string, string | number> } = {}
   ): Promise<T> {
-    const { params, ...fetchOptions } = options;
-    const url = new URL(`${API_BASE_URL}/${endpoint}`);
+    const url = new URL(
+      endpoint.startsWith('/')
+        ? `https://waarneming.nl${endpoint}`
+        : `${this.getApiBaseUrl()}/${endpoint}`
+    );
+    if (options.params) {
+      Object.entries(options.params).forEach(([key, value]) =>
+        url.searchParams.append(key, String(value))
+      );
+    }
 
-    if (params) {
-      for (const key in params) {
-        url.searchParams.set(key, String(params[key]));
+    const fetchOptions: RequestInit = {
+      ...options,
+      headers: {
+        'Accept-Language': this.language,
+        Accept: 'application/json',
+        ...options.headers,
+      },
+    };
+
+    if (options.body) {
+      if (options.body instanceof FormData) {
+        fetchOptions.body = options.body;
+        delete (fetchOptions.headers as Record<string, string>)['Content-Type'];
+      } else {
+        fetchOptions.body = JSON.stringify(options.body);
+        (fetchOptions.headers as Record<string, string>)['Content-Type'] =
+          'application/json';
       }
     }
 
-    const response = await fetch(url.toString(), {
-      ...fetchOptions,
-      headers: {
-        ...fetchOptions.headers,
-        'Accept-Language': this.language,
-      },
-    });
+    const response = await fetch(url.toString(), fetchOptions);
 
     if (!response.ok) {
       throw new Error(`API request failed: ${await response.text()}`);
     }
-
-    return (await response.json()) as T;
+    return response.json() as Promise<T>;
   }
 } 

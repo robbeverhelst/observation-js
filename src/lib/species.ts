@@ -35,7 +35,7 @@ export class Species {
   ): Promise<Paginated<SpeciesData>> {
     return this.client.publicRequest<Paginated<SpeciesData>>(
       'species/search/',
-      params
+      { params }
     );
   }
 
@@ -80,7 +80,7 @@ export class Species {
   ): Promise<Paginated<Observation>> {
     return this.client.publicRequest<Paginated<Observation>>(
       `species/${speciesId}/observations/`,
-      options
+      { params: options }
     );
   }
 
