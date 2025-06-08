@@ -198,4 +198,26 @@ export namespace GeoJSON {
     type: 'FeatureCollection';
     features: Array<Feature<G>>;
   }
+}
+
+export interface RegionSpeciesList {
+  id: number;
+  region: number;
+  species_group: number;
+  custom_name?: string;
+}
+
+export interface RegionSpecies {
+  species: number;
+  group: number;
+  name: string;
+  scientific_name: string;
+  rarity: number;
+  native: boolean;
+  type: string;
+  rank: number;
+  sort_order_group: number;
+  sort_order_rank: number;
+  sort_order_taxonomy: number;
+  determination_requirements?: string;
 } 

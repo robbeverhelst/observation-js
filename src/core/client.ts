@@ -1,6 +1,7 @@
 import { Locations } from '../lib/locations';
 import { Observations } from '../lib/observations';
 import { Regions } from '../lib/regions';
+import { RegionSpeciesLists } from '../lib/regionSpeciesLists';
 import { Species } from '../lib/species';
 import type {
   ObservationClientOptions,
@@ -20,6 +21,7 @@ export class ObservationClient {
   public readonly species: Species;
   public readonly regions: Regions;
   public readonly locations: Locations;
+  public readonly regionSpeciesLists: RegionSpeciesLists;
 
   constructor(options?: ObservationClientOptions) {
     this.options = options;
@@ -27,6 +29,7 @@ export class ObservationClient {
     this.species = new Species(this);
     this.regions = new Regions(this);
     this.locations = new Locations(this);
+    this.regionSpeciesLists = new RegionSpeciesLists(this);
   }
 
   /**
