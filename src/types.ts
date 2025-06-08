@@ -86,6 +86,7 @@ export interface ObservationClientOptions {
   clientId: string;
   clientSecret: string;
   redirectUri: string;
+  baseUrl?: string;
 }
 
 export interface PasswordGrantOptions {

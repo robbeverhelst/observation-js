@@ -84,6 +84,13 @@ async function main() {
       `Successfully created observation ID: ${syncObs.id} with photo.`
     );
     console.log('Photo URL:', syncObs.photos[0]);
+
+    // 6. --- DELETE AN OBSERVATION ---
+    if (createdObservationId) {
+      console.log(`\n--- Deleting observation ID: ${createdObservationId} ---`);
+      await client.observations.delete(createdObservationId);
+      console.log(`Observation ${createdObservationId} deleted successfully.`);
+    }
   } catch (error) {
     console.error('An error occurred:', error);
   }

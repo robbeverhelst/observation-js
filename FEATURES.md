@@ -20,7 +20,7 @@ This document tracks the implementation status of the `waarneming.nl` API endpoi
 | **Utilities** | | |
 | Public (Unauthenticated) Requests | ✅ Implemented & Tested | `publicRequest()` |
 | Authenticated Requests | ✅ Implemented & Tested | `request()` |
-| Test Environment Support | ❌ Not Implemented | Client should support targeting `waarneming-test.nl`. |
+| Test Environment Support | ✅ Implemented & Tested | Client constructor accepts an optional `baseUrl`. |
 
 ---
 
@@ -31,9 +31,15 @@ This document tracks the implementation status of the `waarneming.nl` API endpoi
 | Endpoint | Method | Status | Notes |
 |---|---|---|---|
 | `/api/v1/observations/{id}/` | `GET` | ✅ Implemented & Tested | `client.observations.get(id)` |
-| `/api/v1/observations/create-single/` | `POST` | ❌ Not Implemented | |
-| `/api/v1/observations/{id}/update/` | `POST` | ❌ Not Implemented | |
-| `/api/v1/observations/{id}/delete/` | `POST` | ❌ Not Implemented | |
+| `/api/v1/observations/create-single/` | `POST` | 🟡 Implemented (Untested) | `client.observations.create(payload, options)` |
+| `/api/v1/observations/{id}/update/` | `POST` | 🟡 Implemented (Untested) | `client.observations.update(id, payload, options)` |
+| `/api/v1/observations/{id}/delete/` | `POST` | 🟡 Implemented (Untested) | `client.observations.delete(id)` |
+
+#### Media
+
+| Endpoint | Method | Status | Notes |
+|---|---|---|---|
+| `/api/v1/media-upload/` | `POST` | 🟡 Implemented (Untested) | `client.media.upload(file)` |
 
 #### Species
 
@@ -147,22 +153,10 @@ This document tracks the implementation status of the `waarneming.nl` API endpoi
 |---|---|---|---|
 | `/api/identify-proxy/v1/` | `POST` | 🟡 Implemented (Untested) | `client.nia.identify(options)` - Can be used without auth (limited) or with auth. |
 
-#### Other Resources
+#### Sessions (V2)
 
-| Resource | Status | Notes |
-|---|---|---|
-| Badges | ✅ Implemented & Tested | Moved to dedicated section. |
-| Challenges | ❌ Not Implemented | |
-| Countries | ✅ Implemented & Tested | Moved to dedicated section. |
-| Exports | 🟡 Implemented (Untested) | Moved to dedicated section. Requires authentication. |
-| Groups | ✅ Implemented & Tested | Moved to dedicated section. |
-| Information blocks | ✅ Implemented & Tested | Defines types for flexible content views. |
-| Languages | ✅ Implemented & Tested | |
-| Locations | ✅ Implemented & Tested | Moved to dedicated section. |
-| Lookups / Constants | ✅ Implemented & Tested | |
-| NIA proxy | 🟡 Implemented (Untested) | |
-| Region species lists | ✅ Implemented & Tested | Moved to dedicated section. |
-| Regions | ✅ Implemented & Tested | Moved to dedicated section. |
-| Sessions | ❌ Not Implemented | |
-| Transects | ❌ Not Implemented | |
-| User | ✅ Implemented & Tested | Moved to dedicated section. | 
+| Endpoint | Method | Status | Notes |
+|---|---|---|---|
+| `/api/v2/user/sessions/` | `GET` | 🟡 Implemented (Untested) | `client.sessions.list()` - Requires authentication. |
+| `/api/v2/sessions/` | `POST` | 🟡 Implemented (Untested) | `client.sessions.create(payload)` - Requires authentication. |
+| `

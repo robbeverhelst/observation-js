@@ -21,13 +21,14 @@ import type {
   TokenResponse,
 } from '../types';
 
-const API_BASE_URL = 'https://waarneming.nl/api/v1';
+const API_BASE_URL = '/api/v1';
 
 export class ObservationClient {
   private accessToken: string | null = null;
   private refreshToken: string | null = null;
   private options: ObservationClientOptions | undefined;
   private language: string = 'en'; // Default to English
+  private baseUrl: string = 'https://waarneming.nl';
 
   public readonly observations: Observations;
   public readonly species: Species;
@@ -49,6 +50,9 @@ export class ObservationClient {
 
   constructor(options?: ObservationClientOptions) {
     this.options = options;
+    if (options?.baseUrl) {
+      this.baseUrl = options.baseUrl;
+    }
     this.observations = new Observations(this);
     this.species = new Species(this);
     this.regions = new Regions(this);
@@ -77,7 +81,7 @@ export class ObservationClient {
   }
 
   public getApiBaseUrl(): string {
-    return API_BASE_URL;
+    return `${this.baseUrl}${API_BASE_URL}`;
   }
 
   /**
@@ -97,7 +101,7 @@ export class ObservationClient {
       scope: scope.join(' '),
       state: state,
     });
-    return `https://waarneming.nl/accounts/oauth2/authorize/?${urlParams.toString()}`;
+    return `${this.baseUrl}/accounts/oauth2/authorize/?${urlParams.toString()}`;
   }
 
   /**
@@ -119,7 +123,7 @@ export class ObservationClient {
     });
 
     const response = await fetch(
-      'https://waarneming.nl/accounts/oauth2/token/',
+      `${this.baseUrl}/accounts/oauth2/token/`,
       {
         method: 'POST',
         headers: {
@@ -154,7 +158,7 @@ export class ObservationClient {
     }
 
     const response = await fetch(
-      'https://waarneming.nl/accounts/oauth2/token/',
+      `${this.baseUrl}/accounts/oauth2/token/`,
       {
         method: 'POST',
         headers: {
@@ -196,7 +200,7 @@ export class ObservationClient {
     });
 
     const response = await fetch(
-      'https://waarneming.nl/accounts/oauth2/token/',
+      `${this.baseUrl}/accounts/oauth2/token/`,
       {
         method: 'POST',
         headers: {
@@ -238,7 +242,7 @@ export class ObservationClient {
 
     const url = new URL(
       endpoint.startsWith('/')
-        ? `https://waarneming.nl${endpoint}`
+        ? `${this.baseUrl}${endpoint}`
         : `${this.getApiBaseUrl()}/${endpoint}`
     );
     if (options.params) {
@@ -293,7 +297,7 @@ export class ObservationClient {
   ): Promise<T> {
     const url = new URL(
       endpoint.startsWith('/')
-        ? `https://waarneming.nl${endpoint}`
+        ? `${this.baseUrl}${endpoint}`
         : `${this.getApiBaseUrl()}/${endpoint}`
     );
     if (options.params) {

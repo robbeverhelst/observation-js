@@ -92,4 +92,16 @@ export class Observations {
       body: payload as any,
     });
   }
+
+  /**
+   * Deletes an observation by its ID.
+   * This is an authenticated endpoint.
+   * @param id The ID of the observation to delete.
+   * @returns A promise that resolves when the observation is deleted.
+   */
+  public async delete(id: number): Promise<void> {
+    await this.client.request<void>(`observations/${id}/delete/`, {
+      method: 'POST',
+    });
+  }
 } 
