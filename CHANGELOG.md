@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/RobbeVerhelst/observation-js/compare/v1.1.0...v1.1.1) (2025-06-08)
+
+
+### Bug Fixes
+
+* trigger release v1.1.1 ([577fd44](https://github.com/RobbeVerhelst/observation-js/commit/577fd442d29ce1685df2394333de5acd0bbb8ee0))
+
 # [1.1.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.0.2...v1.1.0) (2025-06-08)
 
 
