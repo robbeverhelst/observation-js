@@ -34,12 +34,15 @@ export class Nia {
       );
     }
 
-    const requestMethod = this.#client.hasAccessToken()
-      ? this.#client.request
-      : this.#client.publicRequest;
+    if (this.#client.hasAccessToken()) {
+      return this.#client.request<NiaResponse>('/api/identify-proxy/v1/', {
+        method: 'POST',
+        body: formData,
+      });
+    }
 
     // This endpoint has a different base path than the rest of the API.
-    return requestMethod<NiaResponse>('/api/identify-proxy/v1/', {
+    return this.#client.publicRequest<NiaResponse>('/api/identify-proxy/v1/', {
       method: 'POST',
       body: formData,
     });
