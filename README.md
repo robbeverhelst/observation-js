@@ -33,17 +33,64 @@ yarn add observation-js
 
 ## Getting Started
 
-### 1. Initializing the Client
-
-The client can be initialized without any options for accessing public, unauthenticated endpoints.
+Get details for a species in just a few lines of code. The client can be used without any options for accessing public, unauthenticated endpoints.
 
 ```typescript
 import { ObservationClient } from 'observation-js';
 
 const client = new ObservationClient();
+
+async function getSpeciesDetails(id: number) {
+  try {
+    // Set language for results (optional, defaults to 'en')
+    client.setLanguage('nl');
+
+    const species = await client.species.get(id);
+    console.log(`Successfully fetched: ${species.name} (${species.scientific_name})`);
+    console.log(`Group: ${species.group_name}`);
+    console.log(`Photos:`, species.photos.map(p => p.url));
+  } catch (error) {
+    console.error('Error fetching species details:', error);
+  }
+}
+
+// Get details for the Little Grebe (Dodaars)
+getSpeciesDetails(2);
 ```
 
-For authenticated endpoints, you'll need to provide your OAuth2 client credentials, which you can get by registering your application on waarneming.nl.
+## Usage Examples
+
+The client is organized into resources, making the API intuitive to use.
+
+### Search for locations
+
+```typescript
+const locations = await client.locations.search({ q: 'Amsterdam' });
+console.log('Found locations:', locations.results);
+```
+
+### Get observations for a species
+
+```typescript
+const observations = await client.species.getObservations(2); // Species ID for Little Grebe
+console.log(`Found ${observations.count} observations.`);
+```
+
+### Get the current user's info (requires authentication)
+
+```typescript
+// First, authenticate the client (see Authentication section)
+await client.setAccessToken('YOUR_ACCESS_TOKEN');
+
+const userInfo = await client.users.getInfo();
+console.log(`Hello, ${userInfo.name}`);
+```
+
+## Authentication
+
+For endpoints that require authentication (like creating or updating data), you'll need to authenticate the user using OAuth2.
+
+First, initialize the client with your application's credentials:
 
 ```typescript
 const client = new ObservationClient({
@@ -53,11 +100,7 @@ const client = new ObservationClient({
 });
 ```
 
-### 2. Authenticating a User
-
-This library supports the OAuth2 **Authorization Code Grant**.
-
-First, redirect the user to the authorization URL:
+Next, redirect the user to the generated authorization URL:
 
 ```typescript
 const scopes = ['read_observations', 'write_observations'];
@@ -65,75 +108,34 @@ const state = 'a-random-string-for-security'; // Generate and store this securel
 const authUrl = client.getAuthorizationUrl(state, scopes);
 
 // Redirect your user to authUrl
-console.log('Redirect user to:', authUrl);
 ```
 
-After the user authorizes your application, they will be redirected back to your `redirectUri` with a `code` and the `state` in the query parameters. You can then exchange this code for an access token:
+After the user authorizes your app, they will be sent to your `redirectUri`, where you can exchange the received `code` for an access token:
 
 ```typescript
-// On your callback page
-const urlParams = new URLSearchParams(window.location.search);
-const code = urlParams.get('code');
-const returnedState = urlParams.get('state');
-
-if (code && returnedState === state) {
-  try {
-    const tokenResponse = await client.getAccessToken(code);
-    console.log('Access Token:', tokenResponse.access_token);
-
-    // Securely store the token and use it for authenticated requests
-    client.setAccessToken(tokenResponse.access_token);
-  } catch (error) {
-    console.error('Error getting access token:', error);
-  }
-}
-```
-
-### 3. Making API Calls
-
-Once the client is initialized (and authenticated, if needed), you can start making API calls.
-
-```typescript
-async function getSpeciesDetails(id: number) {
-  try {
-    // Set language for results (optional, defaults to 'en')
-    client.setLanguage('nl');
-
-    const species = await client.species.get(id);
-    console.log(`Successfully fetched: ${species.name} (${species.scientific_name})`);
-    console.log(`Group: ${species.group_name}`);
-  } catch (error) {
-    console.error('Error fetching species details:', error);
-  }
-}
-
-// Get details for Little Grebe (Dodaars)
-getSpeciesDetails(2);
+const code = '...'; // Get code from URL query parameters
+const tokenResponse = await client.getAccessToken(code);
+client.setAccessToken(tokenResponse.access_token);
 ```
 
 ## Error Handling
 
-The library throws custom errors to help you handle different failure scenarios:
+The library throws custom errors to help you handle different failure scenarios. All errors extend from `ObservationError`.
 
-- `ObservationError`: The base error class for all errors from this library.
-- `ApiError`: Thrown for general API errors (e.g., server errors, invalid requests). It contains the `response` and `body` from the API for inspection.
-- `AuthenticationError`: A subclass of `ApiError`, specifically for authentication issues (e.g., invalid token, insufficient permissions).
+- **`ApiError`**: Thrown for general API errors (e.g., server errors, invalid requests).
+- **`AuthenticationError`**: A subclass of `ApiError`, specifically for authentication issues.
 
 ```typescript
 import { ApiError, AuthenticationError } from 'observation-js';
 
-async function getMyObservations() {
-  try {
-    const observations = await client.observations.list(); // Example authenticated request
-  } catch (error) {
-    if (error instanceof AuthenticationError) {
-      console.error('Authentication failed!', error.body);
-      // Handle re-authentication or token refresh here
-    } else if (error instanceof ApiError) {
-      console.error(`API Error: ${error.message}`, error.response.status, error.body);
-    } else {
-      console.error('A generic error occurred:', error);
-    }
+try {
+  const myObservations = await client.observations.list();
+} catch (error) {
+  if (error instanceof AuthenticationError) {
+    console.error('Authentication failed!', error.body);
+    // Handle re-authentication or token refresh here
+  } else if (error instanceof ApiError) {
+    console.error(`API Error: ${error.message}`, error.response.status, error.body);
   }
 }
 ```
