@@ -10,6 +10,7 @@ import { Nia } from '../lib/nia';
 import { Observations } from '../lib/observations';
 import { Regions } from '../lib/regions';
 import { RegionSpeciesLists } from '../lib/regionSpeciesLists';
+import { Sessions } from '../lib/sessions';
 import { Species } from '../lib/species';
 import { Users } from '../lib/users';
 import type {
@@ -40,6 +41,7 @@ export class ObservationClient {
   public readonly lookups: Lookups;
   public readonly nia: Nia;
   public readonly media: Media;
+  public readonly sessions: Sessions;
 
   constructor(options?: ObservationClientOptions) {
     this.options = options;
@@ -57,6 +59,7 @@ export class ObservationClient {
     this.lookups = new Lookups(this);
     this.nia = new Nia(this);
     this.media = new Media(this);
+    this.sessions = new Sessions(this);
   }
 
   /**

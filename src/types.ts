@@ -181,7 +181,7 @@ export interface SpeciesSeen {
 
 // Basic GeoJSON types based on the API response
 export namespace GeoJSON {
-  export type Geometry = Point | Polygon | MultiPolygon;
+  export type Geometry = Point | Polygon | MultiPolygon | LineString;
 
   export interface Point {
     type: 'Point';
@@ -196,6 +196,11 @@ export namespace GeoJSON {
   export interface MultiPolygon {
     type: 'MultiPolygon';
     coordinates: Array<Array<Array<[number, number]>>>;
+  }
+
+  export interface LineString {
+    type: 'LineString';
+    coordinates: Array<[number, number]>;
   }
 
   export interface Feature<G extends Geometry | null = Geometry> {
@@ -618,4 +623,38 @@ export type UpdateObservationPayload = Omit<
 export interface CreateObservationOptions {
   upload_photos?: Blob[];
   upload_sounds?: Blob[];
-} 
+}
+
+export interface ObservationList {
+  id?: number;
+  species_group: number;
+  all_species_counted: boolean | null;
+  all_individuals_counted: boolean | null;
+  notes: string;
+}
+
+export interface Session {
+  id: number;
+  uuid: string;
+  type: 'point' | 'transect';
+  observation_lists: ObservationList[];
+  observation_count: number;
+  location_detail: LocationDetail;
+  start_datetime: string;
+  end_datetime: string;
+  geom: GeoJSON.Point | GeoJSON.LineString;
+  notes: string;
+  permalink: string;
+}
+
+export interface CreateSessionPayload {
+  uuid: string;
+  type: 'point' | 'transect';
+  observation_lists: Omit<ObservationList, 'id'>[];
+  start_datetime: string;
+  end_datetime: string;
+  geom: GeoJSON.Point | GeoJSON.LineString;
+  notes: string;
+}
+
+export type UpdateSessionPayload = CreateSessionPayload; 
