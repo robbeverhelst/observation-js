@@ -15,14 +15,11 @@
   "scripts": {
     "build": "bun build src/index.ts --outdir ./dist --target bun",
     "prepublishOnly": "bun run build",
-    "lint": "bunx @biomejs/biome lint ./src",
-    "lint:fix": "bunx @biomejs/biome lint --apply ./src",
     "test": "bun test",
     "test-all": "bun run examples/test-all.ts",
     "docs:generate": "typedoc"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/commit-analyzer": "^13.0.1",
     "@semantic-release/git": "^10.0.1",
