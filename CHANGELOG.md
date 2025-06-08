@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.0.2...v1.1.0) (2025-06-08)
+
+
+### Features
+
+* enhance README.md with additional examples and clarify usage instructions ([2bb4906](https://github.com/RobbeVerhelst/observation-js/commit/2bb490698681ac398d70e97dd10380979827f59f))
+
 ## [1.0.2](https://github.com/RobbeVerhelst/observation-js/compare/v1.0.1...v1.0.2) (2025-06-08)
 
 
