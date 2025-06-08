@@ -1,0 +1,30 @@
+{
+  "name": "observation-js",
+  "version": "0.0.1",
+  "description": "A fully-typed TypeScript client for the waarneming.nl API.",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "bun build src/index.ts --outdir ./dist --target node",
+    "test": "bun test",
+    "prepublishOnly": "bun run build"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "observation",
+    "waarneming.nl",
+    "waarnemingen.be",
+    "observation.org",
+    "api",
+    "client"
+  ],
+  "author": "Robbe Verhelst",
+  "license": "MIT"
+}
