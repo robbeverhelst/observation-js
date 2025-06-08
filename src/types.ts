@@ -564,4 +564,58 @@ export interface NiaResponse {
   location_detail?: LocationDetail;
   species?: NiaSpecies[];
   life_stages?: NiaLifeStage[];
+}
+
+export interface MediaUploadResponse {
+  name: string;
+  type: 'jpg' | 'mp3' | 'wav';
+  exif?: {
+    datetime?: string;
+    date?: string;
+    time?: string;
+  };
+}
+
+export interface ObservationDetailPayload {
+  number?: number;
+  sex?: 'M' | 'F' | 'U';
+  activity?: number;
+  life_stage?: number;
+}
+
+export interface CreateObservationPayload {
+  species: number;
+  date: string; // yyyy-mm-dd
+  point: string | Point;
+  time?: string; // hh:mm
+  number?: number;
+  sex?: 'M' | 'F' | 'U';
+  is_certain?: boolean;
+  notes?: string;
+  external_reference?: string;
+  activity?: number;
+  life_stage?: number;
+  method?: number;
+  substrate?: number;
+  obscurity?: number;
+  counting_method?: number;
+  embargo_date?: string; // yyyy-mm-dd
+  transect_uuid?: string;
+  details?: ObservationDetailPayload[];
+  upload_media?: string[];
+  recognition_probability?: number;
+}
+
+export type UpdateObservationPayload = Omit<
+  CreateObservationPayload,
+  'species' | 'date' | 'point'
+> & {
+  species?: number;
+  date?: string;
+  point?: string | Point;
+};
+
+export interface CreateObservationOptions {
+  upload_photos?: Blob[];
+  upload_sounds?: Blob[];
 } 

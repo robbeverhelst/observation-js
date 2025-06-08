@@ -5,6 +5,7 @@ import { Groups } from '../lib/groups';
 import { Languages } from '../lib/languages';
 import { Locations } from '../lib/locations';
 import { Lookups } from '../lib/lookups';
+import { Media } from '../lib/media';
 import { Nia } from '../lib/nia';
 import { Observations } from '../lib/observations';
 import { Regions } from '../lib/regions';
@@ -38,6 +39,7 @@ export class ObservationClient {
   public readonly languages: Languages;
   public readonly lookups: Lookups;
   public readonly nia: Nia;
+  public readonly media: Media;
 
   constructor(options?: ObservationClientOptions) {
     this.options = options;
@@ -54,6 +56,7 @@ export class ObservationClient {
     this.languages = new Languages(this);
     this.lookups = new Lookups(this);
     this.nia = new Nia(this);
+    this.media = new Media(this);
   }
 
   /**
