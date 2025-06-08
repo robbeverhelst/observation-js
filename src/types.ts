@@ -300,4 +300,53 @@ export interface Badge {
   next_level: BadgeLevel | null;
   onboarding_levels: BadgeLevel[] | null;
   user_season_badges: UserSeasonBadge[] | null;
+}
+
+export interface GroupMember {
+  id: number;
+  name: string;
+  avatar: string | null;
+  role: 'admin' | 'member';
+}
+
+export interface Group {
+  id: number;
+  name: string;
+  photo: string;
+  created_at: string;
+  invite_link: string;
+  members: GroupMember[];
+}
+
+export type GroupSummary = Pick<Group, 'id' | 'name' | 'photo'>;
+
+export interface ChallengeUser {
+  is_subscribed: boolean;
+  observation_count: number;
+  species_count: number;
+}
+
+export interface Challenge {
+  id: number;
+  type: string;
+  title: string;
+  header: string;
+  start_date_time: string;
+  end_date_time: string;
+  cover_image: string;
+  cover_thumbnail: string | null;
+  results: any[];
+  observation_count: number;
+  species_count: number;
+  challenge_user: ChallengeUser;
+  targets_description: string;
+  targets: any[];
+  group_id: number;
+  template_id: number;
+}
+
+export interface ChallengeTemplate {
+  id: number;
+  title: string;
+  species_groups: number[];
 } 
