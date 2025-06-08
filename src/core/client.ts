@@ -1,3 +1,4 @@
+import { Badges } from '../lib/badges';
 import { Countries } from '../lib/countries';
 import { Locations } from '../lib/locations';
 import { Observations } from '../lib/observations';
@@ -26,6 +27,7 @@ export class ObservationClient {
   public readonly regionSpeciesLists: RegionSpeciesLists;
   public readonly users: Users;
   public readonly countries: Countries;
+  public readonly badges: Badges;
 
   constructor(options?: ObservationClientOptions) {
     this.options = options;
@@ -36,6 +38,7 @@ export class ObservationClient {
     this.regionSpeciesLists = new RegionSpeciesLists(this);
     this.users = new Users(this);
     this.countries = new Countries(this);
+    this.badges = new Badges(this);
   }
 
   /**
@@ -192,6 +195,10 @@ export class ObservationClient {
    */
   public setAccessToken(token: string) {
     this.accessToken = token;
+  }
+
+  public hasAccessToken(): boolean {
+    return this.accessToken !== null;
   }
 
   public async request<T>(
