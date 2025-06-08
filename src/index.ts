@@ -1,4 +1,19 @@
-export * from './core/client';
-export * from './types';
-export * from './core/errors';
+export { ObservationClient } from './core/client';
+export { ApiError, ObservationError } from './core/errors';
+
+export type {
+  User,
+  Session,
+  Species,
+  SpeciesGroup,
+  Observation,
+  CreateObservationPayload,
+  UpdateObservationPayload,
+  Paginated,
+  Export,
+  Challenge,
+  ChallengeRanking,
+  NiaResponse,
+  NiaPrediction,
+} from './types';
  

@@ -2,6 +2,7 @@
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": ["src/index.ts"],
   "out": "docs",
+  "plugin": ["typedoc-material-theme"],
   "name": "observation-js Documentation",
   "readme": "README.md",
   "exclude": [
