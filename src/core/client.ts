@@ -1,4 +1,5 @@
 import { Badges } from '../lib/badges';
+import { Challenges } from '../lib/challenges';
 import { Countries } from '../lib/countries';
 import { Exports } from '../lib/exports';
 import { Groups } from '../lib/groups';
@@ -44,6 +45,7 @@ export class ObservationClient {
   public readonly media: Media;
   public readonly sessions: Sessions;
   public readonly transects: Transects;
+  public readonly challenges: Challenges;
 
   constructor(options?: ObservationClientOptions) {
     this.options = options;
@@ -63,6 +65,7 @@ export class ObservationClient {
     this.media = new Media(this);
     this.sessions = new Sessions(this);
     this.transects = new Transects(this);
+    this.challenges = new Challenges(this);
   }
 
   /**

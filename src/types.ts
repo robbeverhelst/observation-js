@@ -325,6 +325,25 @@ export interface Group {
 
 export type GroupSummary = Pick<Group, 'id' | 'name' | 'photo'>;
 
+export interface ChallengeContent {
+  id: number;
+  title: string | null;
+  text: string;
+  url: string | null;
+  video: string | null;
+  video_thumbnail: string | null;
+  publication_time: string;
+  last_seen: string | null;
+}
+
+export interface ChallengeTarget {
+  id: number;
+  name: string;
+  type: 'observations' | 'species';
+  target_count: number;
+  user_count: number;
+}
+
 export interface ChallengeUser {
   is_subscribed: boolean;
   observation_count: number;
@@ -333,21 +352,46 @@ export interface ChallengeUser {
 
 export interface Challenge {
   id: number;
-  type: string;
+  type: 'regular' | 'onboarding' | 'group';
   title: string;
   header: string;
   start_date_time: string;
   end_date_time: string;
   cover_image: string;
   cover_thumbnail: string | null;
-  results: any[];
+  instructions: ChallengeContent | null;
+  results: ChallengeContent[];
   observation_count: number;
   species_count: number;
-  challenge_user: ChallengeUser;
+  challenge_user: ChallengeUser | null;
   targets_description: string;
-  targets: any[];
-  group_id: number;
-  template_id: number;
+  targets: ChallengeTarget[] | null;
+  group_id: number | null;
+  template_id: number | null;
+}
+
+export interface ChallengeRank {
+  rank: number;
+  user: UserDetail;
+  count: number;
+  rank_user_count: number;
+}
+
+export interface ChallengeRanking {
+  ranking: ChallengeRank[];
+}
+
+export interface ChallengeListParams {
+  point?: string;
+  type?: 'regular' | 'onboarding' | 'group';
+}
+
+export interface SubscribeResponse extends ChallengeUser {
+  last_seen: string | null;
+}
+
+export interface MarkAsSeenResponse {
+  last_seen: string;
 }
 
 export interface ChallengeTemplate {
