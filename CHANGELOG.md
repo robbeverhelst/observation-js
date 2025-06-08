@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.1.1...v1.2.0) (2025-06-08)
+
+
+### Features
+
+* add testing suite ([2054920](https://github.com/RobbeVerhelst/observation-js/commit/2054920132410e0f3ea326dc3ea6819370dbb9c5))
+
 ## [1.1.1](https://github.com/RobbeVerhelst/observation-js/compare/v1.1.0...v1.1.1) (2025-06-08)
 
 
