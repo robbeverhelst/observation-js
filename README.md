@@ -44,6 +44,7 @@ You can still use the `baseUrl` option to connect to a custom instance, which wi
 - ✅ **Custom Error Handling**: Throws detailed, custom errors to simplify debugging.
 - ✅ **Multi-language Support**: Easily fetch API responses in different languages.
 - ✅ **Configurable Caching**: Built-in, configurable in-memory cache to reduce redundant API calls.
+- ✅ **Request/Response Interceptors**: Hook into the request lifecycle to globally modify requests and responses.
 - ✅ **Powered by Bun**: Built and tested with the modern [Bun](https://bun.sh/) runtime.
 
 ## Installation
@@ -167,6 +168,33 @@ const client = new ObservationClient({
 ```
 
 For more advanced caching options, such as injecting your own cache implementation, please refer to the `ObservationClientOptions` in the generated [API documentation](https://robbeverhelst.github.io/observation-js/).
+
+## Interceptors
+
+You can globally inspect, modify, or handle all requests and responses using interceptors. This is useful for logging, adding custom headers, or other cross-cutting concerns.
+
+```typescript
+// Log every outgoing request
+client.interceptors.request.use(config => {
+  // Note: The request config is a standard RequestInit object.
+  // We can't easily log the URL here as it's constructed later.
+  console.log(`Sending ${config.method || 'GET'} request...`);
+  return config;
+});
+
+// Add a custom header to every request
+client.interceptors.request.use(config => {
+  config.headers = new Headers(config.headers); // Ensure headers object exists
+  config.headers.set('X-Custom-Header', 'my-value');
+  return config;
+});
+
+// Log every incoming response status
+client.interceptors.response.use(response => {
+  console.log(`Received response with status: ${response.status}`);
+  return response;
+});
+```
 
 ## Error Handling
 

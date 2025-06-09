@@ -23,6 +23,7 @@ import type {
 } from '../types';
 import { ApiError, AuthenticationError } from './errors';
 import { InMemoryCache } from './cache';
+import { InterceptorManager } from './interceptors';
 
 type FetchOptions = RequestInit & {
   params?: Record<string, string | number>;
@@ -71,6 +72,10 @@ export class ObservationClient {
   public readonly media: Media;
   public readonly sessions: Sessions;
   public readonly challenges: Challenges;
+  public readonly interceptors: {
+    request: InterceptorManager<FetchOptions>;
+    response: InterceptorManager<Response>;
+  };
 
   /**
    * The main client for interacting with the Waarneming.nl API.
@@ -79,6 +84,11 @@ export class ObservationClient {
    */
   constructor(options?: ObservationClientOptions) {
     this.#options = options;
+
+    this.interceptors = {
+      request: new InterceptorManager<FetchOptions>(),
+      response: new InterceptorManager<Response>(),
+    };
 
     this.#cache =
       options?.cache?.store ??
@@ -301,39 +311,88 @@ export class ObservationClient {
     authenticate: boolean,
     options: FetchOptions = {},
   ): Promise<T> {
-    if (authenticate && !this.#accessToken) {
-      throw new Error('Access token is not set. Please authenticate first.');
+    // --- Caching Layer: GET ---
+    const url = this.buildUrl(endpoint, options.params);
+    const cacheKey = url.toString();
+    const isCacheable = (options.method === 'GET' || !options.method) && this.#options?.cache?.enabled !== false;
+
+    if (isCacheable && this.#cache.has(cacheKey)) {
+      const cachedData = this.#cache.get<T>(cacheKey);
+      if (cachedData) return cachedData;
     }
 
+    // --- Interceptor Chain ---
+    const chain: any[] = [
+      this._coreRequest.bind(this, url, authenticate),
+      undefined,
+    ];
+
+    this.interceptors.request.forEach(interceptor => {
+      chain.unshift(interceptor.onFulfilled, interceptor.onRejected);
+    });
+
+    this.interceptors.response.forEach(interceptor => {
+      chain.push(interceptor.onFulfilled, interceptor.onRejected);
+    });
+
+    let promise: Promise<any> = Promise.resolve(options);
+
+    while (chain.length) {
+      promise = promise.then(chain.shift(), chain.shift());
+    }
+
+    // --- Final Response Handling & Caching Layer: SET ---
+    return promise
+      .then(response => this._handleResponse<T>(response))
+      .then(data => {
+        if (isCacheable && options.cache) {
+          const cacheOptions = this.#options?.cache;
+          const defaultTTL = cacheOptions?.defaultTTL ?? 3600;
+          let ttl: number | undefined;
+
+          if (typeof options.cache === 'object' && options.cache.ttl) {
+            ttl = options.cache.ttl;
+          } else if (options.cache === true) {
+            ttl = defaultTTL;
+          }
+
+          if (ttl) {
+            this.#cache.set(cacheKey, data, ttl);
+          }
+        }
+        return data;
+      });
+  }
+
+  private buildUrl(endpoint: string, params?: Record<string, string | number>): URL {
     let url: URL;
     if (endpoint.startsWith('http') || endpoint.startsWith('/api/')) {
       url = new URL(
-        endpoint.startsWith('/') ? `${this.#baseUrl}${endpoint}` : endpoint
+        endpoint.startsWith('/') ? `${this.#baseUrl}${endpoint}` : endpoint,
       );
     } else {
       url = new URL(`${this.getApiBaseUrl()}/${endpoint}`);
     }
 
-    if (options.params) {
-      for (const [key, value] of Object.entries(options.params)) {
+    if (params) {
+      for (const [key, value] of Object.entries(params)) {
         url.searchParams.append(key, String(value));
       }
-      delete options.params;
     }
+    return url;
+  }
 
-    const cacheKey = url.toString();
-    const isCacheable = options.method === 'GET' || !options.method;
-    const cacheOptions = this.#options?.cache;
-
-    // For GET requests, check cache first
-    if (isCacheable && cacheOptions?.enabled !== false) {
-      if (this.#cache.has(cacheKey)) {
-        const cachedData = this.#cache.get<T>(cacheKey);
-        if (cachedData) {
-          return cachedData;
-        }
-      }
+  private async _coreRequest(
+    url: URL,
+    authenticate: boolean,
+    options: FetchOptions,
+  ): Promise<Response> {
+    if (authenticate && !this.#accessToken) {
+      throw new Error('Access token is not set. Please authenticate first.');
     }
+    
+    // params are already in the URL, so we can delete them from options
+    delete options.params;
 
     const headers = new Headers(options.headers);
     if (authenticate) {
@@ -347,16 +406,16 @@ export class ObservationClient {
       headers,
     };
 
-    const response = await fetch(url.toString(), fetchOptions);
+    return fetch(url.toString(), fetchOptions);
+  }
 
+  private async _handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
       const body = await response.text();
       let errorBody: any = null;
       try {
         errorBody = body ? JSON.parse(body) : null;
       } catch (e) {
-        // The body is not JSON, which can happen for redirects, etc.
-        // We'll pass the raw text body in the error.
         errorBody = body;
       }
 
@@ -366,30 +425,12 @@ export class ObservationClient {
       throw new ApiError(
         `API request failed with status ${response.status}`,
         response,
-        errorBody
+        errorBody,
       );
     }
 
     const text = await response.text();
-    const data = text ? (JSON.parse(text) as T) : ({} as T);
-
-    // For GET requests, store in cache if TTL is provided
-    if (isCacheable && cacheOptions?.enabled !== false && options.cache) {
-      const defaultTTL = cacheOptions?.defaultTTL ?? 3600; // Default to 1 hour if not set
-      let ttl: number | undefined;
-
-      if (typeof options.cache === 'object' && options.cache.ttl) {
-        ttl = options.cache.ttl;
-      } else if (options.cache === true) {
-        ttl = defaultTTL;
-      }
-
-      if (ttl) {
-        this.#cache.set(cacheKey, data, ttl);
-      }
-    }
-
-    return data;
+    return text ? (JSON.parse(text) as T) : ({} as T);
   }
 
   /**
