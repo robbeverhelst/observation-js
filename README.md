@@ -43,6 +43,7 @@ You can still use the `baseUrl` option to connect to a custom instance, which wi
 - ✅ **Authentication Handled**: Built-in support for the OAuth2 Authorization Code Grant and Password Grant flows.
 - ✅ **Custom Error Handling**: Throws detailed, custom errors to simplify debugging.
 - ✅ **Multi-language Support**: Easily fetch API responses in different languages.
+- ✅ **Configurable Caching**: Built-in, configurable in-memory cache to reduce redundant API calls.
 - ✅ **Powered by Bun**: Built and tested with the modern [Bun](https://bun.sh/) runtime.
 
 ## Installation
@@ -144,6 +145,28 @@ const code = '...'; // Get code from URL query parameters
 const tokenResponse = await client.getAccessToken(code);
 client.setAccessToken(tokenResponse.access_token);
 ```
+
+## Caching
+
+To improve performance, `observation-js` includes a configurable in-memory cache for `GET` requests. It's enabled by default with a 1-hour TTL. You can easily configure it when initializing the client.
+
+```typescript
+const client = new ObservationClient({
+  // ...other options
+
+  // Example: Disable the cache entirely
+  cache: {
+    enabled: false,
+  },
+
+  // Example: Set a default TTL of 15 minutes for all cacheable requests
+  cache: {
+    defaultTTL: 900, // TTL in seconds
+  },
+});
+```
+
+For more advanced caching options, such as injecting your own cache implementation, please refer to the `ObservationClientOptions` in the generated [API documentation](https://robbeverhelst.github.io/observation-js/).
 
 ## Error Handling
 

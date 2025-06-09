@@ -19,8 +19,15 @@ import type {
   PasswordGrantOptions,
   TokenResponse,
   Platform,
+  CacheStore,
 } from '../types';
 import { ApiError, AuthenticationError } from './errors';
+import { InMemoryCache } from './cache';
+
+type FetchOptions = RequestInit & {
+  params?: Record<string, string | number>;
+  cache?: boolean | { ttl: number }; // `true` uses default TTL
+};
 
 const API_BASE_URL = '/api/v1';
 
@@ -46,6 +53,7 @@ export class ObservationClient {
   #options: ObservationClientOptions | undefined;
   #language: string = 'en'; // Default to English
   #baseUrl: string;
+  #cache: CacheStore;
 
   public readonly observations: Observations;
   public readonly species: Species;
@@ -71,6 +79,10 @@ export class ObservationClient {
    */
   constructor(options?: ObservationClientOptions) {
     this.#options = options;
+
+    this.#cache =
+      options?.cache?.store ??
+      new InMemoryCache();
 
     if (options?.baseUrl) {
       this.#baseUrl = options.baseUrl;
@@ -287,7 +299,7 @@ export class ObservationClient {
   private async _fetch<T>(
     endpoint: string,
     authenticate: boolean,
-    options: RequestInit & { params?: Record<string, string | number> } = {}
+    options: FetchOptions = {},
   ): Promise<T> {
     if (authenticate && !this.#accessToken) {
       throw new Error('Access token is not set. Please authenticate first.');
@@ -307,6 +319,20 @@ export class ObservationClient {
         url.searchParams.append(key, String(value));
       }
       delete options.params;
+    }
+
+    const cacheKey = url.toString();
+    const isCacheable = options.method === 'GET' || !options.method;
+    const cacheOptions = this.#options?.cache;
+
+    // For GET requests, check cache first
+    if (isCacheable && cacheOptions?.enabled !== false) {
+      if (this.#cache.has(cacheKey)) {
+        const cachedData = this.#cache.get<T>(cacheKey);
+        if (cachedData) {
+          return cachedData;
+        }
+      }
     }
 
     const headers = new Headers(options.headers);
@@ -345,8 +371,25 @@ export class ObservationClient {
     }
 
     const text = await response.text();
-    // Return empty object if the response is empty
-    return text ? (JSON.parse(text) as T) : ({} as T);
+    const data = text ? (JSON.parse(text) as T) : ({} as T);
+
+    // For GET requests, store in cache if TTL is provided
+    if (isCacheable && cacheOptions?.enabled !== false && options.cache) {
+      const defaultTTL = cacheOptions?.defaultTTL ?? 3600; // Default to 1 hour if not set
+      let ttl: number | undefined;
+
+      if (typeof options.cache === 'object' && options.cache.ttl) {
+        ttl = options.cache.ttl;
+      } else if (options.cache === true) {
+        ttl = defaultTTL;
+      }
+
+      if (ttl) {
+        this.#cache.set(cacheKey, data, ttl);
+      }
+    }
+
+    return data;
   }
 
   /**
@@ -361,7 +404,7 @@ export class ObservationClient {
    */
   public request = async <T>(
     endpoint: string,
-    options: RequestInit & { params?: Record<string, string | number> } = {}
+    options: FetchOptions = {},
   ): Promise<T> => {
     return this._fetch<T>(endpoint, true, options);
   };
@@ -376,7 +419,7 @@ export class ObservationClient {
    */
   public publicRequest = async <T>(
     endpoint: string,
-    options: RequestInit & { params?: Record<string, string | number> } = {}
+    options: FetchOptions = {},
   ): Promise<T> => {
     return this._fetch<T>(endpoint, false, options);
   };

@@ -20,6 +20,9 @@ export class Countries {
    * @throws {ApiError} If the request fails.
    */
   public async list(): Promise<Paginated<Country>> {
-    return this.#client.publicRequest<Paginated<Country>>('countries/');
+    return this.#client.publicRequest<Paginated<Country>>('countries/', {
+      method: 'GET',
+      cache: true,
+    });
   }
 } 

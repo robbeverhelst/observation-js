@@ -19,6 +19,9 @@ export class Languages {
    * @throws {ApiError} If the request fails.
    */
   public async list(): Promise<Paginated<Language>> {
-    return this.#client.publicRequest<Paginated<Language>>('languages/');
+    return this.#client.publicRequest<Paginated<Language>>('languages/', {
+      method: 'GET',
+      cache: true,
+    });
   }
 } 

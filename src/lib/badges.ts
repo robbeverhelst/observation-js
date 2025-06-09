@@ -23,7 +23,10 @@ export class Badges {
     if (this.#client.hasAccessToken()) {
       return this.#client.request<Paginated<Badge>>('badges/');
     }
-    return this.#client.publicRequest<Paginated<Badge>>('badges/');
+    return this.#client.publicRequest<Paginated<Badge>>('badges/', {
+      method: 'GET',
+      cache: true,
+    });
   }
 
   /**
@@ -40,7 +43,10 @@ export class Badges {
     if (this.#client.hasAccessToken()) {
       return this.#client.request<Badge>(endpoint);
     }
-    return this.#client.publicRequest<Badge>(endpoint);
+    return this.#client.publicRequest<Badge>(endpoint, {
+      method: 'GET',
+      cache: true,
+    });
   }
 
   /**

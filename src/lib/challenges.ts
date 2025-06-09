@@ -27,11 +27,16 @@ export class Challenges {
    * @throws {ApiError} If the request fails.
    */
   async list(params?: ChallengeListParams): Promise<Paginated<Challenge>> {
-    const request = this.#client.hasAccessToken()
-      ? this.#client.request
-      : this.#client.publicRequest;
-    return request<Paginated<Challenge>>('challenges/', {
+    const options = {
       params: params as Record<string, string | number>,
+    };
+    if (this.#client.hasAccessToken()) {
+      return this.#client.request<Paginated<Challenge>>('challenges/', options);
+    }
+    return this.#client.publicRequest<Paginated<Challenge>>('challenges/', {
+      ...options,
+      method: 'GET',
+      cache: true,
     });
   }
 
@@ -44,10 +49,13 @@ export class Challenges {
    * @throws {ApiError} If the request fails.
    */
   async get(id: number): Promise<Challenge> {
-    const request = this.#client.hasAccessToken()
-      ? this.#client.request
-      : this.#client.publicRequest;
-    return request<Challenge>(`challenges/${id}`);
+    if (this.#client.hasAccessToken()) {
+      return this.#client.request<Challenge>(`challenges/${id}`);
+    }
+    return this.#client.publicRequest<Challenge>(`challenges/${id}`, {
+      method: 'GET',
+      cache: true,
+    });
   }
 
   /**
@@ -62,10 +70,14 @@ export class Challenges {
     id: number,
     by: 'species' | 'observations'
   ): Promise<ChallengeRanking> {
-    const request = this.#client.hasAccessToken()
-      ? this.#client.request
-      : this.#client.publicRequest;
-    return request<ChallengeRanking>(`challenges/${id}/ranking/${by}`);
+    const endpoint = `challenges/${id}/ranking/${by}`;
+    if (this.#client.hasAccessToken()) {
+      return this.#client.request<ChallengeRanking>(endpoint);
+    }
+    return this.#client.publicRequest<ChallengeRanking>(endpoint, {
+      method: 'GET',
+      cache: true,
+    });
   }
 
   /**

@@ -19,7 +19,10 @@ export class Regions {
    * @throws {ApiError} If the request fails.
    */
   async list(): Promise<Region[]> {
-    return this.#client.publicRequest<Region[]>('regions/');
+    return this.#client.publicRequest<Region[]>('regions/', {
+      method: 'GET',
+      cache: true,
+    });
   }
 
   /**
@@ -30,6 +33,9 @@ export class Regions {
    * @throws {ApiError} If the request fails.
    */
   async listTypes(): Promise<RegionType[]> {
-    return this.#client.publicRequest<RegionType[]>('region-types/');
+    return this.#client.publicRequest<RegionType[]>('region-types/', {
+      method: 'GET',
+      cache: true,
+    });
   }
 } 

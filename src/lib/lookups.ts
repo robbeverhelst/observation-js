@@ -21,6 +21,9 @@ export class Lookups {
    * @throws {ApiError} If the request fails.
    */
   public async get(): Promise<LookupsType> {
-    return this.#client.publicRequest<LookupsType>('lookups/');
+    return this.#client.publicRequest<LookupsType>('lookups/', {
+      method: 'GET',
+      cache: true,
+    });
   }
 } 
