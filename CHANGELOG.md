@@ -1,3 +1,10 @@
+## [1.2.3](https://github.com/RobbeVerhelst/observation-js/compare/v1.2.2...v1.2.3) (2025-06-09)
+
+
+### Bug Fixes
+
+* rename test step in CI workflow to clarify coverage reporting ([6201b6a](https://github.com/RobbeVerhelst/observation-js/commit/6201b6aaae905c5e55f52476d97cf0003eb2d16a))
+
 ## [1.2.2](https://github.com/RobbeVerhelst/observation-js/compare/v1.2.1...v1.2.2) (2025-06-09)
 
 
