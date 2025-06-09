@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.2.3...v1.3.0) (2025-06-09)
+
+
+### Features
+
+* enhance ObservationClient to support multiple platforms and environments ([435cebc](https://github.com/RobbeVerhelst/observation-js/commit/435cebc4b5598a54b69bb93e688be205a78a580e))
+
 ## [1.2.3](https://github.com/RobbeVerhelst/observation-js/compare/v1.2.2...v1.2.3) (2025-06-09)
 
 
