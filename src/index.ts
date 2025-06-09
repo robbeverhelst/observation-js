@@ -32,7 +32,6 @@ export type {
   Link,
   LocationDetail,
   Lookups,
-  NiaMorph,
   NiaPrediction,
   NiaResponse,
   Observation,
