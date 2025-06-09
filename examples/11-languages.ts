@@ -6,13 +6,11 @@ async function main() {
   console.log('--- Fetching all available languages ---');
   try {
     const languages = await client.languages.list();
-    console.log(
-      `Successfully fetched ${languages.count} languages.`
-    );
+    console.log(`Successfully fetched ${languages.count} languages.`);
     console.table(languages.results);
   } catch (error) {
     console.error('Error fetching languages:', error);
   }
 }
 
-main().catch(console.error); 
+main().catch(console.error);

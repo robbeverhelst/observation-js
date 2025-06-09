@@ -35,7 +35,7 @@ test('exports.list should fetch a list of exports', async () => {
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -54,7 +54,7 @@ test('exports.get should fetch a single export', async () => {
     new Response(JSON.stringify(mockExport), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -73,7 +73,7 @@ test('exports.start should start a new export', async () => {
     new Response(JSON.stringify(mockExportStartResponse), {
       status: 201,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -88,7 +88,9 @@ test('exports.start should start a new export', async () => {
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
   expect(url.pathname).toBe('/api/v1/exports/');
   const body = await (fetchSpy.mock.calls[0][1] as RequestInit).body;
-  expect(body).toBe('type=USER_OBSERVATIONS&export_format=csv&date_after=2023-01-01');
+  expect(body).toBe(
+    'type=USER_OBSERVATIONS&export_format=csv&date_after=2023-01-01',
+  );
 
   fetchSpy.mockRestore();
-}); 
+});

@@ -38,7 +38,7 @@ test('regionSpeciesLists.list should fetch a list of region species lists', asyn
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -57,7 +57,7 @@ test('regionSpeciesLists.getSpecies should fetch species for a list', async () =
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -68,4 +68,4 @@ test('regionSpeciesLists.getSpecies should fetch species for a list', async () =
   expect(url.pathname).toBe('/api/v1/region-lists/1/species/');
 
   fetchSpy.mockRestore();
-}); 
+});

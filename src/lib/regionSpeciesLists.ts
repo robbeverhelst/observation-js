@@ -1,5 +1,5 @@
 import type { ObservationClient } from '../core/client';
-import type { Paginated, RegionSpeciesList, Species } from '../types';
+import type { RegionSpeciesList, Species } from '../types';
 
 export class RegionSpeciesLists {
   #client: ObservationClient;
@@ -17,9 +17,7 @@ export class RegionSpeciesLists {
    * @returns A promise that resolves to a paginated list of region species lists.
    */
   async list(): Promise<RegionSpeciesList[]> {
-    return this.#client.publicRequest<RegionSpeciesList[]>(
-      'region-lists/'
-    );
+    return this.#client.publicRequest<RegionSpeciesList[]>('region-lists/');
   }
 
   /**
@@ -29,8 +27,6 @@ export class RegionSpeciesLists {
    * @returns A promise that resolves to an array of species in the list.
    */
   async getSpecies(id: number): Promise<Species[]> {
-    return this.#client.publicRequest<Species[]>(
-      `region-lists/${id}/species/`
-    );
+    return this.#client.publicRequest<Species[]>(`region-lists/${id}/species/`);
   }
-} 
+}

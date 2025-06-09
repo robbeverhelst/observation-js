@@ -4,6 +4,8 @@ import type {
   Paginated,
   Species as SpeciesData,
   SpeciesGroup,
+  SpeciesGroupAttributes,
+  SpeciesOccurrence,
   SpeciesSearchParams,
 } from '../types';
 
@@ -42,13 +44,13 @@ export class Species {
    * @throws {ApiError} If the request fails.
    */
   public async search(
-    params: SpeciesSearchParams = {}
+    params: SpeciesSearchParams = {},
   ): Promise<Paginated<SpeciesData>> {
     const request = this.#client.hasAccessToken()
       ? this.#client.request
       : this.#client.publicRequest;
     return request<Paginated<SpeciesData>>('species/search/', {
-      params: params as Record<string, string | number>,
+      params: params as unknown as Record<string, string | number>,
     });
   }
 
@@ -63,15 +65,14 @@ export class Species {
    */
   public async getObservations(
     id: number,
-    params: Record<string, string | number> = {}
+    params: Record<string, string | number> = {},
   ): Promise<Paginated<Observation>> {
     const request = this.#client.hasAccessToken()
       ? this.#client.request
       : this.#client.publicRequest;
-    return request<Paginated<Observation>>(
-      `species/${id}/observations/`,
-      { params }
-    );
+    return request<Paginated<Observation>>(`species/${id}/observations/`, {
+      params,
+    });
   }
 
   /**
@@ -85,17 +86,17 @@ export class Species {
    */
   public async getOccurrence(
     ids: number[],
-    point: string
-  ): Promise<Paginated<any>> {
+    point: string,
+  ): Promise<Paginated<SpeciesOccurrence>> {
     const params = {
       species_id: ids.join(','),
       point,
     };
-    return this.#client.publicRequest<Paginated<any>>(
+    return this.#client.publicRequest<Paginated<SpeciesOccurrence>>(
       'species-occurrence',
       {
         params,
-      }
+      },
     );
   }
 
@@ -119,7 +120,9 @@ export class Species {
    * @returns A promise that resolves to the attributes for the species group.
    * @throws {ApiError} If the request fails.
    */
-  public async getGroupAttributes(id: number): Promise<any> {
-    return this.#client.publicRequest(`species-groups/${id}/attributes/`);
+  public async getGroupAttributes(id: number): Promise<SpeciesGroupAttributes> {
+    return this.#client.publicRequest<SpeciesGroupAttributes>(
+      `species-groups/${id}/attributes/`,
+    );
   }
 }

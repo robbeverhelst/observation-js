@@ -15,4 +15,4 @@ export interface Lookups {
   obscurity: LookupValue<number>[];
   species_type: LookupValue<string>[];
   species_status: LookupValue<number>[];
-} 
+}

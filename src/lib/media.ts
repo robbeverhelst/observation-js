@@ -1,5 +1,5 @@
 import type { ObservationClient } from '../core/client';
-import type { MediaUploadResponse } from '../types';
+import type { MediaUploadResponse, Paginated } from '../types';
 
 export class Media {
   #client: ObservationClient;
@@ -24,15 +24,34 @@ export class Media {
    */
   public async upload(
     media: Blob,
-    options: { identify?: boolean } = {}
+    options: { identify?: boolean } = {},
   ): Promise<MediaUploadResponse> {
     const formData = new FormData();
     formData.append('media', media);
 
+    const params: Record<string, string | number> = {};
+    if (options.identify) {
+      params.identify = 'true';
+    }
+
     return this.#client.request<MediaUploadResponse>('media-upload/', {
       method: 'POST',
       body: formData,
-      params: options as any,
+      params,
     });
   }
-} 
+
+  /**
+   * @throws {ApiError} If the request fails.
+   */
+  public async getSimilar(id: number): Promise<Paginated<Media>> {
+    const params: Record<string, string | number> = {
+      model: 'Media',
+      pk: id,
+    };
+    return this.#client.request<Paginated<Media>>('media/similar/', {
+      method: 'GET',
+      params,
+    });
+  }
+}

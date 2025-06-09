@@ -14,7 +14,7 @@ async function main() {
 
       const firstListId = lists[0].id;
       console.log(
-        `\n--- Fetching species for the first list (ID: ${firstListId}) ---`
+        `\n--- Fetching species for the first list (ID: ${firstListId}) ---`,
       );
 
       const species = await client.regionSpeciesLists.getSpecies(firstListId);
@@ -25,7 +25,7 @@ async function main() {
           name: s.name,
           scientific_name: s.scientific_name,
           rarity: s.rarity,
-        }))
+        })),
       );
     }
   } catch (error) {
@@ -37,4 +37,4 @@ async function main() {
   }
 }
 
-main().catch(console.error); 
+main().catch(console.error);

@@ -12,7 +12,10 @@ async function main() {
   const onboardingChallenges = await client.challenges.list({
     type: 'onboarding',
   });
-  console.log('Onboarding challenges found:', onboardingChallenges.results.length);
+  console.log(
+    'Onboarding challenges found:',
+    onboardingChallenges.results.length,
+  );
 
   if (onboardingChallenges.results.length > 0) {
     const challenge = onboardingChallenges.results[0];
@@ -21,7 +24,7 @@ async function main() {
     console.log('Challenge title:', challengeDetails.title);
 
     console.log(
-      `\n--- Getting personal ranking for challenge ${challenge.id} ---`
+      `\n--- Getting personal ranking for challenge ${challenge.id} ---`,
     );
     // Note: for an unauthenticated user, this will show a default/empty state.
     // For an authenticated user, it shows their personal progress.
@@ -38,7 +41,7 @@ async function main() {
   // --- Authenticated endpoints ---
   if (!accessToken) {
     console.log(
-      '\n--- Skipping authenticated challenge examples. Set WAARNEMING_NL_ACCESS_TOKEN to run them. ---'
+      '\n--- Skipping authenticated challenge examples. Set WAARNEMING_NL_ACCESS_TOKEN to run them. ---',
     );
     return;
   }
@@ -55,10 +58,13 @@ async function main() {
       console.log(`\n--- Subscribing to challenge ${challengeId} ---`);
       // Note: We set it to `false` to immediately unsubscribe and not leave a trace.
       // Set to `true` to actually subscribe.
-      const subscription = await client.challenges.subscribe(challengeId, false);
+      const subscription = await client.challenges.subscribe(
+        challengeId,
+        false,
+      );
       console.log(
         `Is subscribed to challenge ${challengeId}:`,
-        subscription.is_subscribed
+        subscription.is_subscribed,
       );
     }
   } catch (error) {
@@ -72,4 +78,4 @@ async function main() {
   }
 }
 
-main().catch(console.error); 
+main().catch(console.error);

@@ -14,10 +14,10 @@ const observationId = 25488439;
 const main = async () => {
   if (!accessToken) {
     console.log(
-      'Access token is required. Please provide it as a command-line argument.'
+      'Access token is required. Please provide it as a command-line argument.',
     );
     console.log(
-      'Skipping example. Set WAARNEMING_NL_ACCESS_TOKEN to run this.'
+      'Skipping example. Set WAARNEMING_NL_ACCESS_TOKEN to run this.',
     );
     return;
   }
@@ -47,4 +47,4 @@ const main = async () => {
   }
 };
 
-main(); 
+main();

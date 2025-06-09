@@ -103,7 +103,7 @@ test('sessions.list should fetch a list of sessions', async () => {
     results: [mockSession],
   };
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
-    new Response(JSON.stringify(mockResponse))
+    new Response(JSON.stringify(mockResponse)),
   );
 
   const client = new ObservationClient();
@@ -117,7 +117,7 @@ test('sessions.list should fetch a list of sessions', async () => {
 
 test('sessions.create should create a new session', async () => {
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
-    new Response(JSON.stringify(mockSession))
+    new Response(JSON.stringify(mockSession)),
   );
 
   const client = new ObservationClient();
@@ -127,12 +127,14 @@ test('sessions.create should create a new session', async () => {
   expect(session).toEqual(mockSession);
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
   expect(url.pathname).toBe('/api/v2/sessions/');
-  expect(fetchSpy.mock.calls[0][1]?.body).toBe(JSON.stringify(mockCreatePayload));
+  expect(fetchSpy.mock.calls[0][1]?.body).toBe(
+    JSON.stringify(mockCreatePayload),
+  );
 });
 
 test('sessions.update should update a session', async () => {
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
-    new Response(JSON.stringify(mockSession))
+    new Response(JSON.stringify(mockSession)),
   );
 
   const client = new ObservationClient();
@@ -142,7 +144,9 @@ test('sessions.update should update a session', async () => {
   expect(session).toEqual(mockSession);
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
   expect(url.pathname).toBe('/api/v2/sessions/');
-  expect(fetchSpy.mock.calls[0][1]?.body).toBe(JSON.stringify(mockUpdatePayload));
+  expect(fetchSpy.mock.calls[0][1]?.body).toBe(
+    JSON.stringify(mockUpdatePayload),
+  );
 });
 
 test('sessions.listObservations should fetch observations for a session', async () => {
@@ -153,7 +157,7 @@ test('sessions.listObservations should fetch observations for a session', async 
     results: [mockObservation],
   };
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
-    new Response(JSON.stringify(mockResponse))
+    new Response(JSON.stringify(mockResponse)),
   );
 
   const client = new ObservationClient();
@@ -163,4 +167,4 @@ test('sessions.listObservations should fetch observations for a session', async 
   expect(observations).toEqual(mockResponse);
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
   expect(url.pathname).toBe('/api/v2/user/sessions/test-uuid/observations/');
-}); 
+});

@@ -10,10 +10,10 @@ const accessToken = process.argv[2] || null;
 const main = async () => {
   if (!accessToken) {
     console.log(
-      'Access token is required. Please provide it as a command-line argument.'
+      'Access token is required. Please provide it as a command-line argument.',
     );
     console.log(
-      'Skipping example. Set WAARNEMING_NL_ACCESS_TOKEN to run this.'
+      'Skipping example. Set WAARNEMING_NL_ACCESS_TOKEN to run this.',
     );
     return;
   }
@@ -45,7 +45,7 @@ const main = async () => {
       },
       {
         upload_photos: [imageBlob], // Upload the blob directly
-      }
+      },
     );
 
     console.log('--- Observation Created Successfully! ---');
@@ -53,7 +53,7 @@ const main = async () => {
     console.log(`- Species: ${observation.species?.name}`);
     console.log(`- See it online: ${observation.url}`);
     console.log(
-      '- NOTE: This observation was created as a real record. You may want to delete it from the website.'
+      '- NOTE: This observation was created as a real record. You may want to delete it from the website.',
     );
   } catch (error) {
     console.error('Failed to create observation:');

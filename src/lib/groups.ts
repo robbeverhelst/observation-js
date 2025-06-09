@@ -1,13 +1,11 @@
 import type { ObservationClient } from '../core/client';
 import type {
-  Group,
-  GroupMember,
-  GroupSummary,
-  Paginated,
-  User,
-  Observation,
-  ChallengeTemplate,
   Challenge,
+  ChallengeTemplate,
+  Group,
+  GroupSummary,
+  Observation,
+  Paginated,
 } from '../types';
 
 export class Groups {
@@ -55,10 +53,10 @@ export class Groups {
    */
   public async getSummary(
     groupId: number,
-    inviteCode: string
+    inviteCode: string,
   ): Promise<GroupSummary> {
     return this.#client.publicRequest<GroupSummary>(
-      `groups/${groupId}/summary/${inviteCode}/`
+      `groups/${groupId}/summary/${inviteCode}/`,
     );
   }
 
@@ -93,7 +91,7 @@ export class Groups {
    */
   public async update(
     groupId: number,
-    data: { name?: string; photo?: Blob | Buffer }
+    data: { name?: string; photo?: Blob | Buffer },
   ): Promise<Group> {
     const formData = new FormData();
     if (data.name) formData.append('name', data.name);
@@ -189,7 +187,7 @@ export class Groups {
    */
   public async listChallengeTemplates(): Promise<Paginated<ChallengeTemplate>> {
     return this.#client.request<Paginated<ChallengeTemplate>>(
-      'groups/challenge-templates/'
+      'groups/challenge-templates/',
     );
   }
 
@@ -204,7 +202,7 @@ export class Groups {
    */
   public async listChallenges(groupId: number): Promise<Paginated<Challenge>> {
     return this.#client.request<Paginated<Challenge>>(
-      `groups/${groupId}/challenges/`
+      `groups/${groupId}/challenges/`,
     );
   }
 
@@ -224,7 +222,7 @@ export class Groups {
       template: number;
       start_date_time: string;
       end_date_time: string;
-    }
+    },
   ): Promise<Challenge> {
     return this.#client.request<Challenge>(`groups/${groupId}/challenges/`, {
       method: 'POST',
@@ -246,14 +244,14 @@ export class Groups {
   public async updateChallenge(
     groupId: number,
     challengeId: number,
-    data: { start_date_time?: string; end_date_time?: string }
+    data: { start_date_time?: string; end_date_time?: string },
   ): Promise<Challenge> {
     return this.#client.request<Challenge>(
       `groups/${groupId}/challenges/${challengeId}/`,
       {
         method: 'PATCH',
         body: JSON.stringify(data),
-      }
+      },
     );
   }
 
@@ -269,13 +267,13 @@ export class Groups {
    */
   public async deleteChallenge(
     groupId: number,
-    challengeId: number
+    challengeId: number,
   ): Promise<void> {
     await this.#client.request<void>(
       `groups/${groupId}/challenges/${challengeId}/`,
       {
         method: 'DELETE',
-      }
+      },
     );
   }
 
@@ -290,12 +288,16 @@ export class Groups {
    * @throws {ApiError} If the request fails.
    */
   public async getObservations(
-    groupId: number
-  ): Promise<{ next: string | null; previous: string | null; results: Observation[] }> {
+    groupId: number,
+  ): Promise<{
+    next: string | null;
+    previous: string | null;
+    results: Observation[];
+  }> {
     return this.#client.request<{
       next: string | null;
       previous: string | null;
       results: Observation[];
     }>(`groups/${groupId}/observations/`);
   }
-} 
+}

@@ -136,4 +136,4 @@ export interface InformationBlock {
   content: ContentBlock[];
   info?: string;
   link?: Link;
-} 
+}

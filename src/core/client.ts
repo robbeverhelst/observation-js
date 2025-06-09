@@ -322,7 +322,7 @@ export class ObservationClient {
     }
 
     // --- Interceptor Chain ---
-    const chain: any[] = [
+    const chain: unknown[] = [
       this._coreRequest.bind(this, url, authenticate),
       undefined,
     ];
@@ -335,15 +335,16 @@ export class ObservationClient {
       chain.push(interceptor.onFulfilled, interceptor.onRejected);
     });
 
-    let promise: Promise<any> = Promise.resolve(options);
+    let promise: Promise<unknown> = Promise.resolve(options);
 
     while (chain.length) {
-      promise = promise.then(chain.shift(), chain.shift());
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      promise = promise.then(chain.shift() as any, chain.shift() as any);
     }
 
     // --- Final Response Handling & Caching Layer: SET ---
     return promise
-      .then(response => this._handleResponse<T>(response))
+      .then(response => this._handleResponse<T>(response as Response))
       .then(data => {
         if (isCacheable && options.cache) {
           const cacheOptions = this.#options?.cache;
@@ -358,7 +359,7 @@ export class ObservationClient {
 
           if (ttl) {
             this.#cache.set(cacheKey, data, ttl);
-          }
+    }
         }
         return data;
       });
@@ -392,7 +393,7 @@ export class ObservationClient {
     }
     
     // params are already in the URL, so we can delete them from options
-    delete options.params;
+      delete options.params;
 
     const headers = new Headers(options.headers);
     if (authenticate) {
@@ -412,10 +413,10 @@ export class ObservationClient {
   private async _handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
       const body = await response.text();
-      let errorBody: any = null;
+      let errorBody: unknown = null;
       try {
         errorBody = body ? JSON.parse(body) : null;
-      } catch (e) {
+      } catch {
         errorBody = body;
       }
 

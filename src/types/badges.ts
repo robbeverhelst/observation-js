@@ -37,4 +37,4 @@ export interface Badge {
   next_level: BadgeLevel | null;
   onboarding_levels: BadgeLevel[] | null;
   user_season_badges: UserSeasonBadge[] | null;
-} 
+}

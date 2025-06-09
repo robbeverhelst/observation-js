@@ -32,7 +32,7 @@ test('locations.search by name should search for locations', async () => {
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -58,7 +58,7 @@ test('locations.search by coordinates should search for locations', async () => 
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -79,7 +79,7 @@ test('locations.get should fetch a single location', async () => {
     new Response(JSON.stringify(mockLocation), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -95,13 +95,20 @@ test('locations.get should fetch a single location', async () => {
 
 test('locations.getSpeciesSeen should fetch species seen at a location', async () => {
   const mockResponse = {
-    results: [{ species: 1, species_name: 'Test Species', last_observation_date: '2023-01-01', observation_count: 1 }],
+    results: [
+      {
+        species: 1,
+        species_name: 'Test Species',
+        last_observation_date: '2023-01-01',
+        observation_count: 1,
+      },
+    ],
   };
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -118,18 +125,29 @@ test('locations.getSpeciesSeen should fetch species seen at a location', async (
 
 test('locations.getSpeciesSeenAroundPoint should fetch species seen around a point', async () => {
   const mockResponse = {
-    results: [{ species: 1, species_name: 'Test Species', last_observation_date: '2023-01-01', observation_count: 1 }],
+    results: [
+      {
+        species: 1,
+        species_name: 'Test Species',
+        last_observation_date: '2023-01-01',
+        observation_count: 1,
+      },
+    ],
   };
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
   client.setAccessToken('test-token');
-  const speciesSeen = await client.locations.getSpeciesSeenAroundPoint({ lat: 52.123, lng: 5.123, radius: 1000 });
+  const speciesSeen = await client.locations.getSpeciesSeenAroundPoint({
+    lat: 52.123,
+    lng: 5.123,
+    radius: 1000,
+  });
 
   expect(speciesSeen).toEqual(mockResponse);
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
@@ -150,11 +168,13 @@ test('locations.getGeoJSON with point should fetch GeoJSON data', async () => {
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
-  const geojson = await client.locations.getGeoJSON({ point: 'POINT(5.123 52.123)' });
+  const geojson = await client.locations.getGeoJSON({
+    point: 'POINT(5.123 52.123)',
+  });
 
   expect(geojson).toEqual(mockResponse);
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
@@ -173,7 +193,7 @@ test('locations.getGeoJSON with id should fetch GeoJSON data', async () => {
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -185,4 +205,4 @@ test('locations.getGeoJSON with id should fetch GeoJSON data', async () => {
   expect(url.searchParams.get('id')).toBe('1');
 
   fetchSpy.mockRestore();
-}); 
+});

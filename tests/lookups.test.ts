@@ -38,7 +38,7 @@ test('lookups.get should fetch lookup tables', async () => {
     new Response(JSON.stringify(mockLookups), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -49,4 +49,4 @@ test('lookups.get should fetch lookup tables', async () => {
   expect(url.pathname).toBe('/api/v1/lookups/');
 
   fetchSpy.mockRestore();
-}); 
+});

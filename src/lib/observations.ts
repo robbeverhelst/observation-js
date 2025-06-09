@@ -39,7 +39,7 @@ export class Observations {
    */
   public async create(
     payload: CreateObservationPayload,
-    options: CreateObservationOptions = {}
+    options: CreateObservationOptions = {},
   ): Promise<Observation> {
     const { upload_photos, upload_sounds } = options;
 
@@ -47,10 +47,10 @@ export class Observations {
       const formData = new FormData();
       formData.append('observation', JSON.stringify(payload));
       upload_photos?.forEach((photo) =>
-        formData.append('upload_photos', photo)
+        formData.append('upload_photos', photo),
       );
       upload_sounds?.forEach((sound) =>
-        formData.append('upload_sounds', sound)
+        formData.append('upload_sounds', sound),
       );
       return this.#client.request<Observation>('observations/create-single/', {
         method: 'POST',
@@ -60,7 +60,10 @@ export class Observations {
 
     return this.#client.request<Observation>('observations/create-single/', {
       method: 'POST',
-      body: payload as any,
+      body: JSON.stringify(payload),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
   }
 
@@ -77,7 +80,7 @@ export class Observations {
   public async update(
     id: number,
     payload: UpdateObservationPayload,
-    options: CreateObservationOptions = {}
+    options: CreateObservationOptions = {},
   ): Promise<Observation> {
     const { upload_photos, upload_sounds } = options;
 
@@ -85,10 +88,10 @@ export class Observations {
       const formData = new FormData();
       formData.append('observation', JSON.stringify(payload));
       upload_photos?.forEach((photo) =>
-        formData.append('upload_photos', photo)
+        formData.append('upload_photos', photo),
       );
       upload_sounds?.forEach((sound) =>
-        formData.append('upload_sounds', sound)
+        formData.append('upload_sounds', sound),
       );
       return this.#client.request<Observation>(`observations/${id}/update/`, {
         method: 'POST',
@@ -98,7 +101,10 @@ export class Observations {
 
     return this.#client.request<Observation>(`observations/${id}/update/`, {
       method: 'POST',
-      body: payload as any,
+      body: JSON.stringify(payload),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
   }
 
@@ -115,4 +121,4 @@ export class Observations {
       method: 'POST',
     });
   }
-} 
+}

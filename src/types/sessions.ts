@@ -26,4 +26,4 @@ export interface CreateSessionPayload {
   // ... other fields
 }
 
-export interface UpdateSessionPayload extends CreateSessionPayload {} 
+export type UpdateSessionPayload = CreateSessionPayload;

@@ -6,9 +6,7 @@ async function main() {
   console.log('--- Fetching all countries (in English) ---');
   try {
     const countries = await client.countries.list();
-    console.log(
-      `Successfully fetched ${countries.results.length} countries.`
-    );
+    console.log(`Successfully fetched ${countries.results.length} countries.`);
     console.log('First 5 countries (English):');
     console.table(countries.results.slice(0, 5));
   } catch (error) {
@@ -22,7 +20,7 @@ async function main() {
   try {
     const countriesNl = await client.countries.list();
     console.log(
-      `Successfully fetched ${countriesNl.results.length} countries.`
+      `Successfully fetched ${countriesNl.results.length} countries.`,
     );
     console.log('First 5 countries (Dutch):');
     console.table(countriesNl.results.slice(0, 5));
@@ -31,4 +29,4 @@ async function main() {
   }
 }
 
-main().catch(console.error); 
+main().catch(console.error);

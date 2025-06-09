@@ -4,7 +4,7 @@
  */
 export interface Interceptor<V> {
   onFulfilled: (value: V) => V | Promise<V>;
-  onRejected?: (error: any) => any;
+  onRejected?: (error: unknown) => unknown;
 }
 
 /**
@@ -23,7 +23,7 @@ export class InterceptorManager<V> {
    */
   public use(
     onFulfilled: (value: V) => V | Promise<V>,
-    onRejected?: (error: any) => any,
+    onRejected?: (error: unknown) => unknown,
   ): number {
     this.handlers.push({ onFulfilled, onRejected });
     return this.handlers.length - 1;
@@ -47,10 +47,10 @@ export class InterceptorManager<V> {
    * @internal
    */
   public forEach(fn: (interceptor: Interceptor<V>) => void): void {
-    this.handlers.forEach(handler => {
+    this.handlers.forEach((handler) => {
       if (handler !== null) {
         fn(handler);
       }
     });
   }
-} 
+}

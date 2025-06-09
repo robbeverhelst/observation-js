@@ -41,8 +41,13 @@ export class Users {
       country?: string;
     },
     appName: string,
-    appVersion: string
-  ): Promise<{ name: string; email: string; permalink: string; country: string }> {
+    appVersion: string,
+  ): Promise<{
+    name: string;
+    email: string;
+    permalink: string;
+    country: string;
+  }> {
     const headers = {
       'User-Agent': `${appName}/${appVersion}`,
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -50,9 +55,7 @@ export class Users {
 
     const bodyParams: Record<string, string> = {};
     for (const key in details) {
-      bodyParams[key] = String(
-        details[key as keyof typeof details]
-      );
+      bodyParams[key] = String(details[key as keyof typeof details]);
     }
     const body = new URLSearchParams(bodyParams).toString();
 
@@ -84,7 +87,7 @@ export class Users {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body,
-      }
+      },
     );
   }
 
@@ -129,7 +132,7 @@ export class Users {
   public async resendEmailConfirmation(): Promise<{ detail: string }> {
     return this.#client.request<{ detail: string }>(
       'user/resend-email-confirmation/',
-      { method: 'POST' }
+      { method: 'POST' },
     );
   }
 
@@ -186,7 +189,7 @@ export class Users {
    * @throws {ApiError} If the upload fails.
    */
   public async updateAvatar(
-    avatar: Blob | Buffer
+    avatar: Blob | Buffer,
   ): Promise<{ avatar: string | null }> {
     const formData = new FormData();
     formData.append('avatar', new Blob([avatar]));
@@ -208,4 +211,4 @@ export class Users {
       method: 'DELETE',
     });
   }
-} 
+}

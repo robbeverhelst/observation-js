@@ -50,7 +50,9 @@ export class Exports {
    * @throws {AuthenticationError} If the request is not authenticated.
    * @throws {ApiError} If the request fails.
    */
-  public async start(options: StartExportOptions): Promise<ExportStartResponse> {
+  public async start(
+    options: StartExportOptions,
+  ): Promise<ExportStartResponse> {
     const bodyParams: Record<string, string> = {};
     for (const key in options) {
       const value = options[key as keyof typeof options];
@@ -68,4 +70,4 @@ export class Exports {
       body,
     });
   }
-} 
+}

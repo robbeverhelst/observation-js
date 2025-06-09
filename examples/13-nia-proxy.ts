@@ -48,7 +48,7 @@ async function main() {
       const predictions = niaResponse.predictions.slice(0, 5);
       const displayData = predictions.map((pred, i) => {
         const species = niaResponse.species?.find(
-          (s) => s.scientific_name === pred.taxon.name
+          (s) => s.scientific_name === pred.taxon.name,
         );
         return {
           '#': i + 1,
@@ -67,4 +67,4 @@ async function main() {
   }
 }
 
-main().catch(console.error); 
+main().catch(console.error);

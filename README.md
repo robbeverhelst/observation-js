@@ -9,6 +9,7 @@
 A fully-typed TypeScript client for the [waarneming.nl](https://waarneming.nl/api/docs/) API. This library provides an easy-to-use interface for interacting with the API, handling both public (unauthenticated) and private (authenticated) endpoints.
 
 This library supports all websites in the Observation International network:
+
 - **[waarneming.nl](https://waarneming.nl)** (The Netherlands)
 - **[waarnemingen.be](https://waarnemingen.be)** (Belgium)
 - **[observation.org](https://observation.org)** (International)
@@ -75,9 +76,14 @@ async function getSpeciesDetails(id: number) {
     client.setLanguage('nl');
 
     const species = await client.species.get(id);
-    console.log(`Successfully fetched: ${species.name} (${species.scientific_name})`);
+    console.log(
+      `Successfully fetched: ${species.name} (${species.scientific_name})`,
+    );
     console.log(`Group: ${species.group_name}`);
-    console.log(`Photos:`, species.photos.map(p => p.url));
+    console.log(
+      `Photos:`,
+      species.photos.map((p) => p.url),
+    );
   } catch (error) {
     console.error('Error fetching species details:', error);
   }
@@ -175,7 +181,7 @@ You can globally inspect, modify, or handle all requests and responses using int
 
 ```typescript
 // Log every outgoing request
-client.interceptors.request.use(config => {
+client.interceptors.request.use((config) => {
   // Note: The request config is a standard RequestInit object.
   // We can't easily log the URL here as it's constructed later.
   console.log(`Sending ${config.method || 'GET'} request...`);
@@ -183,40 +189,19 @@ client.interceptors.request.use(config => {
 });
 
 // Add a custom header to every request
-client.interceptors.request.use(config => {
+client.interceptors.request.use((config) => {
   config.headers = new Headers(config.headers); // Ensure headers object exists
   config.headers.set('X-Custom-Header', 'my-value');
   return config;
 });
 
 // Log every incoming response status
-client.interceptors.response.use(response => {
+client.interceptors.response.use((response) => {
   console.log(`Received response with status: ${response.status}`);
   return response;
 });
 ```
 
-## Error Handling
-
-The library throws custom errors to help you handle different failure scenarios. All errors extend from `ObservationError`.
-
-- **`ApiError`**: Thrown for general API errors (e.g., server errors, invalid requests).
-- **`AuthenticationError`**: A subclass of `ApiError`, specifically for authentication issues.
-
-```typescript
-import { ApiError, AuthenticationError } from 'observation-js';
-
-try {
-  const myObservations = await client.observations.list();
-} catch (error) {
-  if (error instanceof AuthenticationError) {
-    console.error('Authentication failed!', error.body);
-    // Handle re-authentication or token refresh here
-  } else if (error instanceof ApiError) {
-    console.error(`API Error: ${error.message}`, error.response.status, error.body);
-  }
-}
-```
 
 ## Examples
 

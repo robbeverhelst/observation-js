@@ -16,6 +16,8 @@
   "scripts": {
     "build": "bun build src/index.ts --outdir ./dist --target bun",
     "test": "bun test",
+    "lint": "eslint 'src/**/*.ts'",
+    "format": "prettier --write .",
     "examples": "bun run examples/test-all.ts",
     "docs:generate": "typedoc"
   },
@@ -27,7 +29,11 @@
     "@semantic-release/npm": "^12.0.1",
     "@semantic-release/release-notes-generator": "^14.0.3",
     "@types/bun": "latest",
+    "@typescript-eslint/eslint-plugin": "^8.33.1",
+    "@typescript-eslint/parser": "^8.33.1",
     "bun-types": "latest",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
     "prettier": "^3.3.3",
     "semantic-release": "^24.2.5",
     "typedoc": "^0.28.5",

@@ -21,7 +21,7 @@ test('media.upload should upload a file', async () => {
     new Response(JSON.stringify(mockMediaUploadResponse), {
       status: 201,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -43,7 +43,7 @@ test('media.upload should upload a file with identify option', async () => {
     new Response(JSON.stringify(mockMediaUploadResponseWithIdentify), {
       status: 201,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -58,4 +58,4 @@ test('media.upload should upload a file with identify option', async () => {
   expect(fetchSpy.mock.calls[0][1]?.method).toBe('POST');
 
   fetchSpy.mockRestore();
-}); 
+});

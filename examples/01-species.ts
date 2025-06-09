@@ -10,7 +10,7 @@ async function main() {
       fn: async () => {
         const species = await client.species.get(2);
         console.log(
-          `Successfully fetched: ${species.name} (${species.scientific_name})`
+          `Successfully fetched: ${species.name} (${species.scientific_name})`,
         );
         console.log(`Group: ${species.group_name}`);
         console.log(`Status: ${species.status}`);
@@ -28,20 +28,19 @@ async function main() {
       },
     },
     {
-      title:
-        '3. Get Observations for a Species (ID: 32, Black Tern, Limit: 3)',
+      title: '3. Get Observations for a Species (ID: 32, Black Tern, Limit: 3)',
       fn: async () => {
         const observations = await client.species.getObservations(32, {
           limit: 3,
         });
         console.log(
-          `Found ${observations.count} total observations. Showing first ${observations.results.length}:`
+          `Found ${observations.count} total observations. Showing first ${observations.results.length}:`,
         );
         observations.results.forEach((obs) => {
           console.log(
             `- Observation ID: ${obs.id} on ${obs.date} by ${
               obs.user?.name || 'Unknown'
-            }`
+            }`,
           );
         });
       },
@@ -60,10 +59,10 @@ async function main() {
         const attributes = await client.species.getGroupAttributes(1);
         console.log(`Attributes for group: ${attributes.name}`);
         console.log(
-          `- Found ${attributes.activity.length} possible activities.`
+          `- Found ${attributes.activity.length} possible activities.`,
         );
         console.log(
-          `- Found ${attributes.life_stage.length} possible life stages.`
+          `- Found ${attributes.life_stage.length} possible life stages.`,
         );
         console.log(`- Found ${attributes.method.length} possible methods.`);
         const defaultActivity = attributes.activity.find((a) => a.is_default);
@@ -101,4 +100,4 @@ async function main() {
   }
 }
 
-main(); 
+main();

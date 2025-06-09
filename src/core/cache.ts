@@ -6,7 +6,7 @@ interface CacheEntry<T> {
 }
 
 export class InMemoryCache implements CacheStore {
-  #cache = new Map<string, CacheEntry<any>>();
+  #cache = new Map<string, CacheEntry<unknown>>();
 
   public get<T>(key: string): T | undefined {
     const entry = this.#cache.get(key);
@@ -36,4 +36,4 @@ export class InMemoryCache implements CacheStore {
     // We check `get` to make sure we don't say we "have" an expired key
     return this.get(key) !== undefined;
   }
-} 
+}

@@ -38,4 +38,4 @@ export class Regions {
       cache: true,
     });
   }
-} 
+}

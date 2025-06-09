@@ -13,11 +13,9 @@ async function main() {
     console.log('--- Access token found. Running authenticated examples. ---');
   } else {
     console.log(
-      '--- No access token found. Skipping some authenticated examples. ---'
+      '--- No access token found. Skipping some authenticated examples. ---',
     );
-    console.log(
-      '--- Set WAARNEMING_NL_ACCESS_TOKEN to run all examples. ---'
-    );
+    console.log('--- Set WAARNEMING_NL_ACCESS_TOKEN to run all examples. ---');
   }
 
   const scripts = files
@@ -61,4 +59,4 @@ async function main() {
   console.log('\n--- All example scripts ran successfully! ---');
 }
 
-main(); 
+main();

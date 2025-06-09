@@ -23,7 +23,7 @@ test('languages.list should fetch a list of languages', async () => {
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -34,4 +34,4 @@ test('languages.list should fetch a list of languages', async () => {
   expect(url.pathname).toBe('/api/v1/languages/');
 
   fetchSpy.mockRestore();
-}); 
+});

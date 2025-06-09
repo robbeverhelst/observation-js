@@ -14,4 +14,4 @@ export * from './species';
 export * from './regions';
 export * from './sessions';
 export * from './users';
-export * from './media'; 
+export * from './media';

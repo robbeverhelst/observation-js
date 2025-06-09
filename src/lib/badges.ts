@@ -58,10 +58,10 @@ export class Badges {
    * @throws {ApiError} If the request fails.
    */
   public async getForObservation(
-    observationId: number
+    observationId: number,
   ): Promise<Paginated<{ id: number }>> {
     return this.#client.request<Paginated<{ id: number }>>(
-      `badges/observation/${observationId}/`
+      `badges/observation/${observationId}/`,
     );
   }
 
@@ -76,7 +76,7 @@ export class Badges {
   public async markAllAsSeen(): Promise<{ last_seen: string }> {
     return this.#client.request<{ last_seen: string }>(
       'badges/user-badge/seen/',
-      { method: 'POST' }
+      { method: 'POST' },
     );
   }
 
@@ -88,9 +88,11 @@ export class Badges {
    * @throws {AuthenticationError} If the request is not authenticated.
    * @throws {ApiError} If the request fails.
    */
-  public async getLastSeen(userBadgeId: number): Promise<{ last_seen: string }> {
+  public async getLastSeen(
+    userBadgeId: number,
+  ): Promise<{ last_seen: string }> {
     return this.#client.request<{ last_seen: string }>(
-      `badges/user-badge/${userBadgeId}/seen/`
+      `badges/user-badge/${userBadgeId}/seen/`,
     );
   }
 
@@ -105,7 +107,7 @@ export class Badges {
   public async markAsSeen(userBadgeId: number): Promise<{ last_seen: string }> {
     return this.#client.request<{ last_seen: string }>(
       `badges/user-badge/${userBadgeId}/seen/`,
-      { method: 'POST' }
+      { method: 'POST' },
     );
   }
 
@@ -118,10 +120,10 @@ export class Badges {
    * @throws {ApiError} If the request fails.
    */
   public async getSeasonLastSeen(
-    userSeasonBadgeId: number
+    userSeasonBadgeId: number,
   ): Promise<{ last_seen: string }> {
     return this.#client.request<{ last_seen: string }>(
-      `badges/user-season-badge/${userSeasonBadgeId}/seen/`
+      `badges/user-season-badge/${userSeasonBadgeId}/seen/`,
     );
   }
 
@@ -134,11 +136,11 @@ export class Badges {
    * @throws {ApiError} If the request fails.
    */
   public async markSeasonAsSeen(
-    userSeasonBadgeId: number
+    userSeasonBadgeId: number,
   ): Promise<{ last_seen: string }> {
     return this.#client.request<{ last_seen: string }>(
       `badges/user-season-badge/${userSeasonBadgeId}/seen/`,
-      { method: 'POST' }
+      { method: 'POST' },
     );
   }
-} 
+}

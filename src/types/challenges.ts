@@ -75,4 +75,4 @@ export interface ChallengeTemplate {
   id: number;
   title: string;
   species_groups: number[];
-} 
+}

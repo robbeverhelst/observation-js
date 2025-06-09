@@ -51,4 +51,4 @@ export interface TokenResponse {
   token_type: 'Bearer';
   scope: string;
   refresh_token: string;
-} 
+}

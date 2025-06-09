@@ -1,10 +1,4 @@
-import type {
-  LocationDetail,
-  Photo,
-  Point,
-  Sound,
-  UserDetail,
-} from './base';
+import type { LocationDetail, Photo, Point, Sound, UserDetail } from './base';
 import type { Species } from './species';
 
 export interface Observation {
@@ -84,10 +78,10 @@ export type CreateObservationPayload = {
 
   // Media (for async uploads)
   upload_media?: string[];
-  
+
   // Advanced fields (example)
   // 'fields' would be an array of ObservationFieldValue or ObservationFieldValueFree
   // fields?: (ObservationFieldValue | ObservationFieldValueFree)[];
 };
 
-export type UpdateObservationPayload = Partial<CreateObservationPayload>; 
+export type UpdateObservationPayload = Partial<CreateObservationPayload>;

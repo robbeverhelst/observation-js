@@ -39,7 +39,7 @@ test('nia.identify should make a public request without token', async () => {
     new Response(JSON.stringify(mockNiaResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -50,7 +50,9 @@ test('nia.identify should make a public request without token', async () => {
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
   expect(url.pathname).toBe('/api/identify-proxy/v1/');
   expect(fetchSpy.mock.calls[0][1]?.method).toBe('POST');
-  expect(fetchSpy.mock.calls[0][1]?.headers).not.toHaveProperty('Authorization');
+  expect(fetchSpy.mock.calls[0][1]?.headers).not.toHaveProperty(
+    'Authorization',
+  );
 
   fetchSpy.mockRestore();
 });
@@ -60,7 +62,7 @@ test('nia.identify should make an authenticated request with token', async () =>
     new Response(JSON.stringify(mockNiaResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -83,7 +85,7 @@ test('nia.identify should send location data', async () => {
     new Response(JSON.stringify(mockNiaResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -97,4 +99,4 @@ test('nia.identify should send location data', async () => {
   expect(body.get('location_coordinates')).toBe('1.23,4.56');
 
   fetchSpy.mockRestore();
-}); 
+});

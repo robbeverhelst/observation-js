@@ -21,9 +21,9 @@ export interface RegionSpeciesList {
   observation_count: number;
 }
 
-export interface RegionSpecies extends RegionSpeciesList {}
+export type RegionSpecies = RegionSpeciesList;
 
 export interface RegionType {
   id: number;
   name: string;
-} 
+}

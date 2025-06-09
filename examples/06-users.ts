@@ -15,8 +15,8 @@ async function main() {
   }
 
   console.log(
-    '\\n--- Note: Other user endpoints like registration, login, and profile updates require user interaction or authentication and are not demonstrated here. ---'
+    '\\n--- Note: Other user endpoints like registration, login, and profile updates require user interaction or authentication and are not demonstrated here. ---',
   );
 }
 
-main().catch(console.error); 
+main().catch(console.error);

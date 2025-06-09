@@ -68,7 +68,7 @@ test('species.get should make a public request when unauthenticated', async () =
     new Response(JSON.stringify(mockSpecies), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -89,7 +89,7 @@ test('species.get should make an authenticated request when authenticated', asyn
     new Response(JSON.stringify(mockSpecies), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -118,7 +118,7 @@ test('species.search should call the search endpoint with parameters', async () 
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -146,7 +146,7 @@ test('species.getObservations should fetch observations for a species', async ()
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -172,7 +172,7 @@ test('species.getOccurrence should fetch occurrence data', async () => {
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -196,7 +196,7 @@ test('species.listGroups should fetch a list of species groups', async () => {
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -218,7 +218,7 @@ test('species.getGroupAttributes should fetch attributes for a species group', a
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();

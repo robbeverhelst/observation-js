@@ -65,7 +65,7 @@ test('observations.get should fetch a single observation', async () => {
     new Response(JSON.stringify(mockObservation), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -88,7 +88,7 @@ test('observations.create should create a new observation without media', async 
     new Response(JSON.stringify(mockObservation), {
       status: 201,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -102,7 +102,7 @@ test('observations.create should create a new observation without media', async 
   expect(observation).toEqual(mockObservation);
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
   const options = fetchSpy.mock.calls[0][1];
-  const body = options?.body as any;
+  const body = JSON.parse(options?.body as string);
 
   expect(url.pathname).toBe('/api/v1/observations/create-single/');
   expect(body.species_id).toBe(2);
@@ -115,7 +115,7 @@ test('observations.create should create a new observation with media', async () 
     new Response(JSON.stringify(mockObservation), {
       status: 201,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -146,7 +146,7 @@ test('observations.update should update an observation without media', async () 
     new Response(JSON.stringify(mockObservation), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -157,7 +157,7 @@ test('observations.update should update an observation without media', async () 
   expect(observation).toEqual(mockObservation);
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
   const options = fetchSpy.mock.calls[0][1];
-  const body = options?.body as any;
+  const body = JSON.parse(options?.body as string);
 
   expect(url.pathname).toBe('/api/v1/observations/1/update/');
   expect(body.notes).toBe('Updated notes');
@@ -170,7 +170,7 @@ test('observations.update should update an observation with media', async () => 
     new Response(JSON.stringify(mockObservation), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -195,7 +195,7 @@ test('observations.update should update an observation with media', async () => 
 
 test('observations.delete should delete an observation', async () => {
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
-    new Response(null, { status: 204 })
+    new Response(null, { status: 204 }),
   );
 
   const client = new ObservationClient();
@@ -209,4 +209,4 @@ test('observations.delete should delete an observation', async () => {
   expect(options?.method).toBe('POST');
 
   fetchSpy.mockRestore();
-}); 
+});

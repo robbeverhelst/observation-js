@@ -14,5 +14,5 @@ export interface Terms {
 
 export interface UserStats {
   // Define the structure based on API response
-  [key: string]: any;
-} 
+  [key: string]: unknown;
+}

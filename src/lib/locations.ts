@@ -1,5 +1,10 @@
 import type { ObservationClient } from '../core/client';
-import type { GeoJSON, Location, Paginated, SpeciesSeen } from '../types';
+import type {
+  GeoJSONFeatureCollection,
+  Location,
+  Paginated,
+  SpeciesSeen,
+} from '../types';
 
 export class Locations {
   #client: ObservationClient;
@@ -20,7 +25,7 @@ export class Locations {
    * @throws {ApiError} If the request fails.
    */
   public async search(
-    params: { name?: string } | { lat: number; lng: number }
+    params: { name?: string } | { lat: number; lng: number },
   ): Promise<Paginated<Location>> {
     return this.#client.request<Paginated<Location>>('locations/', {
       method: 'GET',
@@ -57,11 +62,16 @@ export class Locations {
       species_group?: number;
       rarity?: number;
       fast?: boolean;
-    } = {}
+    } = {},
   ): Promise<{ results: SpeciesSeen[] }> {
+    const { fast, ...rest } = params;
+    const processedParams: Record<string, string | number> = { ...rest };
+    if (fast !== undefined) {
+      processedParams.fast = fast ? 1 : 0;
+    }
     return this.#client.request<{ results: SpeciesSeen[] }>(
       `locations/${id}/species-seen/`,
-      { method: 'GET', params: params as any }
+      { method: 'GET', params: processedParams },
     );
   }
 
@@ -84,9 +94,14 @@ export class Locations {
     fast?: boolean;
     order_by?: string;
   }): Promise<{ results: SpeciesSeen[] }> {
+    const { fast, ...rest } = params;
+    const processedParams: Record<string, string | number> = { ...rest };
+    if (fast !== undefined) {
+      processedParams.fast = fast ? 1 : 0;
+    }
     return this.#client.request<{ results: SpeciesSeen[] }>(
       'locations/species-seen/',
-      { method: 'GET', params: params as any }
+      { method: 'GET', params: processedParams },
     );
   }
 
@@ -99,11 +114,11 @@ export class Locations {
    * @throws {ApiError} If the request fails.
    */
   public async getGeoJSON(
-    params: { point: string; model?: string } | { id: number; model?: string }
-  ): Promise<GeoJSON.FeatureCollection> {
-    return this.#client.publicRequest<GeoJSON.FeatureCollection>(
+    params: { point: string; model?: string } | { id: number; model?: string },
+  ): Promise<GeoJSONFeatureCollection> {
+    return this.#client.publicRequest<GeoJSONFeatureCollection>(
       'locations/geojson/',
-      { params: params as any }
+      { params },
     );
   }
-} 
+}

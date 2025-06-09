@@ -27,4 +27,16 @@ export interface Species {
 export interface SpeciesSearchParams {
   q?: string;
   species_group?: number;
-} 
+}
+
+export interface SpeciesOccurrence {
+  id: number;
+  name: string;
+  scientific_name: string;
+  occurrence_status: string;
+}
+
+export interface SpeciesGroupAttributes {
+  // Define structure based on expected API response
+  [key: string]: unknown;
+}

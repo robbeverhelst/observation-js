@@ -1,33 +1,3 @@
-import type { LocationDetail } from './base';
-
-export interface ModelCoverage {
-  image: string;
-  description: string;
-}
-
-export interface NiaSpecies {
-  id: number;
-  scientific_name: string;
-  name: string;
-  group: number;
-  type: string;
-  rarity?: number;
-  status?: number;
-}
-
-export interface NiaLifeStage {
-  species_id: number;
-  id: number;
-  text: string;
-  is_active: boolean;
-  is_default?: boolean;
-}
-
-export interface NiaMorph {
-  probability: number;
-  token: string;
-}
-
 export interface NiaPrediction {
   probability: number;
   taxon: {
@@ -62,4 +32,4 @@ export interface NiaIdentifyOptions {
     lat: number;
     lng: number;
   };
-} 
+}

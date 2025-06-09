@@ -160,7 +160,7 @@ test('getAuthorizationUrl should return the correct URL', () => {
 test('getAuthorizationUrl should throw an error if options are not set', () => {
   const client = new ObservationClient();
   expect(() => client.getAuthorizationUrl('xyz', ['obs_read'])).toThrow(
-    'Client options are not set.'
+    'Client options are not set.',
   );
 });
 
@@ -169,7 +169,7 @@ test('getAccessToken should fetch and set tokens', async () => {
     new Response(JSON.stringify(mockTokenResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient({
@@ -184,7 +184,7 @@ test('getAccessToken should fetch and set tokens', async () => {
   expect(client.hasAccessToken()).toBe(true);
 
   const requestBody = new URLSearchParams(
-    (fetchSpy.mock.calls[0][1]?.body as FormData | undefined)?.toString()
+    (fetchSpy.mock.calls[0][1]?.body as FormData | undefined)?.toString(),
   );
   expect(requestBody.get('grant_type')).toBe('authorization_code');
   expect(requestBody.get('code')).toBe('auth-code');
@@ -200,7 +200,7 @@ test('getAccessToken should throw AuthenticationError on failure', async () => {
     new Response(JSON.stringify({ error: 'invalid_grant' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient({
@@ -210,14 +210,14 @@ test('getAccessToken should throw AuthenticationError on failure', async () => {
   });
 
   await expect(client.getAccessToken('wrong-code')).rejects.toThrow(
-    AuthenticationError
+    AuthenticationError,
   );
 });
 
 test('getAccessToken should throw error if options are not set', async () => {
   const client = new ObservationClient();
   await expect(client.getAccessToken('any-code')).rejects.toThrow(
-    'Client options are not set.'
+    'Client options are not set.',
   );
 });
 
@@ -226,7 +226,7 @@ test('getAccessTokenWithPassword should fetch and set tokens', async () => {
     new Response(JSON.stringify(mockTokenResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -240,7 +240,7 @@ test('getAccessTokenWithPassword should fetch and set tokens', async () => {
   expect(client.hasAccessToken()).toBe(true);
 
   const requestBody = new URLSearchParams(
-    (fetchSpy.mock.calls[0][1]?.body as FormData | undefined)?.toString()
+    (fetchSpy.mock.calls[0][1]?.body as FormData | undefined)?.toString(),
   );
   expect(requestBody.get('grant_type')).toBe('password');
   expect(requestBody.get('client_id')).toBe('my-client-id');
@@ -255,7 +255,7 @@ test('getAccessTokenWithPassword should throw AuthenticationError on failure', a
     new Response(JSON.stringify({ error: 'invalid_grant' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -264,7 +264,7 @@ test('getAccessTokenWithPassword should throw AuthenticationError on failure', a
       clientId: 'my-client-id',
       email: 'test@example.com',
       password: 'wrong-password',
-    })
+    }),
   ).rejects.toThrow(AuthenticationError);
 });
 
@@ -275,17 +275,20 @@ test('refreshAccessToken should fetch and set new tokens', async () => {
       new Response(JSON.stringify(mockTokenResponse), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
-      })
+      }),
     )
     .mockResolvedValueOnce(
       // Mock for refreshAccessToken
       new Response(
-        JSON.stringify({ ...mockTokenResponse, access_token: 'new-access-token' }),
+        JSON.stringify({
+          ...mockTokenResponse,
+          access_token: 'new-access-token',
+        }),
         {
           status: 200,
           headers: { 'Content-Type': 'application/json' },
-        }
-      )
+        },
+      ),
     );
 
   const client = new ObservationClient({
@@ -310,7 +313,7 @@ test('refreshAccessToken should fetch and set new tokens', async () => {
 test('refreshAccessToken should throw error if no refresh token is available', async () => {
   const client = new ObservationClient();
   await expect(client.refreshAccessToken()).rejects.toThrow(
-    'No refresh token available.'
+    'No refresh token available.',
   );
 });
 
@@ -320,13 +323,13 @@ test('refreshAccessToken should throw AuthenticationError on failure', async () 
       new Response(JSON.stringify(mockTokenResponse), {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
-      })
+      }),
     )
     .mockResolvedValueOnce(
       new Response(JSON.stringify({ error: 'invalid_grant' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' },
-      })
+      }),
     );
 
   const client = new ObservationClient({
@@ -343,7 +346,9 @@ test('refreshAccessToken should throw AuthenticationError on failure', async () 
   });
 
   // This call will use the second mock
-  await expect(client.refreshAccessToken()).rejects.toThrow(AuthenticationError);
+  await expect(client.refreshAccessToken()).rejects.toThrow(
+    AuthenticationError,
+  );
 });
 
 test('setAccessToken should set the access token', () => {
@@ -355,7 +360,7 @@ test('setAccessToken should set the access token', () => {
 
 test('publicRequest should make an unauthenticated request', async () => {
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
-    new Response(JSON.stringify({ success: true }), { status: 200 })
+    new Response(JSON.stringify({ success: true }), { status: 200 }),
   );
 
   const client = new ObservationClient();
@@ -377,7 +382,7 @@ test('publicRequest should make an unauthenticated request', async () => {
 
 test('request should make an authenticated request', async () => {
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
-    new Response(JSON.stringify({ success: true }), { status: 200 })
+    new Response(JSON.stringify({ success: true }), { status: 200 }),
   );
 
   const client = new ObservationClient();
@@ -399,27 +404,27 @@ test('request should make an authenticated request', async () => {
 test('request should throw error if not authenticated', async () => {
   const client = new ObservationClient();
   await expect(client.request('test-endpoint')).rejects.toThrow(
-    'Access token is not set. Please authenticate first.'
+    'Access token is not set. Please authenticate first.',
   );
 });
 
 test('_fetch should throw ApiError on non-2xx response', async () => {
   spyOn(globalThis, 'fetch').mockResolvedValue(
-    new Response(JSON.stringify({ detail: 'Not found' }), { status: 404 })
+    new Response(JSON.stringify({ detail: 'Not found' }), { status: 404 }),
   );
   const client = new ObservationClient();
   await expect(client.publicRequest('non-existent-endpoint')).rejects.toThrow(
-    'API request failed with status 404'
+    'API request failed with status 404',
   );
 });
 
 test('_fetch should throw AuthenticationError on 401 response', async () => {
   spyOn(globalThis, 'fetch').mockResolvedValue(
-    new Response(JSON.stringify({ detail: 'Unauthorized' }), { status: 401 })
+    new Response(JSON.stringify({ detail: 'Unauthorized' }), { status: 401 }),
   );
   const client = new ObservationClient();
   client.setAccessToken('invalid-token');
   await expect(client.request('protected-endpoint')).rejects.toThrow(
-    AuthenticationError
+    AuthenticationError,
   );
-}); 
+});

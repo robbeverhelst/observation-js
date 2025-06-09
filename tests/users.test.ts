@@ -27,7 +27,7 @@ test('users.getTerms should fetch the terms and privacy policy', async () => {
     new Response(JSON.stringify(mockTerms), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -51,7 +51,7 @@ test('users.register should register a new user', async () => {
     new Response(JSON.stringify(mockResponse), {
       status: 201,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -63,7 +63,7 @@ test('users.register should register a new user', async () => {
   const registeredUser = await client.users.register(
     userDetails,
     'MyApp',
-    '1.0'
+    '1.0',
   );
 
   expect(registeredUser).toEqual(mockResponse);
@@ -86,7 +86,7 @@ test('users.resetPassword should send a password reset email', async () => {
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -108,7 +108,7 @@ test('users.getInfo should fetch the current authenticated user', async () => {
     new Response(JSON.stringify(mockUser), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -132,7 +132,7 @@ test('users.updateInfo should update the user profile', async () => {
     new Response(JSON.stringify(updatedUser), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -158,7 +158,7 @@ test('users.resendEmailConfirmation should resend the confirmation email', async
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -185,7 +185,7 @@ test('users.getStats should fetch user statistics', async () => {
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -210,7 +210,7 @@ test('users.getMagicLoginLink should fetch a magic login link', async () => {
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -235,7 +235,7 @@ test('users.getAvatar should fetch the user avatar URL', async () => {
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -259,7 +259,7 @@ test('users.updateAvatar should upload a new avatar', async () => {
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -287,7 +287,7 @@ test('users.deleteAvatar should delete the user avatar', async () => {
     new Response(JSON.stringify(mockResponse), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
-    })
+    }),
   );
 
   const client = new ObservationClient();
@@ -304,4 +304,4 @@ test('users.deleteAvatar should delete the user avatar', async () => {
   expect(headers.get('Authorization')).toBe('Bearer test-token');
 
   fetchSpy.mockRestore();
-}); 
+});

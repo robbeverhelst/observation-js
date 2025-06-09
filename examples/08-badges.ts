@@ -6,7 +6,9 @@ async function main() {
   console.log('--- Fetching onboarding badges (unauthenticated) ---');
   try {
     const badges = await client.badges.list();
-    console.log(`Successfully fetched ${badges.results.length} onboarding badges.`);
+    console.log(
+      `Successfully fetched ${badges.results.length} onboarding badges.`,
+    );
 
     if (badges.results.length > 0) {
       console.log('First badge:', badges.results[0].name);
@@ -16,12 +18,12 @@ async function main() {
           Name: badge.name,
           Type: badge.type,
           Color: badge.background_color,
-        }))
+        })),
       );
 
       const firstBadgeId = badges.results[0].id;
       console.log(
-        `\\n--- Fetching details for the first badge (ID: ${firstBadgeId}) ---`
+        `\\n--- Fetching details for the first badge (ID: ${firstBadgeId}) ---`,
       );
       const badgeDetails = await client.badges.get(firstBadgeId);
       console.log('Successfully fetched details for badge:', badgeDetails.name);
@@ -32,8 +34,8 @@ async function main() {
   }
 
   console.log(
-    '\\n--- Note: Authenticated badge endpoints provide user-specific data and are not demonstrated here. ---'
+    '\\n--- Note: Authenticated badge endpoints provide user-specific data and are not demonstrated here. ---',
   );
 }
 
-main().catch(console.error); 
+main().catch(console.error);

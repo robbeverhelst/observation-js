@@ -68,7 +68,7 @@ export class Challenges {
    */
   async getRanking(
     id: number,
-    by: 'species' | 'observations'
+    by: 'species' | 'observations',
   ): Promise<ChallengeRanking> {
     const endpoint = `challenges/${id}/ranking/${by}`;
     if (this.#client.hasAccessToken()) {
@@ -89,10 +89,10 @@ export class Challenges {
    * @throws {ApiError} If the request fails.
    */
   async getForObservation(
-    observationId: number
+    observationId: number,
   ): Promise<Paginated<{ id: number }>> {
     return this.#client.request<Paginated<{ id: number }>>(
-      `challenges/observation/${observationId}`
+      `challenges/observation/${observationId}`,
     );
   }
 
@@ -107,18 +107,21 @@ export class Challenges {
    */
   async subscribe(
     id: number,
-    isSubscribed: boolean
+    isSubscribed: boolean,
   ): Promise<SubscribeResponse> {
     const body = new URLSearchParams({
       is_subscribed: String(isSubscribed),
     });
-    return this.#client.request<SubscribeResponse>(`challenges/${id}/subscribe`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+    return this.#client.request<SubscribeResponse>(
+      `challenges/${id}/subscribe`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body,
       },
-      body,
-    });
+    );
   }
 
   /**
@@ -137,4 +140,4 @@ export class Challenges {
       },
     );
   }
-} 
+}

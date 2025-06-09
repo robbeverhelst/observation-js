@@ -9,10 +9,10 @@ const accessToken = process.argv[2] || null;
 const main = async () => {
   if (!accessToken) {
     console.log(
-      'Access token is required. Please provide it as a command-line argument.'
+      'Access token is required. Please provide it as a command-line argument.',
     );
     console.log(
-      'Skipping example. Set WAARNEMING_NL_ACCESS_TOKEN to run this.'
+      'Skipping example. Set WAARNEMING_NL_ACCESS_TOKEN to run this.',
     );
     return;
   }
@@ -38,7 +38,7 @@ const main = async () => {
         Notes: session.notes,
         'Start Time': session.start_datetime,
         'End Time': session.end_datetime,
-      }))
+      })),
     );
   } catch (error) {
     console.error('Failed to fetch sessions:');
@@ -98,4 +98,4 @@ main().catch(console.error);
 //     `Observations for session ${sessionWithObservations.uuid}:`,
 //     observations,
 //   );
-// } 
+// }

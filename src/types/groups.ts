@@ -14,4 +14,4 @@ export interface Group {
   members: GroupMember[];
 }
 
-export type GroupSummary = Pick<Group, 'id' | 'name' | 'photo'>; 
+export type GroupSummary = Pick<Group, 'id' | 'name' | 'photo'>;
