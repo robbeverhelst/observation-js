@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.3.0...v1.4.0) (2025-06-09)
+
+
+### Features
+
+* add configurable in-memory caching to ObservationClient ([7443c17](https://github.com/RobbeVerhelst/observation-js/commit/7443c1707bcb86e551ffc3c963ea24820d01f713))
+
 # [1.3.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.2.3...v1.3.0) (2025-06-09)
 
 
