@@ -14,9 +14,8 @@
   },
   "scripts": {
     "build": "bun build src/index.ts --outdir ./dist --target bun",
-    "prepublishOnly": "bun run build",
     "test": "bun test",
-    "test-all": "bun run examples/test-all.ts",
+    "examples": "bun run examples/test-all.ts",
     "docs:generate": "typedoc"
   },
   "devDependencies": {

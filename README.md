@@ -8,6 +8,22 @@
 
 A fully-typed TypeScript client for the [waarneming.nl](https://waarneming.nl/api/docs/) API. This library provides an easy-to-use interface for interacting with the API, handling both public (unauthenticated) and private (authenticated) endpoints.
 
+This library supports all websites in the Observation International network:
+- **[waarneming.nl](https://waarneming.nl)** (The Netherlands)
+- **[waarnemingen.be](https://waarnemingen.be)** (Belgium)
+- **[observation.org](https://observation.org)** (International)
+
+By default, the client connects to `waarneming.nl`. You can easily switch to another site by providing the `baseUrl` in the client options:
+
+```typescript
+import { ObservationClient } from 'observation-js';
+
+// Connect to the international site
+const client = new ObservationClient({
+  baseUrl: 'https://observation.org',
+});
+```
+
 ## Features
 
 - ✅ **Fully Typed**: Written in TypeScript for a great developer experience with auto-completion and type safety.
