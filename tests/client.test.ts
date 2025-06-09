@@ -1,4 +1,4 @@
-import { expect, test, spyOn, afterEach } from 'bun:test';
+import { expect, test, spyOn, afterEach, describe } from 'bun:test';
 import { ObservationClient } from '../src/index';
 import { Badges } from '../src/lib/badges';
 import { Challenges } from '../src/lib/challenges';
@@ -63,6 +63,72 @@ test('client should initialize with a custom base URL', () => {
   expect(client.getApiBaseUrl()).toBe('https://observation.org/api/v1');
 });
 
+describe('client initialization with platform', () => {
+  test('should use the correct test URL for platform "be" by default', () => {
+    const client = new ObservationClient({
+      platform: 'be',
+      clientId: 'test',
+      clientSecret: 'test',
+      redirectUri: 'test',
+    });
+    expect(client.getApiBaseUrl()).toBe('https://waarnemingen-test.be/api/v1');
+  });
+
+  test('should use the correct test URL for platform "org" by default', () => {
+    const client = new ObservationClient({
+      platform: 'org',
+      clientId: 'test',
+      clientSecret: 'test',
+      redirectUri: 'test',
+    });
+    expect(client.getApiBaseUrl()).toBe('https://observation-test.org/api/v1');
+  });
+
+  test('should use the correct production URL when test is false', () => {
+    const client = new ObservationClient({
+      platform: 'nl',
+      test: false,
+      clientId: 'test',
+      clientSecret: 'test',
+      redirectUri: 'test',
+    });
+    expect(client.getApiBaseUrl()).toBe('https://waarneming.nl/api/v1');
+  });
+
+  test('should use the correct test URL when test is true', () => {
+    const client = new ObservationClient({
+      platform: 'nl',
+      test: true,
+      clientId: 'test',
+      clientSecret: 'test',
+      redirectUri: 'test',
+    });
+    expect(client.getApiBaseUrl()).toBe('https://waarneming-test.nl/api/v1');
+  });
+
+  test('should prioritize baseUrl over platform', () => {
+    const client = new ObservationClient({
+      baseUrl: 'https://custom.url',
+      platform: 'nl',
+      clientId: 'test',
+      clientSecret: 'test',
+      redirectUri: 'test',
+    });
+    expect(client.getApiBaseUrl()).toBe('https://custom.url/api/v1');
+  });
+
+  test('getAuthorizationUrl should use the correct platform URL', () => {
+    const client = new ObservationClient({
+      platform: 'be',
+      clientId: 'my-client-id',
+      clientSecret: 'my-client-secret',
+      redirectUri: 'https://my-app.com/callback',
+    });
+    const url = client.getAuthorizationUrl('xyz', ['obs_read']);
+    expect(url.startsWith('https://waarnemingen-test.be/')).toBe(true);
+  });
+});
+
 test('setLanguage should set the language for requests', () => {
   const client = new ObservationClient();
   client.setLanguage('nl');
@@ -74,7 +140,7 @@ test('setLanguage should set the language for requests', () => {
 
 test('getApiBaseUrl should return the correct default URL', () => {
   const client = new ObservationClient();
-  expect(client.getApiBaseUrl()).toBe('https://waarneming.nl/api/v1');
+  expect(client.getApiBaseUrl()).toBe('https://waarneming-test.nl/api/v1');
 });
 
 test('getAuthorizationUrl should return the correct URL', () => {
@@ -87,7 +153,7 @@ test('getAuthorizationUrl should return the correct URL', () => {
   const scope = ['obs_write', 'obs_read'];
   const url = client.getAuthorizationUrl(state, scope);
   const expectedUrl =
-    'https://waarneming.nl/accounts/oauth2/authorize/?response_type=code&client_id=my-client-id&redirect_uri=https%3A%2F%2Fmy-app.com%2Fcallback&scope=obs_write+obs_read&state=xyz';
+    'https://waarneming-test.nl/accounts/oauth2/authorize/?response_type=code&client_id=my-client-id&redirect_uri=https%3A%2F%2Fmy-app.com%2Fcallback&scope=obs_write+obs_read&state=xyz';
   expect(url).toBe(expectedUrl);
 });
 
@@ -301,7 +367,7 @@ test('publicRequest should make an unauthenticated request', async () => {
   const options = fetchSpy.mock.calls[0][1];
   const headers = new Headers(options?.headers);
 
-  expect(url).toBe('https://waarneming.nl/api/v1/test-endpoint');
+  expect(url).toBe('https://waarneming-test.nl/api/v1/test-endpoint');
   expect(headers.get('Authorization')).toBe(null);
   expect(headers.get('Accept-Language')).toBe('nl');
   expect(headers.get('Accept')).toBe('application/json');
@@ -315,7 +381,7 @@ test('request should make an authenticated request', async () => {
   );
 
   const client = new ObservationClient();
-  client.setAccessToken('my-secret-token');
+  client.setAccessToken('mock-access-token');
   const response = await client.request('test-endpoint');
 
   expect(response).toEqual({ success: true });
@@ -323,8 +389,9 @@ test('request should make an authenticated request', async () => {
   const options = fetchSpy.mock.calls[0][1];
   const headers = new Headers(options?.headers);
 
-  expect(url).toBe('https://waarneming.nl/api/v1/test-endpoint');
-  expect(headers.get('Authorization')).toBe('Bearer my-secret-token');
+  expect(headers.get('Authorization')).toBe('Bearer mock-access-token');
+
+  expect(url).toBe('https://waarneming-test.nl/api/v1/test-endpoint');
 
   fetchSpy.mockRestore();
 });

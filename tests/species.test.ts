@@ -2,7 +2,7 @@ import { expect, test, spyOn, afterEach } from 'bun:test';
 import { ObservationClient } from '../src/index';
 import type { Observation, Species } from '../src/types';
 
-const API_BASE_URL = 'https://waarneming.nl/api/v1';
+const API_BASE_URL = 'https://waarneming-test.nl/api/v1';
 
 // A mock object for a Species
 const mockSpecies: Species = {
@@ -78,7 +78,8 @@ test('species.get should make a public request when unauthenticated', async () =
   const url = fetchSpy.mock.calls[0][0];
   const options = fetchSpy.mock.calls[0][1];
   expect(url).toBe(`${API_BASE_URL}/species/2`);
-  expect(options?.headers).not.toHaveProperty('Authorization');
+  const headers = new Headers(options?.headers);
+  expect(headers.has('Authorization')).toBe(false);
 
   fetchSpy.mockRestore();
 });

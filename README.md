@@ -13,16 +13,27 @@ This library supports all websites in the Observation International network:
 - **[waarnemingen.be](https://waarnemingen.be)** (Belgium)
 - **[observation.org](https://observation.org)** (International)
 
-By default, the client connects to `waarneming.nl`. You can easily switch to another site by providing the `baseUrl` in the client options:
+By default, the client connects to the **test environment** of `waarneming.nl` to prevent accidental operations on production data. You can easily switch to another site or to the production environment by providing the `platform` and `test` options.
 
 ```typescript
 import { ObservationClient } from 'observation-js';
 
-// Connect to the international site
+// Connect to the Belgian production site
 const client = new ObservationClient({
-  baseUrl: 'https://observation.org',
+  platform: 'be',
+  test: false, // Explicitly opt-in to production
+  // other options like clientId, etc.
+});
+
+// Connect to the international test environment
+const testClient = new ObservationClient({
+  platform: 'org',
+  test: true, // This is the default, but can be explicit
+  // other options
 });
 ```
+
+You can still use the `baseUrl` option to connect to a custom instance, which will take precedence over the `platform` setting.
 
 ## Features
 

@@ -18,17 +18,34 @@ import type {
   ObservationClientOptions,
   PasswordGrantOptions,
   TokenResponse,
+  Platform,
 } from '../types';
 import { ApiError, AuthenticationError } from './errors';
 
 const API_BASE_URL = '/api/v1';
+
+const platformBaseUrls: Record<Platform, { production: string; test: string }> =
+  {
+    nl: {
+      production: 'https://waarneming.nl',
+      test: 'https://waarneming-test.nl',
+    },
+    be: {
+      production: 'https://waarnemingen.be',
+      test: 'https://waarnemingen-test.be',
+    },
+    org: {
+      production: 'https://observation.org',
+      test: 'https://observation-test.org',
+    },
+  };
 
 export class ObservationClient {
   #accessToken: string | null = null;
   #refreshToken: string | null = null;
   #options: ObservationClientOptions | undefined;
   #language: string = 'en'; // Default to English
-  #baseUrl: string = 'https://waarneming.nl';
+  #baseUrl: string;
 
   public readonly observations: Observations;
   public readonly species: Species;
@@ -54,9 +71,19 @@ export class ObservationClient {
    */
   constructor(options?: ObservationClientOptions) {
     this.#options = options;
+
     if (options?.baseUrl) {
       this.#baseUrl = options.baseUrl;
+    } else if (options?.platform) {
+      this.#baseUrl =
+        platformBaseUrls[options.platform][
+          options.test === false ? 'production' : 'test'
+        ];
+    } else {
+      // Default to the test environment for the default platform 'nl'
+      this.#baseUrl = platformBaseUrls['nl']['test'];
     }
+
     this.observations = new Observations(this);
     this.species = new Species(this);
     this.regions = new Regions(this);

@@ -1,8 +1,12 @@
+export type Platform = 'nl' | 'be' | 'org';
+
 export interface ObservationClientOptions {
   clientId: string;
   clientSecret: string;
   redirectUri: string;
   baseUrl?: string;
+  platform?: Platform;
+  test?: boolean;
 }
 
 export interface PasswordGrantOptions {
