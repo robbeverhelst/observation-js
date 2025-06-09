@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/RobbeVerhelst/observation-js/compare/v1.2.1...v1.2.2) (2025-06-09)
+
+
+### Bug Fixes
+
+* update Codecov action to v5 in CI workflow ([8a5e847](https://github.com/RobbeVerhelst/observation-js/commit/8a5e8472f37de33edf80cc8b7c8329060bf7d1e5))
+
 ## [1.2.1](https://github.com/RobbeVerhelst/observation-js/compare/v1.2.0...v1.2.1) (2025-06-08)
 
 
