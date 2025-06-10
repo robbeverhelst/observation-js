@@ -1,3 +1,11 @@
+# [1.8.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.7.0...v1.8.0) (2025-06-10)
+
+
+### Features
+
+* enhance performance tests with timeout handling and edge case logging ([5251c2b](https://github.com/RobbeVerhelst/observation-js/commit/5251c2b9469ceb1d66bcd14beeb723b15b05a840))
+* implement rate limit error handling and update species type definitions ([ce68251](https://github.com/RobbeVerhelst/observation-js/commit/ce68251be85ef385cd8dbbd3e6db2e58ec1b7d8b))
+
 # [1.7.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.6.0...v1.7.0) (2025-06-10)
 
 
