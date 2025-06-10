@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.9.0...v1.10.0) (2025-06-10)
+
+
+### Features
+
+* add MediaItem type and enhance media handling with getSimilar method ([cdc7fe3](https://github.com/RobbeVerhelst/observation-js/commit/cdc7fe3caa5af7070c3348d542c989c5bde995a8))
+
 # [1.9.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.8.0...v1.9.0) (2025-06-10)
 
 
