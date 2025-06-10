@@ -4,16 +4,16 @@ import type { Observation, Species } from '../../src/types';
 
 const API_BASE_URL = 'https://waarneming-test.nl/api/v1';
 
-// A mock object for a Species
+// A mock object for a Species (updated to match corrected API types)
 const mockSpecies: Species = {
   id: 2,
   name: 'Dodaars',
   scientific_name: 'Tachybaptus ruficollis',
   group: 1,
   group_name: 'Vogels',
-  status: 0,
-  rarity: 1,
-  rarity_text: 'algemeen',
+  status: '0', // Changed from number to string
+  rarity: '1', // Changed from number to string
+  rarity_text: 'algemeen', // Now optional but provided in this mock
   type: 'S',
   url: 'https://waarneming.nl/species/2/',
   photos: [],
@@ -165,7 +165,12 @@ test('species.getOccurrence should fetch occurrence data', async () => {
     count: 1,
     next: null,
     previous: null,
-    results: [{ id: 2, count: 10 }], // Simplified occurrence mock
+    results: [{ 
+      id: 2, 
+      name: 'Dodaars',
+      scientific_name: 'Tachybaptus ruficollis',
+      occurrence_status: 'common'
+    }], // Proper SpeciesOccurrence mock
   };
 
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(

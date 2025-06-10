@@ -15,13 +15,46 @@ describe('E2E: Public API Endpoints', () => {
       return await publicClient.species.get(2); // Common species ID
     });
     
+    // Comprehensive data validation
     expect(species).toBeDefined();
     expect(species.id).toBe(2);
     expect(species.name).toBeDefined();
+    expect(typeof species.name).toBe('string');
+    expect(species.name.length).toBeGreaterThan(0);
+    
     expect(species.scientific_name).toBeDefined();
+    expect(typeof species.scientific_name).toBe('string');
+    expect(species.scientific_name.length).toBeGreaterThan(0);
+    
     expect(species.group).toBeGreaterThan(0);
+    expect(species.group_name).toBeDefined();
+    expect(typeof species.group_name).toBe('string');
+    
+    expect(typeof species.rarity).toBe('string');
+    expect(species.rarity.length).toBeGreaterThan(0);
+    
+    // rarity_text is optional
+    if (species.rarity_text) {
+      expect(typeof species.rarity_text).toBe('string');
+      expect(['zeldzaam', 'schaars', 'algemeen', 'zeer algemeen']).toContain(species.rarity_text);
+    }
+    
+    // url is optional
+    if (species.url) {
+      expect(typeof species.url).toBe('string');
+      expect(species.url).toMatch(/^https?:\/\//);
+    }
+    
+    // Array fields (optional)
+    if (species.photos !== undefined) {
+      expect(Array.isArray(species.photos)).toBe(true);
+    }
+    if (species.sounds !== undefined) {
+      expect(Array.isArray(species.sounds)).toBe(true);
+    }
     
     console.log(`✅ Retrieved species: ${species.name} (${species.scientific_name})`);
+    console.log(`   Group: ${species.group_name}, Rarity: ${species.rarity_text}`);
   });
 
   test('should search for species', async () => {
@@ -132,20 +165,28 @@ describe('E2E: Public API Endpoints', () => {
     console.log('✅ API error handling works correctly');
   });
 
-  test('should respect rate limiting', async () => {
-    // Make multiple requests quickly to test rate limiting behavior
-    const promises = Array(5).fill(0).map((_, i) => 
-      publicClient.species.get(2 + i) // Different species IDs
-    );
+  test('should handle multiple requests respectfully', async () => {
+    // Make a few sequential requests with delays to be respectful to the API
+    const results: any[] = [];
     
-    // This should either succeed or fail gracefully with rate limiting
-    try {
-      const results = await Promise.all(promises);
-      expect(results).toHaveLength(5);
-      console.log('✅ Multiple concurrent requests handled successfully');
-    } catch (error) {
-      // If rate limited, that's also a valid response
-      console.log('✅ Rate limiting detected and handled correctly');
+    for (let i = 0; i < 3; i++) {
+      const species = await retryOperation(async () => {
+        return await publicClient.species.get(2 + i);
+      });
+      results.push(species);
+      
+      // Small delay between requests to be respectful
+      if (i < 2) { // Don't delay after the last request
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
     }
+    
+    expect(results).toHaveLength(3);
+    results.forEach((species, index) => {
+      expect(species).toBeDefined();
+      expect(species.id).toBe(2 + index);
+    });
+    
+    console.log('✅ Multiple sequential requests completed successfully');
   });
 }); 

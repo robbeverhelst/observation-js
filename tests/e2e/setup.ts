@@ -1,4 +1,5 @@
 import { ObservationClient } from '../../src/index';
+import { RateLimitError } from '../../src/core/errors';
 
 // E2E Test Configuration
 export const E2E_CONFIG = {
@@ -129,7 +130,7 @@ export class E2ETestData {
   }
 }
 
-// Retry utility for flaky network operations
+// Retry utility for flaky network operations with smart rate limit handling
 export async function retryOperation<T>(
   operation: () => Promise<T>,
   maxRetries: number = 3,
@@ -139,10 +140,34 @@ export async function retryOperation<T>(
   
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      return await operation();
+      console.log(`Attempt ${attempt}/${maxRetries}`);
+      const result = await operation();
+      if (attempt > 1) {
+        console.log(`✅ Request succeeded after ${attempt} attempt(s)`);
+      }
+      return result;
     } catch (error) {
       lastError = error as Error;
       
+      // Handle rate limiting with smart backoff
+      if (error instanceof RateLimitError) {
+        const retryDelay = error.getRetryDelayMs();
+        console.warn(`⏱️ Rate limit hit. Waiting ${Math.round(retryDelay / 1000)}s before retry...`);
+        
+        if (attempt === maxRetries) {
+          console.error(`❌ Rate limit exceeded after ${maxRetries} attempts. Consider reducing request frequency.`);
+          throw new Error(
+            `Rate limit exceeded: ${error.message}\n` +
+            `This is expected behavior when making too many requests. ` +
+            `The API is protecting itself from overload.`
+          );
+        }
+        
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+        continue;
+      }
+      
+      // For other errors, use standard retry logic
       if (attempt === maxRetries) {
         throw lastError;
       }

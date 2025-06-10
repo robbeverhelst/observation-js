@@ -21,7 +21,7 @@ import type {
   Platform,
   CacheStore,
 } from '../types';
-import { ApiError, AuthenticationError } from './errors';
+import { ApiError, AuthenticationError, RateLimitError } from './errors';
 import { InMemoryCache } from './cache';
 import { InterceptorManager } from './interceptors';
 
@@ -425,6 +425,9 @@ export class ObservationClient {
 
       if (response.status === 401 || response.status === 403) {
         throw new AuthenticationError(response, errorBody);
+      }
+      if (response.status === 429) {
+        throw new RateLimitError(response, errorBody);
       }
       throw new ApiError(
         `API request failed with status ${response.status}`,
