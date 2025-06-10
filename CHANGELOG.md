@@ -1,3 +1,15 @@
+# [1.9.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.8.0...v1.9.0) (2025-06-10)
+
+
+### Bug Fixes
+
+* update retryAfter parsing in RateLimitError to use parseFloat for improved accuracy ([fd0e4ee](https://github.com/RobbeVerhelst/observation-js/commit/fd0e4eecd859c76ce71abe0853c919ad83086e4b))
+
+
+### Features
+
+* add timeout handling and retry logic for species and countries API calls in cross-platform tests ([b6e514f](https://github.com/RobbeVerhelst/observation-js/commit/b6e514f65c7a244cecf3f062ed1ae4b91133a5ee))
+
 # [1.8.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.7.0...v1.8.0) (2025-06-10)
 
 
