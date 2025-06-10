@@ -32,6 +32,8 @@ export type {
   Link,
   LocationDetail,
   Lookups,
+  MediaItem,
+  MediaUploadResponse,
   NiaPrediction,
   NiaResponse,
   Observation,

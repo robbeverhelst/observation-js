@@ -1,5 +1,5 @@
 import type { ObservationClient } from '../core/client';
-import type { MediaUploadResponse, Paginated } from '../types';
+import type { MediaUploadResponse, MediaItem, Paginated } from '../types';
 
 export class Media {
   #client: ObservationClient;
@@ -42,14 +42,24 @@ export class Media {
   }
 
   /**
+   * Fetches similar media items for a given media ID.
+   * This endpoint can be used with or without authentication.
+   * 
+   * @param id The unique identifier of the media item.
+   * @returns A promise that resolves to a paginated list of similar media items.
    * @throws {ApiError} If the request fails.
    */
-  public async getSimilar(id: number): Promise<Paginated<Media>> {
+  public async getSimilar(id: number): Promise<Paginated<MediaItem>> {
     const params: Record<string, string | number> = {
       model: 'Media',
       pk: id,
     };
-    return this.#client.request<Paginated<Media>>('media/similar/', {
+    
+    const request = this.#client.hasAccessToken()
+      ? this.#client.request
+      : this.#client.publicRequest;
+      
+    return request<Paginated<MediaItem>>('media/similar/', {
       method: 'GET',
       params,
     });
