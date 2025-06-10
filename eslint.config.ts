@@ -6,7 +6,8 @@ import globals from 'globals';
 export default tseslint.config(
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
-  prettierConfig,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  prettierConfig as any,
   {
     languageOptions: {
       globals: {
@@ -28,7 +29,9 @@ export default tseslint.config(
       'typedoc.json',
       'tsconfig.json',
       'package.json',
-      'prettierrc.cjs'
+      'prettierrc.cjs',
+      '.prettierrc.cts',
+      'eslint.config.js',
     ],
-  }
+  },
 ); 

@@ -1,9 +1,8 @@
 # [1.5.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.4.0...v1.5.0) (2025-06-09)
 
-
 ### Features
 
-* add request/response interceptors to ObservationClient for enhanced request lifecycle management ([9058e2c](https://github.com/RobbeVerhelst/observation-js/commit/9058e2c156fd282d7ccb904ac13d63d2736145da))
+- add request/response interceptors to ObservationClient for enhanced request lifecycle management ([9058e2c](https://github.com/RobbeVerhelst/observation-js/commit/9058e2c156fd282d7ccb904ac13d63d2736145da))
 
 # [1.4.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.3.0...v1.4.0) (2025-06-09)
 

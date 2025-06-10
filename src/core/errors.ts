@@ -31,4 +31,4 @@ export class AuthenticationError extends ApiError {
     super('Authentication failed', response, body);
     this.name = 'AuthenticationError';
   }
-} 
+}

@@ -25,7 +25,9 @@ export interface GeoJSONLineString {
   coordinates: Array<[number, number]>;
 }
 
-export interface GeoJSONFeature<G extends GeoJSONGeometry | null = GeoJSONGeometry> {
+export interface GeoJSONFeature<
+  G extends GeoJSONGeometry | null = GeoJSONGeometry,
+> {
   type: 'Feature';
   geometry: G;
   properties: Record<string, unknown> | null;

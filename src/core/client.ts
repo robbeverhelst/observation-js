@@ -90,9 +90,7 @@ export class ObservationClient {
       response: new InterceptorManager<Response>(),
     };
 
-    this.#cache =
-      options?.cache?.store ??
-      new InMemoryCache();
+    this.#cache = options?.cache?.store ?? new InMemoryCache();
 
     if (options?.baseUrl) {
       this.#baseUrl = options.baseUrl;
@@ -215,7 +213,7 @@ export class ObservationClient {
    * @throws {AuthenticationError} If the token request fails.
    */
   public async getAccessTokenWithPassword(
-    options: PasswordGrantOptions
+    options: PasswordGrantOptions,
   ): Promise<TokenResponse> {
     const body = new URLSearchParams({
       grant_type: 'password',
@@ -314,7 +312,9 @@ export class ObservationClient {
     // --- Caching Layer: GET ---
     const url = this.buildUrl(endpoint, options.params);
     const cacheKey = url.toString();
-    const isCacheable = (options.method === 'GET' || !options.method) && this.#options?.cache?.enabled !== false;
+    const isCacheable =
+      (options.method === 'GET' || !options.method) &&
+      this.#options?.cache?.enabled !== false;
 
     if (isCacheable && this.#cache.has(cacheKey)) {
       const cachedData = this.#cache.get<T>(cacheKey);
@@ -327,11 +327,11 @@ export class ObservationClient {
       undefined,
     ];
 
-    this.interceptors.request.forEach(interceptor => {
+    this.interceptors.request.forEach((interceptor) => {
       chain.unshift(interceptor.onFulfilled, interceptor.onRejected);
     });
 
-    this.interceptors.response.forEach(interceptor => {
+    this.interceptors.response.forEach((interceptor) => {
       chain.push(interceptor.onFulfilled, interceptor.onRejected);
     });
 
@@ -344,8 +344,8 @@ export class ObservationClient {
 
     // --- Final Response Handling & Caching Layer: SET ---
     return promise
-      .then(response => this._handleResponse<T>(response as Response))
-      .then(data => {
+      .then((response) => this._handleResponse<T>(response as Response))
+      .then((data) => {
         if (isCacheable && options.cache) {
           const cacheOptions = this.#options?.cache;
           const defaultTTL = cacheOptions?.defaultTTL ?? 3600;
@@ -359,13 +359,16 @@ export class ObservationClient {
 
           if (ttl) {
             this.#cache.set(cacheKey, data, ttl);
-    }
+          }
         }
         return data;
       });
   }
 
-  private buildUrl(endpoint: string, params?: Record<string, string | number>): URL {
+  private buildUrl(
+    endpoint: string,
+    params?: Record<string, string | number>,
+  ): URL {
     let url: URL;
     if (endpoint.startsWith('http') || endpoint.startsWith('/api/')) {
       url = new URL(
@@ -391,9 +394,9 @@ export class ObservationClient {
     if (authenticate && !this.#accessToken) {
       throw new Error('Access token is not set. Please authenticate first.');
     }
-    
+
     // params are already in the URL, so we can delete them from options
-      delete options.params;
+    delete options.params;
 
     const headers = new Headers(options.headers);
     if (authenticate) {
@@ -465,4 +468,4 @@ export class ObservationClient {
   ): Promise<T> => {
     return this._fetch<T>(endpoint, false, options);
   };
-} 
+}

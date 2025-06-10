@@ -287,9 +287,7 @@ export class Groups {
    * @throws {AuthenticationError} If the user is not a member or not authenticated.
    * @throws {ApiError} If the request fails.
    */
-  public async getObservations(
-    groupId: number,
-  ): Promise<{
+  public async getObservations(groupId: number): Promise<{
     next: string | null;
     previous: string | null;
     results: Observation[];

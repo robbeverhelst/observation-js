@@ -202,7 +202,6 @@ client.interceptors.response.use((response) => {
 });
 ```
 
-
 ## Examples
 
 For more detailed, runnable examples of how to use the various API resources, please see the files in the [`/examples`](https://github.com/RobbeVerhelst/observation-js/tree/main/examples) directory of this repository.
