@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.5.0...v1.6.0) (2025-06-10)
+
+
+### Features
+
+* Migrate ESLint and Prettier to TypeScript configuration ([0ecff32](https://github.com/RobbeVerhelst/observation-js/commit/0ecff32c050176ad5407273e074949c12a06de3d))
+
 # [1.5.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.4.0...v1.5.0) (2025-06-09)
 
 ### Features
