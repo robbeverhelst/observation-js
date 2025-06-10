@@ -54,7 +54,7 @@ export class RateLimitError extends ApiError {
     this.name = 'RateLimitError';
     
     // Parse retry timing information
-    this.retryAfter = retryAfter ? parseInt(retryAfter, 10) : undefined;
+    this.retryAfter = retryAfter ? parseFloat(retryAfter) : undefined;
     this.resetTime = resetHeader ? new Date(parseInt(resetHeader, 10) * 1000) : undefined;
   }
 

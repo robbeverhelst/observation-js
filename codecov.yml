@@ -1,0 +1,15 @@
+coverage:
+  ignore:
+    - "tests/**/*"
+    - "**/*.test.ts"
+    - "**/*.test.js"
+    - "**/*.spec.ts"
+    - "**/*.spec.js"
+    - "examples/**/*"
+    - "*.config.*"
+    - "*.md"
+
+comment:
+  layout: "reach,diff,flags,tree"
+  behavior: default
+  require_changes: false 
