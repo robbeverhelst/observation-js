@@ -1,11 +1,11 @@
 import { expect, test, spyOn, afterEach } from 'bun:test';
-import { ObservationClient } from '../src/index';
+import { ObservationClient } from '../../src/index';
 import type {
   Group,
   GroupSummary,
   ChallengeTemplate,
   Challenge,
-} from '../src/types';
+} from '../../src/types';
 
 const API_BASE_URL = 'https://waarneming.nl/api/v1';
 

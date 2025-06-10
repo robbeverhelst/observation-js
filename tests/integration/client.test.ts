@@ -1,23 +1,23 @@
 import { expect, test, spyOn, afterEach, describe } from 'bun:test';
-import { ObservationClient } from '../src/index';
-import { Badges } from '../src/lib/badges';
-import { Challenges } from '../src/lib/challenges';
-import { Countries } from '../src/lib/countries';
-import { Exports } from '../src/lib/exports';
-import { Groups } from '../src/lib/groups';
-import { Languages } from '../src/lib/languages';
-import { Locations } from '../src/lib/locations';
-import { Lookups } from '../src/lib/lookups';
-import { Media } from '../src/lib/media';
-import { Nia } from '../src/lib/nia';
-import { Observations } from '../src/lib/observations';
-import { Regions } from '../src/lib/regions';
-import { RegionSpeciesLists } from '../src/lib/regionSpeciesLists';
-import { Sessions } from '../src/lib/sessions';
-import { Species } from '../src/lib/species';
-import { Users } from '../src/lib/users';
-import type { TokenResponse } from '../src/types';
-import { AuthenticationError } from '../src/core/errors';
+import { ObservationClient } from '../../src/index';
+import { Badges } from '../../src/lib/badges';
+import { Challenges } from '../../src/lib/challenges';
+import { Countries } from '../../src/lib/countries';
+import { Exports } from '../../src/lib/exports';
+import { Groups } from '../../src/lib/groups';
+import { Languages } from '../../src/lib/languages';
+import { Locations } from '../../src/lib/locations';
+import { Lookups } from '../../src/lib/lookups';
+import { Media } from '../../src/lib/media';
+import { Nia } from '../../src/lib/nia';
+import { Observations } from '../../src/lib/observations';
+import { Regions } from '../../src/lib/regions';
+import { RegionSpeciesLists } from '../../src/lib/regionSpeciesLists';
+import { Sessions } from '../../src/lib/sessions';
+import { Species } from '../../src/lib/species';
+import { Users } from '../../src/lib/users';
+import type { TokenResponse } from '../../src/types';
+import { AuthenticationError } from '../../src/core/errors';
 
 const mockTokenResponse: TokenResponse = {
   access_token: 'mock-access-token',

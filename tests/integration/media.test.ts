@@ -1,6 +1,6 @@
 import { expect, test, spyOn, afterEach } from 'bun:test';
-import { ObservationClient } from '../src/index';
-import type { MediaUploadResponse } from '../src/types';
+import { ObservationClient } from '../../src/index';
+import type { MediaUploadResponse } from '../../src/types';
 
 const mockMediaUploadResponse: MediaUploadResponse = {
   name: 'temp_name.jpg',

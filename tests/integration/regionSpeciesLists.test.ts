@@ -1,6 +1,6 @@
 import { expect, test, spyOn, afterEach } from 'bun:test';
-import { ObservationClient } from '../src/index';
-import type { RegionSpeciesList, Species } from '../src/types';
+import { ObservationClient } from '../../src/index';
+import type { RegionSpeciesList, Species } from '../../src/types';
 
 const mockSpecies: Species = {
   id: 1,

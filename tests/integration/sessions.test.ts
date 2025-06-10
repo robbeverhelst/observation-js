@@ -1,5 +1,5 @@
 import { expect, test, spyOn, afterEach } from 'bun:test';
-import { ObservationClient } from '../src/index';
+import { ObservationClient } from '../../src/index';
 import type {
   Session,
   CreateSessionPayload,
@@ -8,7 +8,7 @@ import type {
   Paginated,
   UserDetail,
   Species,
-} from '../src/types';
+} from '../../src/types';
 
 const mockUser: UserDetail = {
   id: 1,

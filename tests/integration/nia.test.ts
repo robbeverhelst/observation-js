@@ -1,6 +1,6 @@
 import { expect, test, spyOn, afterEach } from 'bun:test';
-import { ObservationClient } from '../src/index';
-import type { NiaResponse } from '../src/types';
+import { ObservationClient } from '../../src/index';
+import type { NiaResponse } from '../../src/types';
 
 const mockNiaResponse: NiaResponse = {
   model_version: '1.0',

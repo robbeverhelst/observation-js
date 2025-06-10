@@ -1,23 +1,24 @@
 import { expect, test, spyOn, afterEach } from 'bun:test';
-import { ObservationClient } from '../src/index';
-import type { Language } from '../src/types';
+import { ObservationClient } from '../../src/index';
+import type { Country } from '../../src/types';
 
-const mockLanguage: Language = {
-  code: 'en',
-  name_en: 'English',
-  name_native: 'English',
+const API_BASE_URL = 'https://waarneming.nl/api/v1';
+
+const mockCountry: Country = {
+  name: 'Netherlands',
+  code: 'NL',
 };
 
 afterEach(() => {
   spyOn(globalThis, 'fetch').mockRestore();
 });
 
-test('languages.list should fetch a list of languages', async () => {
+test('countries.list should fetch a list of countries', async () => {
   const mockResponse = {
     count: 1,
     next: null,
     previous: null,
-    results: [mockLanguage],
+    results: [mockCountry],
   };
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
     new Response(JSON.stringify(mockResponse), {
@@ -27,11 +28,11 @@ test('languages.list should fetch a list of languages', async () => {
   );
 
   const client = new ObservationClient();
-  const languages = await client.languages.list();
+  const countries = await client.countries.list();
 
-  expect(languages).toEqual(mockResponse);
+  expect(countries).toEqual(mockResponse);
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
-  expect(url.pathname).toBe('/api/v1/languages/');
+  expect(url.pathname).toBe('/api/v1/countries/');
 
   fetchSpy.mockRestore();
 });

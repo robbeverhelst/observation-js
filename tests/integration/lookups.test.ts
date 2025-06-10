@@ -1,6 +1,6 @@
 import { expect, test, spyOn, afterEach } from 'bun:test';
-import { ObservationClient } from '../src/index';
-import type { Lookups } from '../src/types';
+import { ObservationClient } from '../../src/index';
+import type { Lookups } from '../../src/types';
 
 const mockLookups: Lookups = {
   validation_status: [
