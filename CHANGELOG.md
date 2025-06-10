@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.6.0...v1.7.0) (2025-06-10)
+
+
+### Features
+
+* add integration and e2e test ([8420377](https://github.com/RobbeVerhelst/observation-js/commit/8420377c5b928e29768f87540d74203d80e06a37))
+
 # [1.6.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.5.0...v1.6.0) (2025-06-10)
 
 
