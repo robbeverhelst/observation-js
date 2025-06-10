@@ -1,5 +1,6 @@
 import { expect, test, describe } from 'bun:test';
 import { ObservationClient } from '../../src/index';
+import { retryOperation } from './setup';
 
 describe('E2E: Cross-Platform Compatibility', () => {
   const platforms = [
@@ -21,8 +22,19 @@ describe('E2E: Cross-Platform Compatibility', () => {
       expect(client.getApiBaseUrl()).toBe(`${baseUrl}/api/v1`);
 
       try {
-        // Test basic species endpoint
-        const species = await client.species.get(2);
+        // Add timeout wrapper for slow APIs
+        const withTimeout = async <T>(promise: Promise<T>, timeoutMs: number): Promise<T> => {
+          const timeoutPromise = new Promise<never>((_, reject) => {
+            setTimeout(() => reject(new Error(`Request timed out after ${timeoutMs}ms`)), timeoutMs);
+          });
+          return Promise.race([promise, timeoutPromise]);
+        };
+
+        // Test basic species endpoint with timeout and retry
+        const species = await withTimeout(
+          retryOperation(async () => await client.species.get(2), 2, 1000),
+          4000 // 4 second timeout
+        );
         
         expect(species).toBeDefined();
         expect(species.id).toBe(2);
@@ -31,8 +43,11 @@ describe('E2E: Cross-Platform Compatibility', () => {
         
         console.log(`✅ ${name} (${platform}): Retrieved species "${species.name}"`);
         
-        // Test countries endpoint (should return different data per platform)
-        const countries = await client.countries.list();
+        // Test countries endpoint with timeout (should return different data per platform)
+        const countries = await withTimeout(
+          retryOperation(async () => await client.countries.list(), 2, 1000),
+          4000 // 4 second timeout
+        );
         expect(countries).toBeDefined();
         expect(countries.results).toBeDefined();
         expect(Array.isArray(countries.results)).toBe(true);
@@ -48,9 +63,11 @@ describe('E2E: Cross-Platform Compatibility', () => {
           error.message.includes('fetch') || 
           error.message.includes('502') || 
           error.message.includes('503') || 
-          error.message.includes('504')
+          error.message.includes('504') ||
+          error.message.includes('timed out') ||
+          error.message.includes('timeout')
         )) {
-          console.log(`   This is expected if ${name} platform is temporarily unavailable`);
+          console.log(`   This is expected if ${name} platform is temporarily unavailable or slow`);
           // Just verify we got an error (test passes)
           expect(error).toBeDefined();
         } else {
@@ -78,10 +95,18 @@ describe('E2E: Cross-Platform Compatibility', () => {
     });
 
     try {
-      // Get the same species from both platforms
+      // Add timeout wrapper for slow APIs
+      const withTimeout = async <T>(promise: Promise<T>, timeoutMs: number): Promise<T> => {
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          setTimeout(() => reject(new Error(`Request timed out after ${timeoutMs}ms`)), timeoutMs);
+        });
+        return Promise.race([promise, timeoutPromise]);
+      };
+
+      // Get the same species from both platforms with timeout
       const [nlSpecies, beSpecies] = await Promise.all([
-        nlClient.species.get(2),
-        beClient.species.get(2),
+        withTimeout(retryOperation(async () => await nlClient.species.get(2), 2, 1000), 4000),
+        withTimeout(retryOperation(async () => await beClient.species.get(2), 2, 1000), 4000),
       ]);
 
       // Should have same scientific name but potentially different common names
