@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/robbeverhelst/observation-js/compare/v1.10.0...v1.11.0) (2025-06-17)
+
+
+### Features
+
+* introduce clientCache option for request caching and update README with usage examples ([bc5af24](https://github.com/robbeverhelst/observation-js/commit/bc5af24237863de3ec4b4c66af681fc6a203e528))
+
 # [1.10.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.9.0...v1.10.0) (2025-06-10)
 
 
