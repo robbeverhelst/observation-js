@@ -23,7 +23,7 @@ export class Lookups {
   public async get(): Promise<LookupsType> {
     return this.#client.publicRequest<LookupsType>('lookups/', {
       method: 'GET',
-      cache: true,
+      clientCache: true,
     });
   }
 }

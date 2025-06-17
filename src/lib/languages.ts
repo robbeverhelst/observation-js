@@ -21,7 +21,7 @@ export class Languages {
   public async list(): Promise<Paginated<Language>> {
     return this.#client.publicRequest<Paginated<Language>>('languages/', {
       method: 'GET',
-      cache: true,
+      clientCache: true,
     });
   }
 }

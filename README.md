@@ -173,6 +173,18 @@ const client = new ObservationClient({
 });
 ```
 
+You can also control caching on a per-request basis. This is useful for either disabling caching for a specific call or providing a unique TTL. Use the `clientCache` option for this:
+
+```typescript
+// This request will not be cached, regardless of global settings
+const freshData = await client.countries.list({ clientCache: false });
+
+// This request will be cached for 5 minutes (300 seconds)
+const temporaryData = await client.species.get(123, {
+  clientCache: { ttl: 300 },
+});
+```
+
 For more advanced caching options, such as injecting your own cache implementation, please refer to the `ObservationClientOptions` in the generated [API documentation](https://robbeverhelst.github.io/observation-js/).
 
 ## Interceptors

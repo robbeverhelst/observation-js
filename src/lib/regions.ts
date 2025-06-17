@@ -21,7 +21,7 @@ export class Regions {
   async list(): Promise<Region[]> {
     return this.#client.publicRequest<Region[]>('regions/', {
       method: 'GET',
-      cache: true,
+      clientCache: true,
     });
   }
 
@@ -35,7 +35,7 @@ export class Regions {
   async listTypes(): Promise<RegionType[]> {
     return this.#client.publicRequest<RegionType[]>('region-types/', {
       method: 'GET',
-      cache: true,
+      clientCache: true,
     });
   }
 }

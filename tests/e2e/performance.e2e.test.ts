@@ -52,6 +52,9 @@ describe('E2E: Performance & Reliability', () => {
   });
 
   test('should be resilient to network issues', async () => {
+    // Add a small delay to reduce the chance of hitting a rate limit from previous tests
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     let attempts = 0;
     const maxAttempts = 3;
     
@@ -69,7 +72,7 @@ describe('E2E: Performance & Reliability', () => {
     expect(result.id).toBe(2);
     
     console.log(`✅ Request succeeded after ${attempts} attempt(s)`);
-  });
+  }, { timeout: 65000 }); // 65 seconds timeout to accommodate for API rate-limiting headers
 
   test('should handle large response payloads', async () => {
     const startTime = Date.now();
@@ -105,7 +108,7 @@ describe('E2E: Performance & Reliability', () => {
       results.push(species);
       
       // Small delay between calls
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 300));
     }
     
     // All responses should be identical

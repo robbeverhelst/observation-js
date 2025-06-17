@@ -25,7 +25,7 @@ export class Badges {
     }
     return this.#client.publicRequest<Paginated<Badge>>('badges/', {
       method: 'GET',
-      cache: true,
+      clientCache: true,
     });
   }
 
@@ -45,7 +45,7 @@ export class Badges {
     }
     return this.#client.publicRequest<Badge>(endpoint, {
       method: 'GET',
-      cache: true,
+      clientCache: true,
     });
   }
 

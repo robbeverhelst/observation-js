@@ -22,7 +22,7 @@ export class Countries {
   public async list(): Promise<Paginated<Country>> {
     return this.#client.publicRequest<Paginated<Country>>('countries/', {
       method: 'GET',
-      cache: true,
+      clientCache: true,
     });
   }
 }

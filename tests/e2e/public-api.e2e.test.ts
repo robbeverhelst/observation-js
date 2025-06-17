@@ -109,6 +109,17 @@ describe('E2E: Public API Endpoints', () => {
     console.log(`✅ Retrieved ${countries.results.length} countries`);
   });
 
+  test('should not throw TypeError on public GET requests due to invalid cache option', async () => {
+    // This test directly calls the method without the `retryOperation` helper
+    // to ensure we catch the specific TypeError caused by the invalid `cache` option.
+    const countries = await publicClient.countries.list();
+
+    expect(countries).toBeDefined();
+    expect(countries.results).toBeDefined();
+    expect(Array.isArray(countries.results)).toBe(true);
+    expect(countries.results.length).toBeGreaterThan(0);
+  });
+
   test('should fetch languages list', async () => {
     const languages = await retryOperation(async () => {
       return await publicClient.languages.list();

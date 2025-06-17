@@ -27,7 +27,7 @@ import { InterceptorManager } from './interceptors';
 
 type FetchOptions = RequestInit & {
   params?: Record<string, string | number>;
-  cache?: boolean | { ttl: number }; // `true` uses default TTL
+  clientCache?: boolean | { ttl: number }; // `true` uses default TTL
 };
 
 const API_BASE_URL = '/api/v1';
@@ -346,14 +346,17 @@ export class ObservationClient {
     return promise
       .then((response) => this._handleResponse<T>(response as Response))
       .then((data) => {
-        if (isCacheable && options.cache) {
+        if (isCacheable && options.clientCache) {
           const cacheOptions = this.#options?.cache;
           const defaultTTL = cacheOptions?.defaultTTL ?? 3600;
           let ttl: number | undefined;
 
-          if (typeof options.cache === 'object' && options.cache.ttl) {
-            ttl = options.cache.ttl;
-          } else if (options.cache === true) {
+          if (
+            typeof options.clientCache === 'object' &&
+            options.clientCache.ttl
+          ) {
+            ttl = options.clientCache.ttl;
+          } else if (options.clientCache === true) {
             ttl = defaultTTL;
           }
 
@@ -397,6 +400,8 @@ export class ObservationClient {
 
     // params are already in the URL, so we can delete them from options
     delete options.params;
+    // The `clientCache` property is for the internal cache, not for the fetch API
+    delete options.clientCache;
 
     const headers = new Headers(options.headers);
     if (authenticate) {

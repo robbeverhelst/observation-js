@@ -36,7 +36,7 @@ export class Challenges {
     return this.#client.publicRequest<Paginated<Challenge>>('challenges/', {
       ...options,
       method: 'GET',
-      cache: true,
+      clientCache: true,
     });
   }
 
@@ -54,7 +54,7 @@ export class Challenges {
     }
     return this.#client.publicRequest<Challenge>(`challenges/${id}`, {
       method: 'GET',
-      cache: true,
+      clientCache: true,
     });
   }
 
@@ -76,7 +76,7 @@ export class Challenges {
     }
     return this.#client.publicRequest<ChallengeRanking>(endpoint, {
       method: 'GET',
-      cache: true,
+      clientCache: true,
     });
   }
 
