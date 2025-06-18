@@ -15,7 +15,7 @@
   },
   "scripts": {
     "ci": "bun run lint && bun run build && bun test",
-    "build": "bun build src/index.ts --outdir ./dist --target bun",
+    "build": "tsc",
     "test": "bun test",
     "test:integration": "bun test tests/integration/",
     "test:e2e": "bun test tests/e2e/",
