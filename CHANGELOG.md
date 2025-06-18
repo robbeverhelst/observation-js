@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/robbeverhelst/observation-js/compare/v1.11.0...v1.12.0) (2025-06-18)
+
+
+### Features
+
+* update build script to use TypeScript compiler and remove emitDeclarationOnly from tsconfig ([acd4787](https://github.com/robbeverhelst/observation-js/commit/acd47874d521f08ab72a3ad859ee5fb88395ccf4))
+
 # [1.11.0](https://github.com/robbeverhelst/observation-js/compare/v1.10.0...v1.11.0) (2025-06-17)
 
 
