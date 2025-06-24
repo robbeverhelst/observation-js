@@ -9,18 +9,6 @@ import type {
   SpeciesSearchParams,
 } from '../types';
 
-/**
- * Species API client for retrieving species information, groups, and occurrence data.
- * 
- * This class provides methods to:
- * - Get individual species details
- * - Search for species
- * - Retrieve species groups and their attributes
- * - Check species occurrence at specific locations
- * - Get detailed species information including descriptions and images
- * 
- * @remarks This is the API client class, not to be confused with the Species data interface.
- */
 export class Species {
   #client: ObservationClient;
 
