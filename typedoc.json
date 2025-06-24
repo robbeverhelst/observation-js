@@ -7,5 +7,7 @@
   "readme": "README.md",
   "themeColor": "#4285F4",
   "exclude": ["**/*.test.ts", "**/node_modules/**"],
-  "sort": ["source-order"]
+  "sort": ["source-order"],
+  "excludeInternal": false,
+  "includeVersion": true
 }

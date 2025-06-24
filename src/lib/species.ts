@@ -9,6 +9,18 @@ import type {
   SpeciesSearchParams,
 } from '../types';
 
+/**
+ * Species API client for retrieving species information, groups, and occurrence data.
+ * 
+ * This class provides methods to:
+ * - Get individual species details
+ * - Search for species
+ * - Retrieve species groups and their attributes
+ * - Check species occurrence at specific locations
+ * - Get detailed species information including descriptions and images
+ * 
+ * @remarks This is the API client class, not to be confused with the Species data interface.
+ */
 export class Species {
   #client: ObservationClient;
 
@@ -110,6 +122,42 @@ export class Species {
    */
   public async listGroups(): Promise<SpeciesGroup[]> {
     return this.#client.publicRequest('species-groups/');
+  }
+
+  /**
+   * Retrieves detailed information about a species including descriptions, images, and other content.
+   * This is a public endpoint and does not require authentication.
+   *
+   * @param id The unique identifier of the species.
+   * @param coordinates Optional GPS coordinates as a string (e.g., "4.895168,52.370216").
+   * @returns A promise that resolves to detailed species information.
+   * @throws {ApiError} If the request fails.
+   */
+  public async getInformation(
+    id: number,
+    coordinates?: string,
+  ): Promise<unknown> {
+    const params: Record<string, string> = {};
+    if (coordinates) {
+      params.coordinates = coordinates;
+    }
+    
+    const options = Object.keys(params).length > 0 ? { params } : {};
+    
+    return this.#client.publicRequest(`species/${id}/information/`, options);
+  }
+
+  /**
+   * Retrieves all possible attribute values for observations across all species groups.
+   * This is a public endpoint and does not require authentication.
+   *
+   * @returns A promise that resolves to the general attributes for all species groups.
+   * @throws {ApiError} If the request fails.
+   */
+  public async getAllGroupAttributes(): Promise<SpeciesGroupAttributes> {
+    return this.#client.publicRequest<SpeciesGroupAttributes>(
+      'species-groups/attributes/',
+    );
   }
 
   /**
