@@ -161,7 +161,7 @@ export class ObservationClient {
       scope: scope.join(' '),
       state: state,
     });
-    return `${this.#baseUrl}/accounts/oauth2/authorize/?${urlParams.toString()}`;
+    return `${this.#baseUrl}/api/v1/oauth2/authorize/?${urlParams.toString()}`;
   }
 
   /**
@@ -185,7 +185,7 @@ export class ObservationClient {
       client_secret: this.#options.clientSecret,
     });
 
-    const response = await fetch(`${this.#baseUrl}/accounts/oauth2/token/`, {
+    const response = await fetch(`${this.#baseUrl}/api/v1/oauth2/token/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -226,7 +226,7 @@ export class ObservationClient {
       body.set('client_secret', options.clientSecret);
     }
 
-    const response = await fetch(`${this.#baseUrl}/accounts/oauth2/token/`, {
+    const response = await fetch(`${this.#baseUrl}/api/v1/oauth2/token/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -235,7 +235,13 @@ export class ObservationClient {
     });
 
     if (!response.ok) {
-      const errorBody = await response.json();
+      const errorText = await response.text();
+      let errorBody: unknown = null;
+      try {
+        errorBody = errorText ? JSON.parse(errorText) : null;
+      } catch {
+        errorBody = errorText;
+      }
       throw new AuthenticationError(response, errorBody);
     }
 
@@ -267,7 +273,7 @@ export class ObservationClient {
       client_secret: this.#options.clientSecret,
     });
 
-    const response = await fetch(`${this.#baseUrl}/accounts/oauth2/token/`, {
+    const response = await fetch(`${this.#baseUrl}/api/v1/oauth2/token/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',

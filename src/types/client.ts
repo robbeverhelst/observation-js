@@ -8,9 +8,9 @@ export interface CacheStore {
 }
 
 export interface ObservationClientOptions {
-  clientId: string;
-  clientSecret: string;
-  redirectUri: string;
+  clientId?: string;
+  clientSecret?: string;
+  redirectUri?: string;
   baseUrl?: string;
   platform?: Platform;
   test?: boolean;

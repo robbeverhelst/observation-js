@@ -1,7 +1,16 @@
-import { ObservationClient } from '../src';
+import { ObservationClient, ApiError } from '../src';
+
+// Load credentials from environment for OAuth authentication
+const clientId = process.env.OAUTH_CLIENT_ID;
+const clientSecret = process.env.OAUTH_CLIENT_SECRET;
+const username = process.env.OAUTH_USERNAME;
+const password = process.env.OAUTH_PASSWORD;
 
 async function main() {
-  const client = new ObservationClient();
+  const client = new ObservationClient({
+    platform: 'nl',
+    test: false
+  });
 
   console.log('--- Fetching Terms of Service and Privacy Policy ---');
   try {
@@ -14,9 +23,93 @@ async function main() {
     console.error('Error fetching terms:', error);
   }
 
-  console.log(
-    '\\n--- Note: Other user endpoints like registration, login, and profile updates require user interaction or authentication and are not demonstrated here. ---',
-  );
+  // If we have OAuth credentials, authenticate and demonstrate all user get methods
+  if (clientId && clientSecret && username && password) {
+    console.log('\n🔐 Authenticating with OAuth...');
+    
+    try {
+      await client.getAccessTokenWithPassword({
+        clientId,
+        clientSecret,
+        email: username,
+        password,
+      });
+      console.log('✅ Authentication successful!\n');
+
+      // 1. Get User Info
+      console.log('--- 1. Fetching User Profile (getInfo) ---');
+      try {
+        const profile = await client.users.getInfo();
+        console.log('Successfully fetched user profile:');
+        console.log(`- ID: ${profile.id}`);
+        console.log(`- Name: ${profile.name}`);
+        console.log(`- Email: ${profile.email}`);
+        console.log(`- Member since: ${profile.created}`);
+        console.log(`- Account status: ${profile.status || 'Active'}`);
+        console.log(`- Newsletter: ${profile.newsletter ? 'Yes' : 'No'}`);
+        console.log(`- Language: ${profile.language || 'Not set'}`);
+        console.log(`- Country: ${profile.country || 'Not set'}`);
+        console.log(`- Biography: ${profile.biography || 'No biography'}`);
+        console.log(JSON.stringify(profile, null, 2));
+      } catch (error) {
+        console.error('Failed to fetch user profile:', error);
+      }
+
+      // 2. Get User Stats
+      console.log('\n--- 2. Fetching User Statistics (getStats) ---');
+      try {
+        const stats = await client.users.getStats();
+        console.log('Successfully fetched user statistics:');
+        console.log(`- Total observations: ${stats.observations_count || 0}`);
+        console.log(`- Total species: ${stats.species_count || 0}`);
+        console.log(`- Total photos: ${stats.photos_count || 0}`);
+        console.log(`- Total sounds: ${stats.sounds_count || 0}`);
+        console.log(JSON.stringify(stats, null, 2));
+      } catch (error) {
+        if (error instanceof ApiError && error.response.status === 404) {
+          console.log('User statistics not available');
+        } else {
+          console.error('Failed to fetch user statistics:', error);
+        }
+      }
+
+      // 3. Get User Avatar
+      console.log('\n--- 3. Fetching User Avatar (getAvatar) ---');
+      try {
+        const avatar = await client.users.getAvatar();
+        console.log('Successfully fetched user avatar:');
+        console.log(JSON.stringify(avatar, null, 2));
+      } catch (error) {
+        if (error instanceof ApiError && error.response.status === 404) {
+          console.log('No avatar set for this user');
+        } else {
+          console.error('Failed to fetch user avatar:', error);
+        }
+      }
+
+      // 4. Get Magic Login Link (passwordless login)
+      console.log('\n--- 4. Generating Magic Login Link (getMagicLoginLink) ---');
+      try {
+        const magicLink = await client.users.getMagicLoginLink();
+        console.log('Successfully generated magic login link:');
+        console.log(JSON.stringify(magicLink, null, 2));
+      } catch (error) {
+        if (error instanceof ApiError && error.response.status === 404) {
+          console.log('Magic login link not available');
+        } else {
+          console.error('Failed to generate magic login link:', error);
+        }
+      }
+
+
+    } catch (error) {
+      console.error('Authentication failed:', error);
+    }
+  } else {
+    console.log(
+      '\n--- Note: Other user endpoints like registration, login, and profile updates require user interaction or authentication and are not demonstrated here. ---',
+    );
+  }
 }
 
 main().catch(console.error);
