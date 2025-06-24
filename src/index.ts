@@ -53,7 +53,7 @@ export type {
   Session,
   Sound,
   SoundGalleryItem,
-  Species,
+  SpeciesData,
   SpeciesGroup,
   SpeciesSearchParams,
   Terms,

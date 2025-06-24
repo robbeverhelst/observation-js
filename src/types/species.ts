@@ -7,7 +7,7 @@ export interface SpeciesGroup {
   icon: string;
 }
 
-export interface Species {
+export interface SpeciesData {
   id: number;
   name: string;
   scientific_name: string;

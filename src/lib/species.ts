@@ -2,7 +2,7 @@ import type { ObservationClient } from '../core/client';
 import type {
   Observation,
   Paginated,
-  Species as SpeciesData,
+  SpeciesData,
   SpeciesGroup,
   SpeciesGroupAttributes,
   SpeciesOccurrence,
