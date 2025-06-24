@@ -45,6 +45,20 @@ export class Observations {
   }
 
   /**
+   * Helper function to filter out undefined values from params
+   * @private
+   */
+  private filterParams(params: ObservationSearchParams | AroundPointParams): Record<string, string | number> {
+    const filtered: Record<string, string | number> = {};
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined) {
+        filtered[key] = value;
+      }
+    }
+    return filtered;
+  }
+
+  /**
    * Retrieves a single observation by its ID.
    *
    * @param id The unique identifier of the observation.
@@ -184,7 +198,7 @@ export class Observations {
   ): Promise<PaginatedResponse<Observation>> {
     return this.#client.publicRequest<PaginatedResponse<Observation>>(
       `species/${speciesId}/observations/`,
-      { params },
+      { params: this.filterParams(params) },
     );
   }
 
@@ -204,7 +218,7 @@ export class Observations {
   ): Promise<PaginatedResponse<Observation>> {
     return this.#client.request<PaginatedResponse<Observation>>(
       `species/${speciesId}/related-observations/`,
-      { params },
+      { params: this.filterParams(params) },
     );
   }
 
@@ -224,7 +238,7 @@ export class Observations {
     params: ObservationSearchParams = {},
   ): Promise<PaginatedResponse<Observation>> {
     const endpoint = userId ? `user/${userId}/observations/` : 'user/observations/';
-    return this.#client.request<PaginatedResponse<Observation>>(endpoint, { params });
+    return this.#client.request<PaginatedResponse<Observation>>(endpoint, { params: this.filterParams(params) });
   }
 
   /**
@@ -241,7 +255,7 @@ export class Observations {
   ): Promise<PaginatedResponse<Observation>> {
     return this.#client.publicRequest<PaginatedResponse<Observation>>(
       `locations/${locationId}/observations/`,
-      { params },
+      { params: this.filterParams(params) },
     );
   }
 
@@ -255,7 +269,7 @@ export class Observations {
   public async getAroundPoint(params: AroundPointParams): Promise<PaginatedResponse<Observation>> {
     return this.#client.publicRequest<PaginatedResponse<Observation>>(
       'observations/around-point/',
-      { params },
+      { params: this.filterParams(params) },
     );
   }
 

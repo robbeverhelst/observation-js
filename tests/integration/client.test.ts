@@ -153,7 +153,7 @@ test('getAuthorizationUrl should return the correct URL', () => {
   const scope = ['obs_write', 'obs_read'];
   const url = client.getAuthorizationUrl(state, scope);
   const expectedUrl =
-    'https://waarneming-test.nl/accounts/oauth2/authorize/?response_type=code&client_id=my-client-id&redirect_uri=https%3A%2F%2Fmy-app.com%2Fcallback&scope=obs_write+obs_read&state=xyz';
+    'https://waarneming-test.nl/api/v1/oauth2/authorize/?response_type=code&client_id=my-client-id&redirect_uri=https%3A%2F%2Fmy-app.com%2Fcallback&scope=obs_write+obs_read&state=xyz';
   expect(url).toBe(expectedUrl);
 });
 

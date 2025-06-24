@@ -154,13 +154,12 @@ export class ObservationClient {
     if (!this.#options) {
       throw new Error('Client options are not set.');
     }
-    const urlParams = new URLSearchParams({
-      response_type: 'code',
-      client_id: this.#options.clientId,
-      redirect_uri: this.#options.redirectUri,
-      scope: scope.join(' '),
-      state: state,
-    });
+    const urlParams = new URLSearchParams();
+    urlParams.set('response_type', 'code');
+    urlParams.set('client_id', this.#options.clientId || '');
+    urlParams.set('redirect_uri', this.#options.redirectUri || '');
+    urlParams.set('scope', scope.join(' '));
+    urlParams.set('state', state);
     return `${this.#baseUrl}/api/v1/oauth2/authorize/?${urlParams.toString()}`;
   }
 
@@ -177,13 +176,12 @@ export class ObservationClient {
       throw new Error('Client options are not set.');
     }
 
-    const body = new URLSearchParams({
-      grant_type: 'authorization_code',
-      code: code,
-      redirect_uri: this.#options.redirectUri,
-      client_id: this.#options.clientId,
-      client_secret: this.#options.clientSecret,
-    });
+    const body = new URLSearchParams();
+    body.set('grant_type', 'authorization_code');
+    body.set('code', code);
+    body.set('redirect_uri', this.#options.redirectUri || '');
+    body.set('client_id', this.#options.clientId || '');
+    body.set('client_secret', this.#options.clientSecret || '');
 
     const response = await fetch(`${this.#baseUrl}/api/v1/oauth2/token/`, {
       method: 'POST',
@@ -215,12 +213,11 @@ export class ObservationClient {
   public async getAccessTokenWithPassword(
     options: PasswordGrantOptions,
   ): Promise<TokenResponse> {
-    const body = new URLSearchParams({
-      grant_type: 'password',
-      client_id: options.clientId,
-      username: options.email,
-      password: options.password,
-    });
+    const body = new URLSearchParams();
+    body.set('grant_type', 'password');
+    body.set('client_id', options.clientId);
+    body.set('username', options.email);
+    body.set('password', options.password);
 
     if (options.clientSecret) {
       body.set('client_secret', options.clientSecret);
@@ -266,12 +263,11 @@ export class ObservationClient {
       throw new Error('Client options are not set.');
     }
 
-    const body = new URLSearchParams({
-      grant_type: 'refresh_token',
-      refresh_token: this.#refreshToken,
-      client_id: this.#options.clientId,
-      client_secret: this.#options.clientSecret,
-    });
+    const body = new URLSearchParams();
+    body.set('grant_type', 'refresh_token');
+    body.set('refresh_token', this.#refreshToken);
+    body.set('client_id', this.#options.clientId || '');
+    body.set('client_secret', this.#options.clientSecret || '');
 
     const response = await fetch(`${this.#baseUrl}/api/v1/oauth2/token/`, {
       method: 'POST',
