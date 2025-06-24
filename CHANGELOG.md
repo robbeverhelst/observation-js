@@ -1,3 +1,10 @@
+# [1.14.0](https://github.com/robbeverhelst/observation-js/compare/v1.13.0...v1.14.0) (2025-06-24)
+
+
+### Features
+
+* enhance Species API client with detailed methods for species information and group attributes ([9e43e35](https://github.com/robbeverhelst/observation-js/commit/9e43e358c0c4f4868c2322dc6336d94638ef1886))
+
 # [1.13.0](https://github.com/robbeverhelst/observation-js/compare/v1.12.0...v1.13.0) (2025-06-24)
 
 
