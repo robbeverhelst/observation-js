@@ -1,3 +1,11 @@
+# [1.13.0](https://github.com/robbeverhelst/observation-js/compare/v1.12.0...v1.13.0) (2025-06-24)
+
+
+### Features
+
+* make clientId, clientSecret, and redirectUri optional in ObservationClientOptions; update API endpoints to use /api/v1/ prefix ([8c2b91c](https://github.com/robbeverhelst/observation-js/commit/8c2b91c0793a69d6fe82b21ad81ef09f1950e094))
+* refactor URL parameter handling in ObservationClient; add filterParams method to clean undefined values from request parameters ([29beb52](https://github.com/robbeverhelst/observation-js/commit/29beb52d0212fe5a578855e86b256ca95a947fc7))
+
 # [1.12.0](https://github.com/robbeverhelst/observation-js/compare/v1.11.0...v1.12.0) (2025-06-18)
 
 
