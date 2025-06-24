@@ -1,5 +1,5 @@
 import type { Point } from './base';
-import type { Species } from './species';
+import type { SpeciesData } from './species';
 
 export interface Region {
   id: number;
@@ -14,7 +14,7 @@ export interface Region {
 
 export interface RegionSpeciesList {
   id: number;
-  species: Species;
+  species: SpeciesData;
   date: string;
   first_observation_date: string;
   last_observation_date: string;

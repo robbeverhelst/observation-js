@@ -1,10 +1,10 @@
 import type { LocationDetail, Photo, Point, Sound, UserDetail } from './base';
-import type { Species } from './species';
+import type { SpeciesData } from './species';
 
 export interface Observation {
   id: number;
   url: string;
-  species: Species | null;
+  species: SpeciesData | null;
   species_guess: string;
   user: UserDetail;
   location: LocationDetail | null;
