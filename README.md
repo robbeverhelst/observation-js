@@ -123,7 +123,33 @@ console.log(`Hello, ${userInfo.name}`);
 
 ## Authentication
 
-For endpoints that require authentication (like creating or updating data), you'll need to authenticate the user using OAuth2.
+For endpoints that require authentication (like creating or updating data), you'll need to authenticate the user using OAuth2. The client supports both Authorization Code and Password Grant flows.
+
+### Password Grant (Direct Authentication)
+
+For server-side applications or testing, you can use the password grant flow:
+
+```typescript
+const client = new ObservationClient({
+  platform: 'nl',
+  test: false // Use production environment for OAuth
+});
+
+// Authenticate using password grant
+const tokenResponse = await client.getAccessTokenWithPassword({
+  clientId: process.env.OAUTH_CLIENT_ID,
+  clientSecret: process.env.OAUTH_CLIENT_SECRET,
+  email: process.env.OAUTH_USERNAME,
+  password: process.env.OAUTH_PASSWORD,
+});
+
+console.log('Authentication successful!');
+console.log(`Access token expires in: ${tokenResponse.expires_in} seconds`);
+```
+
+### Authorization Code Flow (Web Applications)
+
+For web applications where users need to authorize your app:
 
 First, initialize the client with your application's credentials:
 
