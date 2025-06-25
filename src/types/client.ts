@@ -15,6 +15,13 @@ export interface ObservationClientOptions {
   platform?: Platform;
   test?: boolean;
   /**
+   * Whether to automatically refresh access tokens when they expire.
+   * When enabled, the client will automatically attempt to use the refresh token
+   * to obtain a new access token when a request fails with a 401 status.
+   * @default true
+   */
+  autoRefreshToken?: boolean;
+  /**
    * Configuration for the in-memory cache.
    */
   cache?: {

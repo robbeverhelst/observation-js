@@ -24,6 +24,7 @@ import type {
 import { ApiError, AuthenticationError, RateLimitError } from './errors';
 import { InMemoryCache } from './cache';
 import { InterceptorManager } from './interceptors';
+import { RefreshTokenInterceptor } from './refresh-interceptor';
 
 type FetchOptions = RequestInit & {
   params?: Record<string, string | number>;
@@ -120,6 +121,15 @@ export class ObservationClient {
     this.media = new Media(this);
     this.sessions = new Sessions(this);
     this.challenges = new Challenges(this);
+
+    // Set up automatic token refresh if enabled (default: true)
+    if (options?.autoRefreshToken !== false) {
+      const refreshInterceptor = new RefreshTokenInterceptor(this);
+      this.interceptors.response.use(
+        (response) => response,
+        refreshInterceptor.createResponseErrorHandler(),
+      );
+    }
   }
 
   /**
@@ -298,12 +308,41 @@ export class ObservationClient {
   }
 
   /**
+   * Manually sets the refresh token for the client.
+   *
+   * @param token - The refresh token.
+   * @internal
+   */
+  public setRefreshToken(token: string) {
+    this.#refreshToken = token;
+  }
+
+  /**
    * Checks if an access token is currently set on the client.
    *
    * @returns `true` if an access token is set, `false` otherwise.
    */
   public hasAccessToken(): boolean {
     return this.#accessToken !== null;
+  }
+
+  /**
+   * Checks if a refresh token is currently set on the client.
+   *
+   * @returns `true` if a refresh token is set, `false` otherwise.
+   */
+  public hasRefreshToken(): boolean {
+    return this.#refreshToken !== null;
+  }
+
+  /**
+   * Gets the current access token.
+   *
+   * @returns The access token or null if not set.
+   * @internal
+   */
+  public getCurrentAccessToken(): string | null {
+    return this.#accessToken;
   }
 
   private async _fetch<T>(
@@ -325,7 +364,7 @@ export class ObservationClient {
 
     // --- Interceptor Chain ---
     const chain: unknown[] = [
-      this._coreRequest.bind(this, url, authenticate),
+      this._coreRequestAndHandle.bind(this, url, authenticate),
       undefined,
     ];
 
@@ -346,8 +385,8 @@ export class ObservationClient {
 
     // --- Final Response Handling & Caching Layer: SET ---
     return promise
-      .then((response) => this._handleResponse<T>(response as Response))
       .then((data) => {
+        const typedData = data as T;
         if (isCacheable && options.clientCache) {
           const cacheOptions = this.#options?.cache;
           const defaultTTL = cacheOptions?.defaultTTL ?? 3600;
@@ -363,10 +402,10 @@ export class ObservationClient {
           }
 
           if (ttl) {
-            this.#cache.set(cacheKey, data, ttl);
+            this.#cache.set(cacheKey, typedData, ttl);
           }
         }
-        return data;
+        return typedData;
       });
   }
 
@@ -389,6 +428,15 @@ export class ObservationClient {
       }
     }
     return url;
+  }
+
+  private async _coreRequestAndHandle<T>(
+    url: URL,
+    authenticate: boolean,
+    options: FetchOptions,
+  ): Promise<T> {
+    const response = await this._coreRequest(url, authenticate, options);
+    return this._handleResponse<T>(response);
   }
 
   private async _coreRequest(
@@ -417,7 +465,13 @@ export class ObservationClient {
       headers,
     };
 
-    return fetch(url.toString(), fetchOptions);
+    const response = await fetch(url.toString(), fetchOptions);
+    // Attach the original config to the response for the interceptor
+    (response as Response & { config?: RequestInit & { url: string } }).config = {
+      ...fetchOptions,
+      url: url.toString(),
+    };
+    return response;
   }
 
   private async _handleResponse<T>(response: Response): Promise<T> {
