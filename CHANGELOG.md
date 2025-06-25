@@ -1,3 +1,10 @@
+# [1.15.0](https://github.com/robbeverhelst/observation-js/compare/v1.14.0...v1.15.0) (2025-06-25)
+
+
+### Features
+
+* add automatic token refresh functionality with interceptor and related methods ([fb8649d](https://github.com/robbeverhelst/observation-js/commit/fb8649dc231d477894e6ad26c7fbbab32236204b))
+
 # [1.14.0](https://github.com/robbeverhelst/observation-js/compare/v1.13.0...v1.14.0) (2025-06-24)
 
 
