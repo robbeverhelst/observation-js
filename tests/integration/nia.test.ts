@@ -3,30 +3,45 @@ import { ObservationClient } from '../../src/index';
 import type { NiaResponse } from '../../src/types';
 
 const mockNiaResponse: NiaResponse = {
-  model_version: '1.0',
   model_coverage: {
-    description: 'test coverage',
+    image: 'https://waarneming.nl/static/img/nia/nia_coverage_europe.png',
+    description: 'The image recognition covers Europe.',
   },
-  location_detail: null,
   predictions: [
     {
-      probability: 0.9,
+      probability: 0.4997982978820801,
       taxon: {
-        id: 1,
-        name: 'Test Species',
-        vernacular_name: 'Test Species',
-        group_name: 'Birds',
-        group_id: 1,
-        url: 'https://example.com/species/1',
+        id: '8807@WRN',
+        name: 'Vespa velutina',
       },
+      morphs: [
+        { probability: 0.9997995273100387, token: 'IMAGO' },
+        { probability: 0.0001763264330502273, token: 'LARVA_NYMPH' },
+        { probability: 0.00002399478342920305, token: 'OTHER' },
+      ],
     },
   ],
+  location: 'Noordzee - t.h.v. Zuid-Holland',
+  location_detail: {
+    id: 8352,
+    name: 'Noordzee - t.h.v. Zuid-Holland',
+    country_code: 'NL',
+    permalink: 'https://waarneming.nl/locations/8352/',
+  },
   species: [
     {
-      name: 'Test Species',
-      scientific_name: 'Species testus',
-      group: 'Birds',
+      id: 1703,
+      scientific_name: 'Volucella zonaria',
+      name: 'Stadsreus',
+      group: 18,
+      type: 'S',
+      rarity: 1,
+      status: 4,
     },
+  ],
+  life_stages: [
+    { species_id: 700, id: 29, text: 'Imago', is_active: true, is_default: true },
+    { species_id: 210097, id: 1028, text: 'Imago', is_active: true },
   ],
 };
 
@@ -96,7 +111,7 @@ test('nia.identify should send location data', async () => {
   });
 
   const body = fetchSpy.mock.calls[0][1]?.body as FormData;
-  expect(body.get('location_coordinates')).toBe('1.23,4.56');
+  expect(body.get('coordinates')).toBe('1.23,4.56');
 
   fetchSpy.mockRestore();
 });

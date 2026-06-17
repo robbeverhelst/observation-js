@@ -18,19 +18,25 @@ const mockChallenge: Challenge = {
   observation_count: 0,
   species_count: 0,
   challenge_user: null,
+  targets_description: '',
   targets: [],
-  group: null,
 };
 
 const mockChallengeRanking: ChallengeRanking = {
-  user: {
-    id: 1,
-    name: 'Test User',
-    avatar: null,
-  },
-  observation_count: 10,
-  species_count: 5,
-  rank: 1,
+  ranking: [
+    {
+      rank: 1,
+      user: { id: 1806, name: 'Grada Menting', avatar: null },
+      count: 21,
+      rank_user_count: 1,
+    },
+    {
+      rank: 2,
+      user: { id: 1160, name: 'nick van der ham', avatar: null },
+      count: 19,
+      rank_user_count: 4,
+    },
+  ],
 };
 
 afterEach(() => {
@@ -177,7 +183,12 @@ test('challenges.getForObservation should fetch challenge IDs for an observation
 });
 
 test('challenges.subscribe should subscribe to a challenge', async () => {
-  const mockResponse = { is_subscribed: true };
+  const mockResponse = {
+    is_subscribed: true,
+    observation_count: 78,
+    species_count: 54,
+    last_seen: '2021-01-19T21:06:38.897646',
+  };
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
     new Response(JSON.stringify(mockResponse), {
       status: 200,
@@ -199,7 +210,7 @@ test('challenges.subscribe should subscribe to a challenge', async () => {
 });
 
 test('challenges.markContentAsSeen should mark challenge content as seen', async () => {
-  const mockResponse = { message: 'Content marked as seen' };
+  const mockResponse = { last_seen: '2020-10-14T11:55:19.675307' };
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
     new Response(JSON.stringify(mockResponse), {
       status: 200,

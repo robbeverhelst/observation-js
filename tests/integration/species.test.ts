@@ -1,25 +1,23 @@
 import { expect, test, spyOn, afterEach } from 'bun:test';
 import { ObservationClient } from '../../src/index';
-import type { Observation, Species } from '../../src/types';
+import type { Observation, SpeciesData } from '../../src/types';
 
 const API_BASE_URL = 'https://waarneming-test.nl/api/v1';
 
-// A mock object for a Species (updated to match corrected API types)
-const mockSpecies: Species = {
+// A mock object for a Species, matching the real API shape.
+const mockSpecies: SpeciesData = {
   id: 2,
-  name: 'Dodaars',
   scientific_name: 'Tachybaptus ruficollis',
+  authority: '(Pallas, 1764)',
+  name: 'Dodaars',
   group: 1,
   group_name: 'Vogels',
-  status: '0', // Changed from number to string
-  rarity: '1', // Changed from number to string
-  rarity_text: 'algemeen', // Now optional but provided in this mock
+  status: 'native',
+  rarity: 'relatively common',
   type: 'S',
-  url: 'https://waarneming.nl/species/2/',
-  photos: [],
-  sounds: [],
-  name_vernacular: null,
-  name_vernacular_language: null,
+  photo: 'https://waarneming.nl/media/photo/000/074/74531.jpg',
+  permalink: 'https://waarneming.nl/species/2/',
+  info_text: '<p>The Little Grebe is a small species within its family.</p>',
 };
 
 const mockObservation = {
@@ -162,15 +160,10 @@ test('species.getObservations should fetch observations for a species', async ()
 
 test('species.getOccurrence should fetch occurrence data', async () => {
   const mockResponse = {
-    count: 1,
-    next: null,
-    previous: null,
-    results: [{ 
-      id: 2, 
-      name: 'Dodaars',
-      scientific_name: 'Tachybaptus ruficollis',
-      occurrence_status: 'common'
-    }], // Proper SpeciesOccurrence mock
+    results: [
+      { species_id: 1, occurs: 'yes' },
+      { species_id: 2, occurs: 'unknown' },
+    ],
   };
 
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
@@ -181,14 +174,43 @@ test('species.getOccurrence should fetch occurrence data', async () => {
   );
 
   const client = new ObservationClient();
-  const point = 'POINT(4.895168 52.370216)';
-  const occurrences = await client.species.getOccurrence([2], point);
+  const coordinates = '52.3,4.2';
+  const occurrences = await client.species.getOccurrence([1, 2], coordinates);
 
   expect(occurrences).toEqual(mockResponse);
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
-  expect(url.pathname).toBe('/api/v1/species-occurrence');
-  expect(url.searchParams.get('species_id')).toBe('2');
-  expect(url.searchParams.get('point')).toBe(point);
+  expect(url.pathname).toBe('/api/v1/species-occurrence/');
+  expect(url.searchParams.get('coordinates')).toBe(coordinates);
+  // `species_id` is repeated once per id (?species_id=1&species_id=2).
+  expect(url.searchParams.getAll('species_id')).toEqual(['1', '2']);
+
+  fetchSpy.mockRestore();
+});
+
+test('species.getInformation should fetch species information blocks', async () => {
+  const mockResponse = [
+    {
+      title: 'Beschrijving',
+      content: [
+        { type: 'html', collapsed: true, body: '<p>Example.</p>' },
+      ],
+    },
+  ];
+
+  const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
+    new Response(JSON.stringify(mockResponse), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    }),
+  );
+
+  const client = new ObservationClient();
+  const info = await client.species.getInformation(710, '52.16489,4.4737');
+
+  expect(info).toEqual(mockResponse);
+  const url = new URL(fetchSpy.mock.calls[0][0] as string);
+  expect(url.pathname).toBe('/api/v1/species/710/information/');
+  expect(url.searchParams.get('coordinates')).toBe('52.16489,4.4737');
 
   fetchSpy.mockRestore();
 });
@@ -214,10 +236,16 @@ test('species.listGroups should fetch a list of species groups', async () => {
   fetchSpy.mockRestore();
 });
 
-test('species.getGroupAttributes should fetch attributes for a species group', async () => {
+test('species.getAllGroupAttributes should fetch attributes for all species groups', async () => {
   const mockResponse = {
     id: 1,
-    attributes: [{ id: 1, name: 'sex' }],
+    name: 'Vogels',
+    activity: [
+      { id: 1, text: 'present', is_active: true, is_default: true, bmp: true },
+      { id: 3, text: 'calling', is_active: true },
+    ],
+    method: [{ id: 47, text: 'unknown', is_active: true, is_default: true }],
+    life_stage: [{ id: 1, text: 'unknown', is_active: true, is_default: true }],
   };
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
     new Response(JSON.stringify(mockResponse), {
@@ -227,11 +255,39 @@ test('species.getGroupAttributes should fetch attributes for a species group', a
   );
 
   const client = new ObservationClient();
-  const attributes = await client.species.getGroupAttributes(1);
+  const attributes = await client.species.getAllGroupAttributes();
 
   expect(attributes).toEqual(mockResponse);
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
-  expect(url.pathname).toBe('/api/v1/species-groups/1/attributes/');
+  expect(url.pathname).toBe('/api/v1/species-groups/attributes/');
+
+  fetchSpy.mockRestore();
+});
+
+test('species.getGroupAttributes should fetch attributes for a species group', async () => {
+  const mockResponse = {
+    id: 11,
+    name: 'Fungi',
+    activity: [
+      { id: 59, text: 'present', is_active: true, is_default: true },
+    ],
+    method: [{ id: 347, text: 'unknown', is_active: true, is_default: true }],
+    life_stage: [{ id: 60, text: 'unknown', is_active: true, is_default: true }],
+    substrate: [{ id: 283, text: 'unknown', is_active: true, is_default: true }],
+  };
+  const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
+    new Response(JSON.stringify(mockResponse), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    }),
+  );
+
+  const client = new ObservationClient();
+  const attributes = await client.species.getGroupAttributes(11);
+
+  expect(attributes).toEqual(mockResponse);
+  const url = new URL(fetchSpy.mock.calls[0][0] as string);
+  expect(url.pathname).toBe('/api/v1/species-groups/11/attributes/');
 
   fetchSpy.mockRestore();
 });

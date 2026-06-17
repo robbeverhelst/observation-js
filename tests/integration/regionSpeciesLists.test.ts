@@ -1,31 +1,28 @@
 import { expect, test, spyOn, afterEach } from 'bun:test';
 import { ObservationClient } from '../../src/index';
-import type { RegionSpeciesList, Species } from '../../src/types';
-
-const mockSpecies: Species = {
-  id: 1,
-  name: 'Test Species',
-  scientific_name: 'Species testus',
-  group: 1,
-  group_name: 'Birds',
-  rarity: 1,
-  rarity_text: 'Common',
-  type: 'bird',
-  status: 1,
-  url: 'https://example.com/species/1',
-  photos: [],
-  sounds: [],
-  name_vernacular: null,
-  name_vernacular_language: null,
-};
+import type { RegionSpecies, RegionSpeciesList } from '../../src/types';
 
 const mockRegionSpeciesList: RegionSpeciesList = {
-  id: 1,
-  species: mockSpecies,
-  date: '2023-01-01',
-  first_observation_date: '2023-01-01',
-  last_observation_date: '2023-01-01',
-  observation_count: 10,
+  id: 217,
+  region: 2,
+  species_group: 2,
+  custom_name: 'Mammals of Costa Rica',
+};
+
+const mockRegionSpecies: RegionSpecies = {
+  species: 1,
+  group: 1,
+  name: 'Common Kingfisher',
+  scientific_name: 'Alcedo atthis',
+  rarity: 2,
+  native: false,
+  type: 'S',
+  rank: 123,
+  sort_order_group: 234,
+  sort_order_rank: 345,
+  sort_order_taxonomy: 456,
+  determination_requirements:
+    'Determinatie alleen mogelijk na microscopisch onderzoek',
 };
 
 afterEach(() => {
@@ -52,7 +49,7 @@ test('regionSpeciesLists.list should fetch a list of region species lists', asyn
 });
 
 test('regionSpeciesLists.getSpecies should fetch species for a list', async () => {
-  const mockResponse = [mockSpecies];
+  const mockResponse = [mockRegionSpecies];
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
     new Response(JSON.stringify(mockResponse), {
       status: 200,

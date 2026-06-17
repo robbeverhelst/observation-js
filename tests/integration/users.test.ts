@@ -7,15 +7,32 @@ const API_BASE_URL = 'https://waarneming.nl/api/v1';
 const mockUser: User = {
   id: 1,
   name: 'Test User',
+  email: 'test@example.com',
+  is_mail_allowed: true,
+  url: 'https://waarneming.nl/users/1/',
+  country: 'NL',
+  consider_email_confirmed: true,
   avatar: null,
-  observation_count: 10,
-  species_count: 5,
-  validation_count: 2,
 };
 
 const mockTerms: Terms = {
-  terms: 'https://waarneming.nl/terms-of-use',
-  privacy_policy: 'https://waarneming.nl/privacy-policy',
+  tos: {
+    content: '<h2>Algemeen</h2>',
+    created: '2019-11-08T13:47:34.646891',
+    permalink: 'https://waarneming.nl/tos/2/',
+  },
+  privacy: {
+    title: 'Privacy',
+    content: '<h2>Privacyverklaring</h2>',
+    created: '2018-06-01T14:02:51.823947',
+    permalink: 'https://waarneming.nl/pages/privacy/',
+  },
+  'faq-obsidentify': {
+    title: 'Veelgestelde vragen over ObsIdentify',
+    content: '<p>Heb je een vraag over ObsIdentify?</p>',
+    created: '2020-12-04T09:24:10.114280',
+    permalink: 'https://waarneming.nl/pages/faq-obsidentify/',
+  },
 };
 
 afterEach(() => {
@@ -34,6 +51,9 @@ test('users.getTerms should fetch the terms and privacy policy', async () => {
   const terms = await client.users.getTerms();
 
   expect(terms).toEqual(mockTerms);
+  expect(terms.tos.content).toBe('<h2>Algemeen</h2>');
+  expect(terms.privacy.permalink).toBe('https://waarneming.nl/pages/privacy/');
+  expect(terms['faq-obsidentify'].created).toBe('2020-12-04T09:24:10.114280');
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
   expect(url.pathname).toBe('/api/v1/user/terms/');
 
@@ -178,8 +198,10 @@ test('users.resendEmailConfirmation should resend the confirmation email', async
 
 test('users.getStats should fetch user statistics', async () => {
   const mockResponse = {
-    '2023-01-01': 10,
-    '2023-01-02': 5,
+    total: [16, 10] as [number, number],
+    '2018': [2, 2] as [number, number],
+    '2019': [3, 3] as [number, number],
+    '2020': [11, 9] as [number, number],
   };
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
     new Response(JSON.stringify(mockResponse), {
@@ -190,15 +212,16 @@ test('users.getStats should fetch user statistics', async () => {
 
   const client = new ObservationClient();
   client.setAccessToken('test-token');
-  const stats = await client.users.getStats({ aggregation: 'day' });
+  const stats = await client.users.getStats({ aggregation: 'year' });
 
   expect(stats).toEqual(mockResponse);
+  expect(stats.total).toEqual([16, 10]);
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
   const options = fetchSpy.mock.calls[0][1];
   const headers = new Headers(options?.headers);
 
   expect(url.pathname).toBe('/api/v1/user/stats/observations/');
-  expect(url.searchParams.get('aggregation')).toBe('day');
+  expect(url.searchParams.get('aggregation')).toBe('year');
   expect(headers.get('Authorization')).toBe('Bearer test-token');
 
   fetchSpy.mockRestore();

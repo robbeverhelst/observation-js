@@ -15,7 +15,6 @@ afterEach(() => {
 
 test('countries.list should fetch a list of countries', async () => {
   const mockResponse = {
-    count: 1,
     next: null,
     previous: null,
     results: [mockCountry],

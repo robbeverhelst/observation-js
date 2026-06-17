@@ -1,18 +1,25 @@
 import { expect, test, spyOn, afterEach } from 'bun:test';
 import { ObservationClient } from '../../src/index';
-import type {
-  Group,
-  GroupSummary,
-  ChallengeTemplate,
-  Challenge,
-} from '../../src/types';
+import type { Group, GroupSummary, Challenge } from '../../src/types';
 
 const API_BASE_URL = 'https://waarneming.nl/api/v1';
 
-const mockChallengeTemplate: ChallengeTemplate = {
-  id: 1,
+const mockChallengeTemplate: Challenge = {
+  id: 68,
+  type: 'template',
   title: 'Test Challenge Template',
-  species_groups: [1],
+  header: 'Template Header',
+  start_date_time: '2023-01-01T00:00:00Z',
+  end_date_time: '2023-01-31T23:59:59Z',
+  cover_image: 'https://example.com/cover.jpg',
+  cover_thumbnail: null,
+  instructions: null,
+  results: [],
+  observation_count: 0,
+  species_count: 0,
+  challenge_user: null,
+  targets_description: '',
+  targets: [],
 };
 
 const mockChallenge: Challenge = {
@@ -29,8 +36,10 @@ const mockChallenge: Challenge = {
   observation_count: 0,
   species_count: 0,
   challenge_user: null,
+  targets_description: '',
   targets: [],
-  group: { id: 1, name: 'Test Group' },
+  group_id: 1,
+  template_id: 33,
 };
 
 const mockGroup: Group = {
@@ -204,17 +213,21 @@ test('groups.renewInviteCode should renew the invite code', async () => {
 
 test('groups.join should join a group', async () => {
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
-    new Response(null, { status: 204 }),
+    new Response(JSON.stringify(mockGroup), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    }),
   );
 
   const client = new ObservationClient();
   client.setAccessToken('test-token');
-  await client.groups.join(1, 'invite-code');
+  const group = await client.groups.join('invite-code');
 
+  expect(group).toEqual(mockGroup);
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
-  expect(url.pathname).toBe('/api/v1/groups/1/join/invite-code/');
+  expect(url.pathname).toBe('/api/v1/groups/join/invite-code/');
   const options = fetchSpy.mock.calls[0][1];
-  expect(options?.method).toBe('POST');
+  expect(options?.method).toBe('PUT');
 
   fetchSpy.mockRestore();
 });
@@ -231,7 +244,7 @@ test('groups.leave should leave a group', async () => {
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
   expect(url.pathname).toBe('/api/v1/groups/1/leave/');
   const options = fetchSpy.mock.calls[0][1];
-  expect(options?.method).toBe('POST');
+  expect(options?.method).toBe('DELETE');
 
   fetchSpy.mockRestore();
 });
@@ -269,11 +282,11 @@ test('groups.listChallengeTemplates should fetch challenge templates', async () 
 
   const client = new ObservationClient();
   client.setAccessToken('test-token');
-  const templates = await client.groups.listChallengeTemplates();
+  const templates = await client.groups.listChallengeTemplates(1);
 
   expect(templates).toEqual(mockResponse);
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
-  expect(url.pathname).toBe('/api/v1/groups/challenge-templates/');
+  expect(url.pathname).toBe('/api/v1/groups/1/challenges/templates/');
 
   fetchSpy.mockRestore();
 });

@@ -1,6 +1,6 @@
 import { expect, test, spyOn, afterEach } from 'bun:test';
 import { ObservationClient } from '../../src/index';
-import type { Location } from '../../src/types';
+import type { Location, SpeciesSeen } from '../../src/types';
 
 const API_BASE_URL = 'https://waarneming.nl/api/v1';
 
@@ -8,13 +8,25 @@ const mockLocation: Location = {
   id: 1,
   name: 'Test Location',
   country_code: 'NL',
-  permalink: 'https://waarneming.nl/location/1',
-  geometry: {
+  permalink: 'https://waarneming.nl/locations/1/',
+  is_active: true,
+  geom: {
     type: 'MultiPolygon',
     coordinates: [],
   },
-  has_geometry: true,
-  cover_photo: null,
+};
+
+const mockSpeciesSeen: SpeciesSeen = {
+  id: 178,
+  scientific_name: 'Accipiter nisus',
+  name: 'Eurasian Sparrowhawk',
+  group: 1,
+  rarity: 1,
+  species_url: 'https://waarneming.nl/api/v1/species/178/',
+  num_observations: 1,
+  last_seen: '2019-03-14',
+  last_observation: 168552790,
+  last_observation_url: 'https://waarneming.nl/api/v1/observations/168552790/',
 };
 
 afterEach(() => {
@@ -68,8 +80,9 @@ test('locations.search by coordinates should search for locations', async () => 
   expect(locations).toEqual(mockResponse);
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
   expect(url.pathname).toBe('/api/v1/locations/');
-  expect(url.searchParams.get('lat')).toBe('52.123');
-  expect(url.searchParams.get('lng')).toBe('5.123');
+  expect(url.searchParams.get('coordinates')).toBe('52.123,5.123');
+  expect(url.searchParams.get('lat')).toBeNull();
+  expect(url.searchParams.get('lng')).toBeNull();
 
   fetchSpy.mockRestore();
 });
@@ -88,21 +101,14 @@ test('locations.get should fetch a single location', async () => {
 
   expect(location).toEqual(mockLocation);
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
-  expect(url.pathname).toBe('/api/v1/locations/1');
+  expect(url.pathname).toBe('/api/v1/locations/1/');
 
   fetchSpy.mockRestore();
 });
 
 test('locations.getSpeciesSeen should fetch species seen at a location', async () => {
   const mockResponse = {
-    results: [
-      {
-        species: 1,
-        species_name: 'Test Species',
-        last_observation_date: '2023-01-01',
-        observation_count: 1,
-      },
-    ],
+    results: [mockSpeciesSeen],
   };
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
     new Response(JSON.stringify(mockResponse), {
@@ -116,6 +122,8 @@ test('locations.getSpeciesSeen should fetch species seen at a location', async (
   const speciesSeen = await client.locations.getSpeciesSeen(1, { days: 30 });
 
   expect(speciesSeen).toEqual(mockResponse);
+  expect(speciesSeen.results[0].scientific_name).toBe('Accipiter nisus');
+  expect(speciesSeen.results[0].num_observations).toBe(1);
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
   expect(url.pathname).toBe('/api/v1/locations/1/species-seen/');
   expect(url.searchParams.get('days')).toBe('30');
@@ -125,14 +133,7 @@ test('locations.getSpeciesSeen should fetch species seen at a location', async (
 
 test('locations.getSpeciesSeenAroundPoint should fetch species seen around a point', async () => {
   const mockResponse = {
-    results: [
-      {
-        species: 1,
-        species_name: 'Test Species',
-        last_observation_date: '2023-01-01',
-        observation_count: 1,
-      },
-    ],
+    results: [mockSpeciesSeen],
   };
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
     new Response(JSON.stringify(mockResponse), {
@@ -152,14 +153,15 @@ test('locations.getSpeciesSeenAroundPoint should fetch species seen around a poi
   expect(speciesSeen).toEqual(mockResponse);
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
   expect(url.pathname).toBe('/api/v1/locations/species-seen/');
-  expect(url.searchParams.get('lat')).toBe('52.123');
-  expect(url.searchParams.get('lng')).toBe('5.123');
+  expect(url.searchParams.get('coordinates')).toBe('52.123,5.123');
+  expect(url.searchParams.get('lat')).toBeNull();
+  expect(url.searchParams.get('lng')).toBeNull();
   expect(url.searchParams.get('radius')).toBe('1000');
 
   fetchSpy.mockRestore();
 });
 
-test('locations.getGeoJSON with point should fetch GeoJSON data', async () => {
+test('locations.getGeoJSON with coordinates should fetch GeoJSON data', async () => {
   const mockResponse = {
     type: 'FeatureCollection' as const,
     features: [],
@@ -173,13 +175,13 @@ test('locations.getGeoJSON with point should fetch GeoJSON data', async () => {
 
   const client = new ObservationClient();
   const geojson = await client.locations.getGeoJSON({
-    point: 'POINT(5.123 52.123)',
+    coordinates: '52.123,5.123',
   });
 
   expect(geojson).toEqual(mockResponse);
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
   expect(url.pathname).toBe('/api/v1/locations/geojson/');
-  expect(url.searchParams.get('point')).toBe('POINT(5.123 52.123)');
+  expect(url.searchParams.get('coordinates')).toBe('52.123,5.123');
 
   fetchSpy.mockRestore();
 });
