@@ -27,7 +27,7 @@ import { InterceptorManager } from './interceptors';
 import { RefreshTokenInterceptor } from './refresh-interceptor';
 
 type FetchOptions = RequestInit & {
-  params?: Record<string, string | number>;
+  params?: Record<string, string | number | boolean>;
   clientCache?: boolean | { ttl: number }; // `true` uses default TTL
 };
 
@@ -202,8 +202,7 @@ export class ObservationClient {
     });
 
     if (!response.ok) {
-      const errorBody = await response.json();
-      throw new AuthenticationError(response, errorBody);
+      throw new AuthenticationError(response, await this.#readErrorBody(response));
     }
 
     const tokenData = (await response.json()) as TokenResponse;
@@ -242,14 +241,7 @@ export class ObservationClient {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      let errorBody: unknown = null;
-      try {
-        errorBody = errorText ? JSON.parse(errorText) : null;
-      } catch {
-        errorBody = errorText;
-      }
-      throw new AuthenticationError(response, errorBody);
+      throw new AuthenticationError(response, await this.#readErrorBody(response));
     }
 
     const tokenData = (await response.json()) as TokenResponse;
@@ -357,7 +349,7 @@ export class ObservationClient {
       (options.method === 'GET' || !options.method) &&
       this.#options?.cache?.enabled !== false;
 
-    if (isCacheable && this.#cache.has(cacheKey)) {
+    if (isCacheable) {
       const cachedData = this.#cache.get<T>(cacheKey);
       if (cachedData) return cachedData;
     }
@@ -411,7 +403,7 @@ export class ObservationClient {
 
   private buildUrl(
     endpoint: string,
-    params?: Record<string, string | number>,
+    params?: Record<string, string | number | boolean>,
   ): URL {
     let url: URL;
     if (endpoint.startsWith('http') || endpoint.startsWith('/api/')) {
@@ -424,7 +416,11 @@ export class ObservationClient {
 
     if (params) {
       for (const [key, value] of Object.entries(params)) {
-        url.searchParams.append(key, String(value));
+        // The API expects booleans as `1`/`0`; `String(false)` would send the
+        // literal string "false", which most backends treat as truthy.
+        const serialized =
+          typeof value === 'boolean' ? (value ? '1' : '0') : String(value);
+        url.searchParams.append(key, serialized);
       }
     }
     return url;
@@ -448,12 +444,14 @@ export class ObservationClient {
       throw new Error('Access token is not set. Please authenticate first.');
     }
 
-    // params are already in the URL, so we can delete them from options
-    delete options.params;
-    // The `clientCache` property is for the internal cache, not for the fetch API
-    delete options.clientCache;
+    // Strip the internal-only fields (`params` is already baked into the URL;
+    // `clientCache` is for our cache, not the fetch API) without mutating the
+    // caller's options object, which may be reused across requests.
+    const { params: _params, clientCache: _clientCache, ...rest } = options;
+    void _params;
+    void _clientCache;
 
-    const headers = new Headers(options.headers);
+    const headers = new Headers(rest.headers);
     if (authenticate) {
       headers.set('Authorization', `Bearer ${this.#accessToken}`);
     }
@@ -461,7 +459,7 @@ export class ObservationClient {
     headers.set('Accept', 'application/json');
 
     const fetchOptions: RequestInit = {
-      ...options,
+      ...rest,
       headers,
     };
 
@@ -474,15 +472,23 @@ export class ObservationClient {
     return response;
   }
 
+  /**
+   * Reads an error response body, parsing it as JSON when possible and falling
+   * back to the raw text (or `null` for an empty body). Never throws.
+   */
+  async #readErrorBody(response: Response): Promise<unknown> {
+    const body = await response.text();
+    if (!body) return null;
+    try {
+      return JSON.parse(body);
+    } catch {
+      return body;
+    }
+  }
+
   private async _handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
-      const body = await response.text();
-      let errorBody: unknown = null;
-      try {
-        errorBody = body ? JSON.parse(body) : null;
-      } catch {
-        errorBody = body;
-      }
+      const errorBody = await this.#readErrorBody(response);
 
       if (response.status === 401 || response.status === 403) {
         throw new AuthenticationError(response, errorBody);
