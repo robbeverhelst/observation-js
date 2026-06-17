@@ -43,11 +43,14 @@ jobs:
   release:
     needs: build-and-test
     if: github.ref == 'refs/heads/main'
-    runs-on: arc-observation-js
+    # GitHub-hosted runner: npm OIDC trusted publishing requires it.
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       issues: write
       pull-requests: write
+      # Required for npm trusted publishing (OIDC) — no NPM_TOKEN needed.
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -58,9 +61,12 @@ jobs:
         uses: oven-sh/setup-bun@v2
 
       - name: Setup Node
+        # Node 24 satisfies semantic-release's engine (>=24.10) and ships npm
+        # >=11, which supports OIDC trusted publishing.
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
         run: bun install
@@ -69,10 +75,8 @@ jobs:
         run: bun run build
 
       - name: Release
-        # semantic-release v25 requires Node ^22.14 || >=24.10; run it under the
-        # Node set up above rather than via Bun (whose emulated Node version is
-        # rejected by semantic-release's engine check).
+        # Publishes to npm via OIDC trusted publishing (configured on npmjs.com),
+        # so no NPM_TOKEN is required.
         run: npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
