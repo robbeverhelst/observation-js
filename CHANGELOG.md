@@ -1,3 +1,36 @@
+# [2.0.0](https://github.com/robbeverhelst/observation-js/compare/v1.16.0...v2.0.0) (2026-06-17)
+
+
+* feat(api)!: sync types and endpoints with the real waarneming.nl API ([feed55b](https://github.com/robbeverhelst/observation-js/commit/feed55b905e30f8985c6caf99ef196efa8fc1a59))
+
+
+### BREAKING CHANGES
+
+* Response and request shapes now match the real API. Highlights:
+- Observations: `species`/`user`/`location` are numbers (IDs) with separate
+  `*_detail` objects; `photos`/`sounds` are `string[]`; removed fabricated fields
+  (`count_text`, `comments_count`, `likes_count`, `is_validated`,
+  `model_prediction`, `obscured_by_user`); `url`→`permalink`,
+  `created_at`→`modified`, `count`→`number`. Query params corrected
+  (`modified_since`, `date_after`, `date_before`); `getAroundPoint` takes
+  `{coordinates, days, radius}`; `getDeleted` returns
+  `Paginated<{original_id, deleted_at}>`; create payload uses `species`/`number`;
+  `search()` now calls the real list endpoint; added bulk `create`.
+- Species: `photo` (string) not `photos`; `permalink` not `url`; added
+  `authority`/`group_name`/`info_text`; `status`/`rarity` optional.
+- Regions: `Region` is `{id,type,name,continent?,iso?}`; `RegionSpeciesList`
+  reshaped; new flat `RegionSpecies`.
+- Users: `User` and `Terms` reshaped; `UserStats` typed.
+- Locations: `Location` uses `geom`; `SpeciesSeen` fields renamed; `coordinates` params.
+- NIA: `taxon.id` is a string; `model_coverage`/`location_detail`/`species[]` reshaped.
+- Sessions: `Session` reshaped; added `get(uuid)`.
+- Challenges: `getRanking` returns `{ranking: ChallengeRank[]}`; `group`→`group_id`/`template_id`.
+- Groups: `join` is PUT `groups/join/<code>/`; `leave` is DELETE; group-scoped templates.
+- Exports: British spelling `ORGANISATION_OBSERVATIONS`/`organisation_id`.
+- Countries: `list()` returns `CountryList` (no `count`).
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
 # [1.16.0](https://github.com/robbeverhelst/observation-js/compare/v1.15.0...v1.16.0) (2026-06-17)
 
 
