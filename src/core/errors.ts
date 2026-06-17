@@ -102,7 +102,8 @@ export async function withRateLimitRetry<T>(
         if (attempt >= maxRetries) {
           throw new Error(
             `Rate limit exceeded after ${maxRetries} attempts. ` +
-            `Please wait ${Math.round(error.getRetryDelayMs() / 1000)} seconds before trying again.`
+            `Please wait ${Math.round(error.getRetryDelayMs() / 1000)} seconds before trying again.`,
+            { cause: error }
           );
         }
         
