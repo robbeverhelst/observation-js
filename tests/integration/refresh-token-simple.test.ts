@@ -93,4 +93,67 @@ describe('Automatic Token Refresh', () => {
     expect(client.hasAccessToken()).toBe(true);
     expect(client.hasRefreshToken()).toBe(true);
   });
+
+  test('concurrent 401s during a refresh all retry and resolve with real data', async () => {
+    const client = new ObservationClient({
+      clientId: 'test-client',
+      clientSecret: 'test-secret',
+    });
+
+    client.setAccessToken('expired-token');
+    client.setRefreshToken('valid-refresh-token');
+
+    let refreshCalls = 0;
+    spyOn(globalThis, 'fetch').mockImplementation((async (
+      input: string | URL | Request,
+      init?: RequestInit,
+    ) => {
+      const url =
+        typeof input === 'string'
+          ? input
+          : input instanceof URL
+            ? input.toString()
+            : input.url;
+      const headers = new Headers(init?.headers);
+
+      if (url.includes('oauth2/token')) {
+        refreshCalls++;
+        return new Response(
+          JSON.stringify({
+            access_token: 'new-token',
+            refresh_token: 'new-refresh-token',
+            expires_in: 3600,
+            token_type: 'Bearer',
+            scope: '',
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } },
+        );
+      }
+
+      if (headers.get('Authorization') === 'Bearer expired-token') {
+        return new Response(JSON.stringify({ detail: 'Token has expired' }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+
+      // Retried request carrying the refreshed token.
+      return new Response(JSON.stringify({ ok: true, url }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }) as typeof fetch);
+
+    const [a, b] = await Promise.all([
+      client.request<{ ok: boolean }>('endpoint-a'),
+      client.request<{ ok: boolean }>('endpoint-b'),
+    ]);
+
+    // Both concurrent requests must resolve with their real retried payload,
+    // not `null` (the previous queue bug resolved queued requests with null).
+    expect(a.ok).toBe(true);
+    expect(b.ok).toBe(true);
+    // Only a single refresh should occur for concurrent 401s.
+    expect(refreshCalls).toBe(1);
+  });
 });

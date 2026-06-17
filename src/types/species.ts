@@ -1,4 +1,4 @@
-import type { Photo } from './base';
+import type { Photo, Sound } from './base';
 
 export interface SpeciesGroup {
   id: number;
@@ -25,7 +25,7 @@ export interface SpeciesData {
   // TODO: Investigate API discrepancy - photos can be undefined in some responses
   photos?: Photo[]; // Changed to optional based on E2E test findings
   // TODO: Investigate API discrepancy - sounds can be undefined in some responses
-  sounds?: []; // Changed to optional based on E2E test findings
+  sounds?: Sound[]; // Changed to optional based on E2E test findings
   name_vernacular: string | null;
   name_vernacular_language: string | null;
 }

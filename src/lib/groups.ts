@@ -1,4 +1,5 @@
 import type { ObservationClient } from '../core/client';
+import { toBlob } from '../core/utils';
 import type {
   Challenge,
   ChallengeTemplate,
@@ -64,15 +65,15 @@ export class Groups {
    * Creates a new group.
    *
    * @param name The name of the new group.
-   * @param photo The group's photo/avatar as a Blob or Buffer.
+   * @param photo The group's photo/avatar as a Blob or Uint8Array.
    * @returns A promise that resolves to the newly created group object.
    * @throws {AuthenticationError} If the request is not authenticated.
    * @throws {ApiError} If the request fails.
    */
-  public async create(name: string, photo: Blob | Buffer): Promise<Group> {
+  public async create(name: string, photo: Blob | Uint8Array): Promise<Group> {
     const formData = new FormData();
     formData.append('name', name);
-    formData.append('photo', new Blob([photo]));
+    formData.append('photo', toBlob(photo));
     return this.#client.request<Group>('groups/create/', {
       method: 'POST',
       body: formData,
@@ -91,11 +92,11 @@ export class Groups {
    */
   public async update(
     groupId: number,
-    data: { name?: string; photo?: Blob | Buffer },
+    data: { name?: string; photo?: Blob | Uint8Array },
   ): Promise<Group> {
     const formData = new FormData();
     if (data.name) formData.append('name', data.name);
-    if (data.photo) formData.append('photo', new Blob([data.photo]));
+    if (data.photo) formData.append('photo', toBlob(data.photo));
     return this.#client.request<Group>(`groups/${groupId}`, {
       method: 'PATCH',
       body: formData,
