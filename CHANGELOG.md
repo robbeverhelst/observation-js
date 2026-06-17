@@ -1,3 +1,21 @@
+# [1.16.0](https://github.com/robbeverhelst/observation-js/compare/v1.15.0...v1.16.0) (2026-06-17)
+
+
+### Bug Fixes
+
+* **ci:** declare @eslint/js as an explicit devDependency ([86454ff](https://github.com/robbeverhelst/observation-js/commit/86454ff75d87a7664f08f52f59f0c7481e67c3bb))
+* **ci:** publish to npm via OIDC trusted publishing ([97f6412](https://github.com/robbeverhelst/observation-js/commit/97f6412e6c4c352f16f3af2e7e9cebbeb8f7b352))
+* **ci:** run semantic-release under Node 22 ([31c2e20](https://github.com/robbeverhelst/observation-js/commit/31c2e2063d2303500f8f32003a140567d3f5d663))
+* **core:** correct token refresh, query params and request handling ([94e4213](https://github.com/robbeverhelst/observation-js/commit/94e421324beb0109f52918f20b72963c8dffcafc))
+* **lint:** satisfy ESLint 10 recommended rules ([bf49429](https://github.com/robbeverhelst/observation-js/commit/bf49429db6045ff5ad069a2706707f3b698f1020))
+* **npm:** add repository metadata for publish provenance ([f7b8966](https://github.com/robbeverhelst/observation-js/commit/f7b896602b31f45467a2bfc06806a33a74ab8bbc))
+* **types:** export all public types and fix SpeciesData.sounds ([1ca6ebd](https://github.com/robbeverhelst/observation-js/commit/1ca6ebd0cc002e672fe146e262b47ff5cff5cf32))
+
+
+### Features
+
+* **uploads:** accept Uint8Array for photo and avatar uploads ([4708ab3](https://github.com/robbeverhelst/observation-js/commit/4708ab3b583cec580b629f9550d221539af397ed))
+
 # [1.15.0](https://github.com/robbeverhelst/observation-js/compare/v1.14.0...v1.15.0) (2025-06-25)
 
 
