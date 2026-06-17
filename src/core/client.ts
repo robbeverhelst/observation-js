@@ -1,4 +1,5 @@
 import { Badges } from '../lib/badges';
+import { BioBlitzes } from '../lib/bioblitzes';
 import { Challenges } from '../lib/challenges';
 import { Countries } from '../lib/countries';
 import { Exports } from '../lib/exports';
@@ -13,6 +14,7 @@ import { Regions } from '../lib/regions';
 import { RegionSpeciesLists } from '../lib/regionSpeciesLists';
 import { Sessions } from '../lib/sessions';
 import { Species } from '../lib/species';
+import { Transects } from '../lib/transects';
 import { Users } from '../lib/users';
 import type {
   ObservationClientOptions,
@@ -73,6 +75,8 @@ export class ObservationClient {
   public readonly media: Media;
   public readonly sessions: Sessions;
   public readonly challenges: Challenges;
+  public readonly transects: Transects;
+  public readonly bioblitzes: BioBlitzes;
   public readonly interceptors: {
     request: InterceptorManager<FetchOptions>;
     response: InterceptorManager<Response>;
@@ -121,6 +125,8 @@ export class ObservationClient {
     this.media = new Media(this);
     this.sessions = new Sessions(this);
     this.challenges = new Challenges(this);
+    this.transects = new Transects(this);
+    this.bioblitzes = new BioBlitzes(this);
 
     // Set up automatic token refresh if enabled (default: true)
     if (options?.autoRefreshToken !== false) {

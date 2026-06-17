@@ -27,7 +27,7 @@ export interface ChallengeUser {
 
 export interface Challenge {
   id: number;
-  type: 'regular' | 'onboarding' | 'group';
+  type: 'regular' | 'onboarding' | 'group' | 'template';
   title: string;
   header: string;
   start_date_time: string;
@@ -39,29 +39,20 @@ export interface Challenge {
   observation_count: number;
   species_count: number;
   challenge_user: ChallengeUser | null;
+  /** Translated text in HTML format (or empty string). */
+  targets_description: string;
   targets: ChallengeTarget[];
-  group: { id: number; name: string } | null;
+  /** Group `id` for challenges with type `group`. */
+  group_id?: number;
+  /** `id` of the template challenge on which a group challenge was based. */
+  template_id?: number;
 }
 
 export interface ChallengeListParams {
+  /** The user's location, formatted as a `latitude,longitude` pair. */
+  coordinates?: string;
   type?: 'regular' | 'onboarding' | 'group';
-  group_id?: number;
   is_active?: boolean;
-}
-
-export interface ChallengeRanking {
-  user: UserDetail;
-  observation_count: number;
-  species_count: number;
-  rank: number;
-}
-
-export interface MarkAsSeenResponse {
-  message: string;
-}
-
-export interface SubscribeResponse {
-  is_subscribed: boolean;
 }
 
 export interface ChallengeRank {
@@ -69,6 +60,25 @@ export interface ChallengeRank {
   user: UserDetail;
   count: number;
   rank_user_count: number;
+}
+
+export interface ChallengeRanking {
+  ranking: ChallengeRank[];
+}
+
+export interface MarkAsSeenResponse {
+  last_seen: string | null;
+}
+
+export interface SubscribeResponse {
+  is_subscribed: boolean;
+  observation_count: number;
+  species_count: number;
+  /**
+   * The date and time that any existing challenge content items were updated
+   * to, or `null`.
+   */
+  last_seen: string | null;
 }
 
 export interface ChallengeTemplate {

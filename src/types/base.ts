@@ -123,13 +123,20 @@ export interface ContentBlockItemList extends ContentBlockBase {
   items: ItemListItem[];
 }
 
+export interface ContentBlockTable extends ContentBlockBase {
+  type: 'table';
+  headers: string[];
+  rows: (string | number)[][];
+}
+
 export type ContentBlock =
   | ContentBlockHtml
   | ContentBlockGallery
   | ContentBlockSoundGallery
   | ContentBlockSpeciesHeader
   | ContentBlockExternalLinks
-  | ContentBlockItemList;
+  | ContentBlockItemList
+  | ContentBlockTable;
 
 export interface InformationBlock {
   title?: string;

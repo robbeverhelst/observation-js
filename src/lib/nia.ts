@@ -29,7 +29,7 @@ export class Nia {
 
     if (options.location) {
       formData.append(
-        'location_coordinates',
+        'coordinates',
         `${options.location.lat},${options.location.lng}`,
       );
     }

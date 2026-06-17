@@ -1,4 +1,5 @@
 export * from './badges';
+export * from './bioblitzes';
 export * from './challenges';
 export * from './countries';
 export * from './exports';
@@ -13,4 +14,5 @@ export * from './regionSpeciesLists';
 export * from './regions';
 export * from './sessions';
 export * from './species';
+export * from './transects';
 export * from './users';

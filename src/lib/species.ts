@@ -1,5 +1,6 @@
 import type { ObservationClient } from '../core/client';
 import type {
+  InformationBlock,
   Observation,
   Paginated,
   SpeciesData,
@@ -80,23 +81,24 @@ export class Species {
    * This is a public endpoint and does not require authentication.
    *
    * @param ids - An array of species IDs.
-   * @param point - The location, formatted as a WKT point string (e.g., 'POINT(4.895168 52.370216)').
+   * @param coordinates - The location, formatted as a `latitude,longitude` pair (e.g., '52.3,4.2').
    * @returns A promise that resolves to a list of species occurrences.
    * @throws {ApiError} If the request fails.
    */
   public async getOccurrence(
     ids: number[],
-    point: string,
-  ): Promise<Paginated<SpeciesOccurrence>> {
-    const params = {
-      species_id: ids.join(','),
-      point,
-    };
-    return this.#client.publicRequest<Paginated<SpeciesOccurrence>>(
-      'species-occurrence',
-      {
-        params,
-      },
+    coordinates: string,
+  ): Promise<{ results: SpeciesOccurrence[] }> {
+    // The API expects `species_id` to be repeated once per id
+    // (?species_id=1&species_id=2), but the client serializes each param key
+    // only once, so we build the query string manually here.
+    const search = new URLSearchParams();
+    search.set('coordinates', coordinates);
+    for (const id of ids) {
+      search.append('species_id', String(id));
+    }
+    return this.#client.publicRequest<{ results: SpeciesOccurrence[] }>(
+      `species-occurrence/?${search.toString()}`,
     );
   }
 
@@ -124,15 +126,18 @@ export class Species {
   public async getInformation(
     id: number,
     coordinates?: string,
-  ): Promise<unknown> {
+  ): Promise<InformationBlock[]> {
     const params: Record<string, string> = {};
     if (coordinates) {
       params.coordinates = coordinates;
     }
-    
+
     const options = Object.keys(params).length > 0 ? { params } : {};
-    
-    return this.#client.publicRequest(`species/${id}/information/`, options);
+
+    return this.#client.publicRequest<InformationBlock[]>(
+      `species/${id}/information/`,
+      options,
+    );
   }
 
   /**

@@ -9,8 +9,10 @@ export interface Group {
   id: number;
   name: string;
   photo: string;
-  created_at: string;
-  invite_link: string;
+  /** Timestamp of creation. Absent from detail and join responses. */
+  created_at?: string;
+  /** URL to let another user join this group. Absent from detail and join responses. */
+  invite_link?: string;
   members: GroupMember[];
 }
 

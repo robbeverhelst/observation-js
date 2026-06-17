@@ -2,36 +2,57 @@ import type { ObservationClient } from '../core/client';
 import type {
   CreateObservationOptions,
   CreateObservationPayload,
+  DeletedObservation,
   Observation,
+  Paginated,
+  SyncObservationPayload,
+  SyncObservationResult,
   UpdateObservationPayload,
 } from '../types';
 
-// Types for observation search and filtering
+/**
+ * Filtering parameters accepted by the observation list endpoints.
+ * See the "Observation filters" section of the API docs.
+ */
 interface ObservationSearchParams {
   limit?: number;
   offset?: number;
   ordering?: string;
   country?: string;
-  modified_after?: string;
-  observation_date_after?: string;
-  observation_date_before?: string;
+  /** ISO8601 date or datetime; only observations modified at or after this. */
+  modified_since?: string;
+  /** ISO8601 date; only observations on or after this date. */
+  date_after?: string;
+  /** ISO8601 date; only observations on or before this date. */
+  date_before?: string;
   species_group?: number;
   rarity?: number;
-  user?: number;
-  species?: number;
+  activity?: string;
+  life_stage?: string;
+  /** Free-text search in species/family/location/observer/notes/external refs. */
+  search?: string;
+  /** Select observations with or without photo (user observations only). */
+  has_photo?: boolean;
 }
 
-interface AroundPointParams extends ObservationSearchParams {
-  lng: number;
-  lat: number;
-  radius_km?: number;
-}
-
-interface PaginatedResponse<T> {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: T[];
+/**
+ * Parameters for the "observations around a point" endpoint.
+ */
+interface AroundPointParams {
+  /** Center coordinates as a `latitude,longitude` pair string. Required. */
+  coordinates: string;
+  /** Only observations within this many days before `end_date`. Required. */
+  days: number;
+  /** Search radius in meters (default 5000, max 10000). */
+  radius?: number;
+  /** ISO8601 date; only observations on or before this date (default today). */
+  end_date?: string;
+  /** Restrict to a single species group. */
+  species_group?: number;
+  /** Only observations of species with at least this rarity. */
+  min_rarity?: number;
+  limit?: number;
+  offset?: number;
 }
 
 export class Observations {
@@ -48,8 +69,10 @@ export class Observations {
    * Helper function to filter out undefined values from params
    * @private
    */
-  private filterParams(params: ObservationSearchParams | AroundPointParams): Record<string, string | number> {
-    const filtered: Record<string, string | number> = {};
+  private filterParams(
+    params: ObservationSearchParams | AroundPointParams,
+  ): Record<string, string | number | boolean> {
+    const filtered: Record<string, string | number | boolean> = {};
     for (const [key, value] of Object.entries(params)) {
       if (value !== undefined) {
         filtered[key] = value;
@@ -67,11 +90,11 @@ export class Observations {
    * @throws {ApiError} If the request fails.
    */
   public async get(id: number): Promise<Observation> {
-    return this.#client.request<Observation>(`observations/${id}`);
+    return this.#client.request<Observation>(`observations/${id}/`);
   }
 
   /**
-   * Creates a new observation.
+   * Creates a new observation via the single-observation endpoint.
    *
    * @param payload - The core data for the new observation.
    * @param options - Optional parameters, including media files to upload synchronously.
@@ -103,6 +126,36 @@ export class Observations {
     return this.#client.request<Observation>('observations/create-single/', {
       method: 'POST',
       body: JSON.stringify(payload),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+
+  /**
+   * Creates (or updates) multiple observations in one request via the
+   * one-way-sync endpoint (`POST /observations/create/`).
+   *
+   * The endpoint replies with one result per submitted observation, in order:
+   * on success the URL of the created/updated observation, otherwise an object
+   * describing the field errors. An error for one observation does not prevent
+   * the others from being created.
+   *
+   * Media uploads, `links` and `details` are not supported by this endpoint;
+   * use {@link create} for those. Observations are matched/updated by their
+   * `external_id`.
+   *
+   * @param observations - The observations to create or update.
+   * @returns A promise that resolves to a list of per-observation results.
+   * @throws {AuthenticationError} If the request is not authenticated.
+   * @throws {ApiError} If the request fails.
+   */
+  public async sync(
+    observations: SyncObservationPayload[],
+  ): Promise<SyncObservationResult[]> {
+    return this.#client.request<SyncObservationResult[]>('observations/create/', {
+      method: 'POST',
+      body: JSON.stringify(observations),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -165,23 +218,21 @@ export class Observations {
   }
 
   /**
-   * Search/list observations with filtering options.
-   * Note: General observation listing may not be available. Use more specific methods like getBySpecies, getByLocation, etc.
+   * Lists observations filtered by the supplied parameters.
+   * This is the general observations list endpoint (`GET /observations/`).
+   * Requires authentication.
    *
    * @param params - Search and filtering parameters.
    * @returns A promise that resolves to a paginated list of observations.
+   * @throws {AuthenticationError} If the request is not authenticated.
    * @throws {ApiError} If the request fails.
    */
-  public async search(params: ObservationSearchParams = {}): Promise<PaginatedResponse<Observation>> {
-    // Try alternative endpoints since general observations/ might not exist
-    if (params.species) {
-      return this.getBySpecies(params.species, params);
-    }
-    if (params.user) {
-      return this.getByUser(params.user, params);
-    }
-    // Fallback to around-point search if lat/lng provided in extended params
-    throw new Error('General observation search not available. Use getBySpecies(), getByUser(), getByLocation(), or getAroundPoint() instead.');
+  public async search(
+    params: ObservationSearchParams = {},
+  ): Promise<Paginated<Observation>> {
+    return this.#client.request<Paginated<Observation>>('observations/', {
+      params: this.filterParams(params),
+    });
   }
 
   /**
@@ -195,8 +246,8 @@ export class Observations {
   public async getBySpecies(
     speciesId: number,
     params: ObservationSearchParams = {},
-  ): Promise<PaginatedResponse<Observation>> {
-    return this.#client.publicRequest<PaginatedResponse<Observation>>(
+  ): Promise<Paginated<Observation>> {
+    return this.#client.publicRequest<Paginated<Observation>>(
       `species/${speciesId}/observations/`,
       { params: this.filterParams(params) },
     );
@@ -215,8 +266,8 @@ export class Observations {
   public async getRelatedBySpecies(
     speciesId: number,
     params: ObservationSearchParams = {},
-  ): Promise<PaginatedResponse<Observation>> {
-    return this.#client.request<PaginatedResponse<Observation>>(
+  ): Promise<Paginated<Observation>> {
+    return this.#client.request<Paginated<Observation>>(
       `species/${speciesId}/related-observations/`,
       { params: this.filterParams(params) },
     );
@@ -236,9 +287,11 @@ export class Observations {
   public async getByUser(
     userId?: number,
     params: ObservationSearchParams = {},
-  ): Promise<PaginatedResponse<Observation>> {
+  ): Promise<Paginated<Observation>> {
     const endpoint = userId ? `user/${userId}/observations/` : 'user/observations/';
-    return this.#client.request<PaginatedResponse<Observation>>(endpoint, { params: this.filterParams(params) });
+    return this.#client.request<Paginated<Observation>>(endpoint, {
+      params: this.filterParams(params),
+    });
   }
 
   /**
@@ -252,8 +305,8 @@ export class Observations {
   public async getByLocation(
     locationId: number,
     params: ObservationSearchParams = {},
-  ): Promise<PaginatedResponse<Observation>> {
-    return this.#client.publicRequest<PaginatedResponse<Observation>>(
+  ): Promise<Paginated<Observation>> {
+    return this.#client.publicRequest<Paginated<Observation>>(
       `locations/${locationId}/observations/`,
       { params: this.filterParams(params) },
     );
@@ -262,29 +315,36 @@ export class Observations {
   /**
    * Retrieves observations around a specific geographic point.
    *
-   * @param params - Point coordinates and search parameters.
+   * @param params - Center coordinates, time window and search parameters.
    * @returns A promise that resolves to a paginated list of observations.
    * @throws {ApiError} If the request fails.
    */
-  public async getAroundPoint(params: AroundPointParams): Promise<PaginatedResponse<Observation>> {
-    return this.#client.publicRequest<PaginatedResponse<Observation>>(
+  public async getAroundPoint(
+    params: AroundPointParams,
+  ): Promise<Paginated<Observation>> {
+    return this.#client.publicRequest<Paginated<Observation>>(
       'observations/around-point/',
       { params: this.filterParams(params) },
     );
   }
 
   /**
-   * Retrieves observations that were deleted after a specific timestamp.
+   * Lists observations that have been deleted at or after a given timestamp.
+   * Each entry contains the original observation id and the moment of deletion,
+   * which is enough to synchronize localized storage.
    * Requires authentication.
    *
-   * @param modifiedAfter - ISO timestamp to get deletions after this point.
-   * @returns A promise that resolves to a list of deleted observation IDs.
+   * @param modifiedSince - ISO8601 date or datetime to list deletions from.
+   * @returns A promise that resolves to a paginated list of deleted observations.
    * @throws {AuthenticationError} If the request is not authenticated.
    * @throws {ApiError} If the request fails.
    */
-  public async getDeleted(modifiedAfter: string): Promise<{ results: number[] }> {
-    return this.#client.request<{ results: number[] }>('observations/deleted/', {
-      params: { modified_after: modifiedAfter },
-    });
+  public async getDeleted(
+    modifiedSince: string,
+  ): Promise<Paginated<DeletedObservation>> {
+    return this.#client.request<Paginated<DeletedObservation>>(
+      'observations/deleted/',
+      { params: { modified_since: modifiedSince } },
+    );
   }
 }

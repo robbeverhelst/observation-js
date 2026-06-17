@@ -19,6 +19,9 @@ export class Locations {
   /**
    * Searches for locations by name or by proximity to a geographic point.
    *
+   * When coordinates are provided exactly one location is returned: the smallest
+   * location containing the point, or the smallest closest location otherwise.
+   *
    * @param params - The search parameters, either a `name` string or a `lat`/`lng` coordinate pair.
    * @returns A promise that resolves to a paginated list of matching locations.
    * @throws {AuthenticationError} If the request is not authenticated.
@@ -27,9 +30,15 @@ export class Locations {
   public async search(
     params: { name?: string } | { lat: number; lng: number },
   ): Promise<Paginated<Location>> {
+    const processedParams: Record<string, string> =
+      'lat' in params
+        ? { coordinates: `${params.lat},${params.lng}` }
+        : params.name !== undefined
+          ? { name: params.name }
+          : {};
     return this.#client.request<Paginated<Location>>('locations/', {
       method: 'GET',
-      params,
+      params: processedParams,
     });
   }
 
@@ -42,7 +51,7 @@ export class Locations {
    * @throws {ApiError} If the request fails.
    */
   public async get(id: number): Promise<Location> {
-    return this.#client.request<Location>(`locations/${id}`);
+    return this.#client.request<Location>(`locations/${id}/`);
   }
 
   /**
@@ -94,8 +103,11 @@ export class Locations {
     fast?: boolean;
     order_by?: string;
   }): Promise<{ results: SpeciesSeen[] }> {
-    const { fast, ...rest } = params;
-    const processedParams: Record<string, string | number> = { ...rest };
+    const { fast, lat, lng, ...rest } = params;
+    const processedParams: Record<string, string | number> = {
+      ...rest,
+      coordinates: `${lat},${lng}`,
+    };
     if (fast !== undefined) {
       processedParams.fast = fast ? 1 : 0;
     }
@@ -109,12 +121,14 @@ export class Locations {
    * Fetches a GeoJSON FeatureCollection with location geometry and properties.
    * This is a public endpoint.
    *
-   * @param params - The query parameters, can be a `point` (WKT format) or a location `id`.
+   * @param params - The query parameters, either `coordinates` (`lat,lng` pair) or a location `id`.
    * @returns A promise that resolves to a GeoJSON FeatureCollection.
    * @throws {ApiError} If the request fails.
    */
   public async getGeoJSON(
-    params: { point: string; model?: string } | { id: number; model?: string },
+    params:
+      | { coordinates: string; model?: string }
+      | { id: number; model?: string },
   ): Promise<GeoJSONFeatureCollection> {
     return this.#client.publicRequest<GeoJSONFeatureCollection>(
       'locations/geojson/',
