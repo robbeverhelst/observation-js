@@ -2,6 +2,14 @@
   "name": "observation-js",
   "version": "1.15.0",
   "description": "A fully-typed TypeScript client for the waarneming.nl API.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/robbeverhelst/observation-js.git"
+  },
+  "homepage": "https://github.com/robbeverhelst/observation-js#readme",
+  "bugs": {
+    "url": "https://github.com/robbeverhelst/observation-js/issues"
+  },
   "main": "dist/index.js",
   "module": "dist/index.js",
   "type": "module",
