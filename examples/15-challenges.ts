@@ -28,11 +28,15 @@ async function main() {
     );
     // Note: for an unauthenticated user, this will show a default/empty state.
     // For an authenticated user, it shows their personal progress.
-    const ranking = await client.challenges.getRanking(challenge.id, 'species');
+    const result = await client.challenges.getRanking(challenge.id, 'species');
 
-    if (ranking && ranking.rank !== undefined) {
-      console.log("Current user's rank:", ranking.rank);
-      console.log("Current user's species count:", ranking.species_count);
+    if (result.ranking.length > 0) {
+      console.log(`Ranking has ${result.ranking.length} entrie(s):`);
+      result.ranking.forEach((entry) => {
+        console.log(
+          `- #${entry.rank} ${entry.user.name} (count: ${entry.count})`,
+        );
+      });
     } else {
       console.log('No personal ranking information available.');
     }
@@ -69,7 +73,7 @@ async function main() {
     }
   } catch (error) {
     console.error('\nFailed to run authenticated challenge examples:');
-    if (error instanceof ApiError) {
+    if (error instanceof ApiError && error.response) {
       console.error(`- Status: ${error.response.status}`);
       console.error(`- Body:`, error.body);
     } else {

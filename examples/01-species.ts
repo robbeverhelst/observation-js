@@ -39,7 +39,7 @@ async function main() {
         observations.results.forEach((obs) => {
           console.log(
             `- Observation ID: ${obs.id} on ${obs.date} by ${
-              obs.user?.name || 'Unknown'
+              obs.user_detail?.name || 'Unknown'
             }`,
           );
         });

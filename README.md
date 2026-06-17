@@ -80,10 +80,7 @@ async function getSpeciesDetails(id: number) {
       `Successfully fetched: ${species.name} (${species.scientific_name})`,
     );
     console.log(`Group: ${species.group_name}`);
-    console.log(
-      `Photos:`,
-      species.photos.map((p) => p.url),
-    );
+    console.log(`Photo:`, species.photo);
   } catch (error) {
     console.error('Error fetching species details:', error);
   }

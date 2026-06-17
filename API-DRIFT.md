@@ -1,53 +1,69 @@
-# Upstream API drift notes
+# API sync & v2.0 migration
 
-A review on **2026-06-17** compared this client against the waarneming.nl /
-observation.org API documentation.
+On **2026-06-17** the client was diffed — field by field — against the
+authenticated waarneming.nl API documentation (`https://waarneming.nl/api/docs/`,
+pulled with a logged-in session) **and** verified against live API responses.
+The type layer had drifted substantially from the real API. **v2.0 corrects it.**
 
-> **Status: needs authenticated verification.** The docs at
-> `https://waarneming.nl/api/docs/` are now **login-gated** — every page (HTML
-> and `.md`, including `?format=openapi`) returns `HTTP 403`
-> ("Authentication is required to view this documentation", linking to
-> `/accounts/login/`). The findings below were reconstructed from
-> search-engine-indexed snippets, **not** authoritative full reads. Do not
-> rewrite published types on them blindly.
+Ground rule (from the API's `about.md`): *"clients must accept more fields than
+described; adding fields is not a new API version."* So additive server fields are
+not breaking. The changes below are corrections where the client's types or
+requests **contradicted** the real API (wrong types, wrong field names, wrong
+request params/methods) — these are breaking for consumers, hence the major bump.
 
-### How to verify properly
+## Breaking changes by resource
 
-Log in with an approved API account and pull the spec with the session cookie:
+### Observations
+- `species`, `user`, `location` are now **`number`** (IDs). The nested objects are
+  separate optional fields: `species_detail`, `user_detail`, `location_detail`.
+- `photos` / `sounds` are now **`string[]`** (URLs), not object arrays.
+- Removed fields that the API never returned: `count`, `count_text`,
+  `comments_count`, `likes_count`, `is_validated`, `model_prediction`,
+  `obscured_by_user`. Renamed: `url`→`permalink`, `created_at`→`modified`,
+  `count`→`number`.
+- Query params corrected (the old names were silently ignored by the server):
+  `modified_after`→`modified_since`, `observation_date_after`→`date_after`,
+  `observation_date_before`→`date_before`.
+- `getAroundPoint` now takes `{ coordinates: "lat,lng", days, radius?, end_date?, species_group?, min_rarity? }` (was `{ lat, lng, radius_km }`).
+- `getDeleted` now returns `Paginated<{ original_id, deleted_at }>` and filters by `modified_since`.
+- Create payload uses `species` / `number` (was `species_id` / `count`); `location_id` removed.
+- `search()` now calls the real `GET /observations/` list endpoint (previously threw). Added bulk `create` (one-way sync).
 
-```bash
-curl --cookie "sessionid=<your-session>" \
-  'https://waarneming.nl/api/docs/?format=openapi' -o openapi.json
-# or fetch the per-resource markdown pages, e.g.
-curl --cookie "sessionid=<your-session>" \
-  'https://waarneming.nl/api/docs/observations.md'
-```
+### Species
+- `photo: string` (was `photos: Photo[]`); `permalink` (was `url`); added `authority`, `group_name`, `info_text?`, `determination_requirements?`.
+- `status` / `rarity` are optional strings (absent without a location context).
+- `getOccurrence` returns `{ results: { species_id, occurs }[] }`; `getInformation` now typed `InformationBlock[]`; species-group attributes fully typed.
 
-Then diff against `src/types/*.ts`. Note upstream's own rule (`about.md`):
-**"clients must accept more fields than described; adding fields is not a new API
-version."** So *missing* fields are expected drift — only **type mismatches,
-renamed fields, and wrong response shapes** are actionable bugs.
+### Regions / region species lists
+- `Region` is `{ id, type, name, continent?, iso? }` (removed `slug`/`centroid`/`parent`).
+- `RegionSpeciesList` is `{ id, region, species_group, custom_name? }`.
+- New `RegionSpecies` (flat row) returned by `regionSpeciesLists.getSpecies()`.
 
-## Suspected drift (verify before acting)
+### Users
+- `User` is `{ id, name, email, is_mail_allowed, url, country, consider_email_confirmed, avatar }` (count fields belong to `users.getStats()`).
+- `Terms` keys are `tos` / `privacy` / `faq-obsidentify` (objects). `UserStats` typed as date→`[observations, species]` tuples.
 
-| # | Confidence | File | Suspected issue |
-|---|-----------|------|-----------------|
-| 1 | High | `src/types/nia-proxy.ts:5` | `taxon.id` typed `number`, but upstream returns a string like `"8807@WRN"`. Also `model_version`/`species[]` may actually be `model_implementation:{tag,version}` + per-prediction `morphs` + top-level `life_stages`. |
-| 2 | High | `src/types/regions.ts` (`Region`) | Indexed shape is `{id, type:number, name, continent?, iso?}`; current `slug`/`centroid`/`parent` may not exist. |
-| 3 | High | `src/types/users.ts` (`User`) | `GET /user/info/` indexed as `{id, name, email, is_mail_allowed, url, country}`; current `avatar`/`observation_count`/`species_count`/`validation_count` may belong to a different endpoint. |
-| 4 | High | `src/types/regions.ts`, `src/lib/regionSpeciesLists.ts` | `region-lists/` index rows look like `{id, region, species_group, custom_name?}` (not `RegionSpeciesList`). `region-lists/{id}/species/` rows are flat with `native`/`rank`/`determination_requirements`, not `SpeciesData`. |
-| 5 | Medium | `src/types/species.ts` | Add `authority`. List/search objects may return singular `photo` (URL string) alongside detail `photos[]`. |
-| 6 | Medium | `src/types/observations.ts` (`Observation`) | v1 detail may return `species` as a bare int (not nested) plus flat fields `number`, `sex`, `accuracy`, `notes`, `is_certain`, `uuid`, `modified`, `species_group`, `permalink`. Current shape looks v2-modeled while the lib calls v1 paths. The `location` field is documented as deprecated in favour of `location_detail`. |
-| 7 | Medium | new resource | `transects` is a documented resource (`POST/PUT /api/v1/transects/create-or-update/`) with **no** type or lib class here. |
+### Locations
+- `Location` uses `geom` (was `geometry`); removed `has_geometry`/`cover_photo`.
+- `SpeciesSeen` fields renamed to match the API (`id`, `name`, `num_observations`, `last_seen`, …).
+- `search` / `getSpeciesSeenAroundPoint` / `getGeoJSON` now send `coordinates="lat,lng"`.
 
-### Confirmed *correct* (no change needed)
-- `SpeciesData.status` / `rarity` as `string` (+ optional `rarity_text`/`url`) — matches docs ("numeric or string, missing without a location").
-- `Export`, `Country`, `LocationDetail`, `Lookups` keys — consistent with indexed examples.
+### NIA
+- `taxon.id` is a **string** (e.g. `"8807@WRN"`); `taxon` is `{ id, name }`.
+- `model_coverage` is `{ image, description }`; removed `model_version`.
+- `location_detail` is a full location object; `species[]` reshaped (`group` is a number); added `morphs`/`life_stages`.
 
-### Other open questions
-- **v1/v2 split:** base URL is hardcoded `/api/v1`; only `sessions` uses absolute `/api/v2` paths. Confirm whether more resources are migrating to v2 and whether the base should be per-resource configurable.
-- **Trailing slashes:** several calls omit the trailing slash (e.g. `badges/${id}`, `challenges/${id}`, `groups/${id}`, `observations/${id}`, `species/${id}`) while most include it; Django `APPEND_SLASH` can 301-redirect and drop POST bodies. Verify each.
-- **OAuth `client_credentials` grant:** documented but not implemented (only `authorization_code` / `password` / `refresh_token`).
+### Sessions / Challenges / Groups / Exports / Countries
+- **Sessions:** `Session` reshaped (removed `name`/`is_active`/`user`; added `observation_lists`, `start_datetime`/`end_datetime`, `geom`, …); added `sessions.get(uuid)`.
+- **Challenges:** `getRanking` returns `{ ranking: ChallengeRank[] }`; `group` → `group_id`/`template_id`.
+- **Groups:** `join` is `PUT groups/join/<code>/` and returns the group; `leave` is `DELETE`; `listChallengeTemplates(groupId)` is group-scoped.
+- **Exports:** British spelling `ORGANISATION_OBSERVATIONS` / `organisation_id`; added `PROJECT_DUMP` and `xlsx`.
+- **Countries:** `list()` returns `CountryList` (the API sends no `count`).
 
-### Resources that could not be verified at all (docs login-gated)
-badges, challenges, groups, sessions, languages, media, information.
+## New resources
+- **`client.transects`** — legacy transect create/update (`POST`/`PUT /transects/create-or-update/`).
+- **`client.bioblitzes`** — list, get, like/unlike, category statistics.
+
+## Verification
+Validated by the full integration suite (rewritten mocks) plus the live e2e suite
+against the public API (`bun test tests/e2e/`).

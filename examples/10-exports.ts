@@ -43,7 +43,7 @@ const main = async () => {
     );
   } catch (error) {
     console.error('Failed to fetch exports:');
-    if (error instanceof ApiError) {
+    if (error instanceof ApiError && error.response) {
       console.error(`- Status: ${error.response.status}`);
       console.error(`- Body:`, error.body);
     } else {
