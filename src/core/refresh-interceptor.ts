@@ -131,10 +131,12 @@ export class RefreshTokenInterceptor {
     if (!response.ok) {
       const body = await response.text();
       let errorBody: unknown = null;
-      try {
-        errorBody = body ? JSON.parse(body) : null;
-      } catch {
-        errorBody = body;
+      if (body) {
+        try {
+          errorBody = JSON.parse(body);
+        } catch {
+          errorBody = body;
+        }
       }
 
       if (response.status === 401 || response.status === 403) {
