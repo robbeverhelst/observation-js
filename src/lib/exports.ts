@@ -37,7 +37,7 @@ export class Exports {
    * @throws {ApiError} If the request fails.
    */
   public async get(exportId: number): Promise<Export> {
-    return this.#client.request<Export>(`exports/${exportId}`);
+    return this.#client.request<Export>(`exports/${exportId}/`);
   }
 
   /**

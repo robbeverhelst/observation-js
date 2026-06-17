@@ -3,14 +3,11 @@ import { ObservationClient } from '../../src/index';
 import type { Region, RegionType } from '../../src/types';
 
 const mockRegion: Region = {
-  id: 1,
-  name: 'Test Region',
-  slug: 'test-region',
-  centroid: {
-    type: 'Point',
-    coordinates: [1, 1],
-  },
-  parent: null,
+  id: 70,
+  type: 20,
+  name: 'Albania',
+  continent: 1,
+  iso: 'AL',
 };
 
 const mockRegionType: RegionType = {

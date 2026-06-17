@@ -1,5 +1,5 @@
 import type { ObservationClient } from '../core/client';
-import type { RegionSpeciesList, SpeciesData } from '../types';
+import type { RegionSpecies, RegionSpeciesList } from '../types';
 
 export class RegionSpeciesLists {
   #client: ObservationClient;
@@ -26,7 +26,9 @@ export class RegionSpeciesLists {
    * @param id - The ID of the region species list.
    * @returns A promise that resolves to an array of species in the list.
    */
-  async getSpecies(id: number): Promise<SpeciesData[]> {
-    return this.#client.publicRequest<SpeciesData[]>(`region-lists/${id}/species/`);
+  async getSpecies(id: number): Promise<RegionSpecies[]> {
+    return this.#client.publicRequest<RegionSpecies[]>(
+      `region-lists/${id}/species/`,
+    );
   }
 }

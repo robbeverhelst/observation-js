@@ -63,7 +63,7 @@ test('exports.get should fetch a single export', async () => {
 
   expect(exportData).toEqual(mockExport);
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
-  expect(url.pathname).toBe('/api/v1/exports/1');
+  expect(url.pathname).toBe('/api/v1/exports/1/');
 
   fetchSpy.mockRestore();
 });
@@ -91,6 +91,27 @@ test('exports.start should start a new export', async () => {
   expect(body).toBe(
     'type=USER_OBSERVATIONS&export_format=csv&date_after=2023-01-01',
   );
+
+  fetchSpy.mockRestore();
+});
+
+test('exports.start should send British spelling for organisation exports', async () => {
+  const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
+    new Response(JSON.stringify(mockExportStartResponse), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    }),
+  );
+
+  const client = new ObservationClient();
+  client.setAccessToken('test-token');
+  await client.exports.start({
+    type: 'ORGANISATION_OBSERVATIONS',
+    organisation_id: 42,
+  });
+
+  const body = await (fetchSpy.mock.calls[0][1] as RequestInit).body;
+  expect(body).toBe('type=ORGANISATION_OBSERVATIONS&organisation_id=42');
 
   fetchSpy.mockRestore();
 });

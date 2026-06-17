@@ -2,7 +2,6 @@ import type { ObservationClient } from '../core/client';
 import { toBlob } from '../core/utils';
 import type {
   Challenge,
-  ChallengeTemplate,
   Group,
   GroupSummary,
   Observation,
@@ -136,21 +135,20 @@ export class Groups {
   /**
    * Joins a group using an invite code.
    *
-   * @param groupId The unique identifier of the group to join.
    * @param inviteCode The invite code for the group.
-   * @returns A promise that resolves when the user has successfully joined the group.
+   * @returns A promise that resolves to the joined group.
    * @throws {AuthenticationError} If the request is not authenticated.
    * @throws {ApiError} If the invite code is invalid or the request fails.
    */
-  public async join(groupId: number, inviteCode: string): Promise<void> {
-    await this.#client.request<void>(`groups/${groupId}/join/${inviteCode}/`, {
-      method: 'POST',
+  public async join(inviteCode: string): Promise<Group> {
+    return this.#client.request<Group>(`groups/join/${inviteCode}/`, {
+      method: 'PUT',
     });
   }
 
   /**
    * Leaves a group.
-   * The authenticated user must be a member of the group.
+   * The authenticated user must be a member of the group (and not an admin).
    *
    * @param groupId The unique identifier of the group to leave.
    * @returns A promise that resolves when the user has successfully left the group.
@@ -159,7 +157,7 @@ export class Groups {
    */
   public async leave(groupId: number): Promise<void> {
     await this.#client.request<void>(`groups/${groupId}/leave/`, {
-      method: 'POST',
+      method: 'DELETE',
     });
   }
 
@@ -180,15 +178,20 @@ export class Groups {
   }
 
   /**
-   * Fetches the available challenge templates that can be used to create group challenges.
+   * Fetches the challenge templates that can be used to create group challenges.
+   * The authenticated user must be a member of the group.
    *
-   * @returns A promise that resolves to a paginated list of challenge templates.
-   * @throws {AuthenticationError} If the request is not authenticated.
+   * @param groupId The unique identifier of the group.
+   * @returns A promise that resolves to a paginated list of challenge templates
+   *   (challenge objects with type `"template"`).
+   * @throws {AuthenticationError} If the user is not a member or not authenticated.
    * @throws {ApiError} If the request fails.
    */
-  public async listChallengeTemplates(): Promise<Paginated<ChallengeTemplate>> {
-    return this.#client.request<Paginated<ChallengeTemplate>>(
-      'groups/challenge-templates/',
+  public async listChallengeTemplates(
+    groupId: number,
+  ): Promise<Paginated<Challenge>> {
+    return this.#client.request<Paginated<Challenge>>(
+      `groups/${groupId}/challenges/templates/`,
     );
   }
 

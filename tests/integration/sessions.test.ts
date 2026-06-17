@@ -17,38 +17,53 @@ const mockUser: UserDetail = {
 };
 
 const mockSession: Session = {
-  id: 1,
+  id: 177929,
   uuid: 'test-uuid',
-  name: 'Test Session',
-  type: 'Test',
-  notes: 'Test notes',
-  start_datetime: '2023-01-01T12:00:00Z',
-  end_datetime: '2023-01-01T13:00:00Z',
-  is_active: true,
-  user: {
-    id: 1,
-    email: 'test@example.com',
-    first_name: 'Test',
-    last_name: 'User',
-    is_staff: false,
-    is_superuser: false,
-    show_scientific_names: false,
-    show_high_quality_only: false,
-    language: 'en',
+  type: 'point',
+  observation_lists: [
+    {
+      id: 365349,
+      species_group: 1,
+      all_species_counted: false,
+      all_individuals_counted: true,
+      notes: 'This is a species group note',
+    },
+  ],
+  observation_count: 5,
+  location_detail: {
+    id: 16066,
+    name: 'Zoeterwoude - Groote Westeindsche Polder',
+    country_code: 'NL',
+    permalink: 'https://waarneming.nl/locations/16066/',
   },
+  start_datetime: '2022-01-01T12:00:12',
+  end_datetime: '2022-01-01T15:00:34',
+  geom: { type: 'Point', coordinates: [4.48, 52.12] },
+  notes: 'This is a session note',
+  permalink: 'https://waarneming.nl/sessions/177929/',
 };
 
-const mockCreatePayload: any = {
+const mockCreatePayload: CreateSessionPayload = {
   uuid: 'new-uuid',
-  name: 'New Session',
-  notes: 'New notes',
-  start_datetime: '2023-01-02T12:00:00Z',
-  end_datetime: '2023-01-02T13:00:00Z',
+  type: 'point',
+  observation_lists: [
+    {
+      species_group: 1,
+      all_species_counted: false,
+      all_individuals_counted: true,
+      notes: 'This is a species group note',
+    },
+  ],
+  start_datetime: '2022-01-01T12:00:34',
+  end_datetime: '2022-01-01T15:00:45',
+  geom: { type: 'Point', coordinates: [4.48, 52.12] },
+  notes: 'This is a session note',
 };
 
-const mockUpdatePayload: any = {
+const mockUpdatePayload: UpdateSessionPayload = {
+  ...mockCreatePayload,
   uuid: 'test-uuid',
-  name: 'Updated Session',
+  notes: 'Updated session note',
 };
 
 const mockSpecies: Species = {
@@ -113,6 +128,20 @@ test('sessions.list should fetch a list of sessions', async () => {
   expect(sessions).toEqual(mockResponse);
   const url = new URL(fetchSpy.mock.calls[0][0] as string);
   expect(url.pathname).toBe('/api/v2/user/sessions/');
+});
+
+test('sessions.get should fetch a single session', async () => {
+  const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
+    new Response(JSON.stringify(mockSession)),
+  );
+
+  const client = new ObservationClient();
+  client.setAccessToken('test-token');
+  const session = await client.sessions.get('test-uuid');
+
+  expect(session).toEqual(mockSession);
+  const url = new URL(fetchSpy.mock.calls[0][0] as string);
+  expect(url.pathname).toBe('/api/v2/user/sessions/test-uuid/');
 });
 
 test('sessions.create should create a new session', async () => {

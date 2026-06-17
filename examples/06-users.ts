@@ -44,12 +44,11 @@ async function main() {
         console.log(`- ID: ${profile.id}`);
         console.log(`- Name: ${profile.name}`);
         console.log(`- Email: ${profile.email}`);
-        console.log(`- Member since: ${profile.created}`);
-        console.log(`- Account status: ${profile.status || 'Active'}`);
-        console.log(`- Newsletter: ${profile.newsletter ? 'Yes' : 'No'}`);
-        console.log(`- Language: ${profile.language || 'Not set'}`);
+        console.log(`- Email confirmed: ${profile.consider_email_confirmed ? 'Yes' : 'No'}`);
+        console.log(`- Mail allowed: ${profile.is_mail_allowed ? 'Yes' : 'No'}`);
         console.log(`- Country: ${profile.country || 'Not set'}`);
-        console.log(`- Biography: ${profile.biography || 'No biography'}`);
+        console.log(`- Profile URL: ${profile.url}`);
+        console.log(`- Avatar: ${profile.avatar || 'No avatar'}`);
         console.log(JSON.stringify(profile, null, 2));
       } catch (error) {
         console.error('Failed to fetch user profile:', error);
@@ -58,15 +57,14 @@ async function main() {
       // 2. Get User Stats
       console.log('\n--- 2. Fetching User Statistics (getStats) ---');
       try {
-        const stats = await client.users.getStats();
+        const stats = await client.users.getStats({ aggregation: 'year' });
         console.log('Successfully fetched user statistics:');
-        console.log(`- Total observations: ${stats.observations_count || 0}`);
-        console.log(`- Total species: ${stats.species_count || 0}`);
-        console.log(`- Total photos: ${stats.photos_count || 0}`);
-        console.log(`- Total sounds: ${stats.sounds_count || 0}`);
+        const [totalObservations, totalSpecies] = stats.total;
+        console.log(`- Total observations: ${totalObservations}`);
+        console.log(`- Total species: ${totalSpecies}`);
         console.log(JSON.stringify(stats, null, 2));
       } catch (error) {
-        if (error instanceof ApiError && error.response.status === 404) {
+        if (error instanceof ApiError && error.response?.status === 404) {
           console.log('User statistics not available');
         } else {
           console.error('Failed to fetch user statistics:', error);
@@ -80,7 +78,7 @@ async function main() {
         console.log('Successfully fetched user avatar:');
         console.log(JSON.stringify(avatar, null, 2));
       } catch (error) {
-        if (error instanceof ApiError && error.response.status === 404) {
+        if (error instanceof ApiError && error.response?.status === 404) {
           console.log('No avatar set for this user');
         } else {
           console.error('Failed to fetch user avatar:', error);
@@ -94,7 +92,7 @@ async function main() {
         console.log('Successfully generated magic login link:');
         console.log(JSON.stringify(magicLink, null, 2));
       } catch (error) {
-        if (error instanceof ApiError && error.response.status === 404) {
+        if (error instanceof ApiError && error.response?.status === 404) {
           console.log('Magic login link not available');
         } else {
           console.error('Failed to generate magic login link:', error);

@@ -47,7 +47,7 @@ const main = async () => {
     console.log(`Access token expires in: ${tokenResponse.expires_in} seconds`);
   } catch (error) {
     console.error('❌ Authentication failed:');
-    if (error instanceof ApiError) {
+    if (error instanceof ApiError && error.response) {
       console.error(`- Status: ${error.response.status}`);
       console.error(`- Body:`, error.body);
     } else {
@@ -69,7 +69,7 @@ const main = async () => {
     console.log(`- Location: ${observation.location_detail?.name || 'Unknown location'}`);
     console.log(`- Coordinates: ${observation.point?.coordinates?.join(', ') || 'No coordinates'}`);
     console.log(`- Validation status: ${observation.validation_status}`);
-    console.log(`- URL: ${observation.permalink || observation.url || 'N/A'}`);
+    console.log(`- URL: ${observation.permalink || 'N/A'}`);
     
     if (observation.photos && observation.photos.length > 0) {
       console.log(`- Photos: ${observation.photos.length} photo(s)`);
@@ -120,12 +120,12 @@ const main = async () => {
     if (observation.point?.coordinates) {
       console.log(`\n🗺️  Getting observations within 2km of this location:`);
       try {
+        const [lng, lat] = observation.point.coordinates;
         const nearbyObs = await client.observations.getAroundPoint({
-          lng: observation.point.coordinates[0],
-          lat: observation.point.coordinates[1],
-          radius_km: 2,
+          coordinates: `${lat},${lng}`,
+          days: 30,
+          radius: 2000,
           limit: 3,
-          ordering: '-date'
         });
         console.log(`Found ${nearbyObs.count} observations within 2km, showing 3 recent ones:`);
         nearbyObs.results.forEach((obs, index) => {
@@ -153,7 +153,7 @@ const main = async () => {
 
   } catch (error) {
     console.error('Failed to fetch observation:');
-    if (error instanceof ApiError) {
+    if (error instanceof ApiError && error.response) {
       console.error(`- Status: ${error.response.status}`);
       console.error(`- Body:`, error.body);
     } else {

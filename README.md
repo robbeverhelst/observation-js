@@ -80,10 +80,7 @@ async function getSpeciesDetails(id: number) {
       `Successfully fetched: ${species.name} (${species.scientific_name})`,
     );
     console.log(`Group: ${species.group_name}`);
-    console.log(
-      `Photos:`,
-      species.photos.map((p) => p.url),
-    );
+    console.log(`Photo:`, species.photo);
   } catch (error) {
     console.error('Error fetching species details:', error);
   }
@@ -97,10 +94,10 @@ getSpeciesDetails(2);
 
 The client is organized into resources, making the API intuitive to use.
 
-### Search for locations
+### Search for locations (requires authentication)
 
 ```typescript
-const locations = await client.locations.search({ q: 'Amsterdam' });
+const locations = await client.locations.search({ name: 'Amsterdam' });
 console.log('Found locations:', locations.results);
 ```
 

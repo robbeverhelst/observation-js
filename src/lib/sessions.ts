@@ -31,6 +31,20 @@ export class Sessions {
   }
 
   /**
+   * Fetches a single observation session for the authenticated user by its UUID.
+   *
+   * @param uuid - The unique identifier (UUID) of the session.
+   * @returns A promise that resolves to the session object.
+   * @throws {AuthenticationError} If the request is not authenticated.
+   * @throws {ApiError} If the request fails.
+   */
+  async get(uuid: string): Promise<Session> {
+    return this.#client.request<Session>(`/api/v2/user/sessions/${uuid}/`, {
+      method: 'GET',
+    });
+  }
+
+  /**
    * Creates a new observation session.
    *
    * @param payload - The data for the new session.

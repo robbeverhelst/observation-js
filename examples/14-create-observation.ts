@@ -34,7 +34,7 @@ const main = async () => {
     const observation = await client.observations.create(
       {
         // Species ID 13 is for "Roodborst" (European Robin)
-        species_id: 13,
+        species: 13,
         date: new Date().toISOString().split('T')[0], // Today's date
         point: {
           type: 'Point',
@@ -50,14 +50,14 @@ const main = async () => {
 
     console.log('--- Observation Created Successfully! ---');
     console.log(`- Observation ID: ${observation.id}`);
-    console.log(`- Species: ${observation.species?.name}`);
-    console.log(`- See it online: ${observation.url}`);
+    console.log(`- Species: ${observation.species_detail?.name ?? observation.species}`);
+    console.log(`- See it online: ${observation.permalink}`);
     console.log(
       '- NOTE: This observation was created as a real record. You may want to delete it from the website.',
     );
   } catch (error) {
     console.error('Failed to create observation:');
-    if (error instanceof ApiError) {
+    if (error instanceof ApiError && error.response) {
       console.error(`- Status: ${error.response.status}`);
       console.error(`- Body:`, error.body);
     } else {

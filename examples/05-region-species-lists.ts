@@ -30,7 +30,7 @@ async function main() {
     }
   } catch (error) {
     console.error('Error fetching region species lists:', error);
-    if (error instanceof ApiError) {
+    if (error instanceof ApiError && error.response) {
       console.error(`- Status: ${error.response.status}`);
       console.error(`- Body:`, error.body);
     }

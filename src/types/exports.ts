@@ -14,7 +14,7 @@ export interface ExportStartResponse {
   state_url: string;
 }
 
-export type ExportFormat = 'csv' | 'tsv' | 'SQLite';
+export type ExportFormat = 'csv' | 'xlsx' | 'SQLite';
 
 interface ExportOptionsBase {
   export_format?: ExportFormat;
@@ -33,8 +33,12 @@ export type StartExportOptions = (
       type: 'USER_OBSERVATIONS';
     }
   | {
-      type: 'ORGANIZATION_OBSERVATIONS';
-      organization_id: number;
+      type: 'ORGANISATION_OBSERVATIONS';
+      organisation_id: number;
+    }
+  | {
+      type: 'PROJECT_DUMP';
+      project_id: number;
     }
   | {
       type: 'SPECIES_SHOWCASE';

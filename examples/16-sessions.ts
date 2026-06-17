@@ -42,7 +42,7 @@ const main = async () => {
     );
   } catch (error) {
     console.error('Failed to fetch sessions:');
-    if (error instanceof ApiError) {
+    if (error instanceof ApiError && error.response) {
       console.error(`- Status: ${error.response.status}`);
       console.error(`- Body:`, error.body);
     } else {
