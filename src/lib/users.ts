@@ -1,4 +1,5 @@
 import type { ObservationClient } from '../core/client';
+import { toBlob } from '../core/utils';
 import type { Terms, User, UserStats } from '../types';
 
 export class Users {
@@ -183,16 +184,16 @@ export class Users {
    * Uploads a new avatar for the current user.
    * The image must be a square JPG, max 1000x1000px.
    *
-   * @param avatar - A Blob or Buffer representing the image.
+   * @param avatar - A Blob or Uint8Array representing the image.
    * @returns A promise that resolves to an object with the new avatar URL.
    * @throws {AuthenticationError} If the request is not authenticated.
    * @throws {ApiError} If the upload fails.
    */
   public async updateAvatar(
-    avatar: Blob | Buffer,
+    avatar: Blob | Uint8Array,
   ): Promise<{ avatar: string | null }> {
     const formData = new FormData();
-    formData.append('avatar', new Blob([avatar]));
+    formData.append('avatar', toBlob(avatar));
     return this.#client.request<{ avatar: string | null }>('user/avatar/', {
       method: 'PUT',
       body: formData,
