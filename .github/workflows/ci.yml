@@ -26,12 +26,19 @@ jobs:
         run: bun run build
 
       - name: Run tests with coverage
-        run: bun test --coverage --coverage-reporter="lcov"
+        # Gate on the deterministic, mocked integration suite. The e2e suite
+        # hits the live third-party API and is run separately (non-blocking)
+        # so transient network/timeouts don't block merges and releases.
+        run: bun test tests/integration/ --coverage --coverage-reporter="lcov"
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Run e2e tests (non-blocking, live API)
+        continue-on-error: true
+        run: bun run test:e2e
 
   release:
     needs: build-and-test
