@@ -63,7 +63,7 @@ jobs:
       - name: Setup Node
         # Node 24 satisfies semantic-release's engine (>=24.10) and ships npm
         # >=11, which supports OIDC trusted publishing.
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
