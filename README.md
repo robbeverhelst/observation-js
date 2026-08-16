@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/observation-js.svg)](https://www.npmjs.com/package/observation-js)
 [![CI](https://github.com/RobbeVerhelst/observation-js/actions/workflows/ci.yml/badge.svg)](https://github.com/RobbeVerhelst/observation-js/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/RobbeVerhelst/observation-js/graph/badge.svg?token=YOUR_CODECOV_TOKEN_PLACEHOLDER)](https://codecov.io/gh/RobbeVerhelst/observation-js)
-[![Documentation](https://img.shields.io/badge/documentation-brightgreen.svg)](https://robbeverhelst.github.io/observation-js/)
+[![Documentation](https://img.shields.io/badge/documentation-brightgreen.svg)](https://observation.robbeverhelst.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A fully-typed TypeScript client for the [waarneming.nl](https://waarneming.nl/api/docs/) API. This library provides an easy-to-use interface for interacting with the API, handling both public (unauthenticated) and private (authenticated) endpoints.
@@ -208,7 +208,7 @@ const temporaryData = await client.species.get(123, {
 });
 ```
 
-For more advanced caching options, such as injecting your own cache implementation, please refer to the `ObservationClientOptions` in the generated [API documentation](https://robbeverhelst.github.io/observation-js/).
+For more advanced caching options, such as injecting your own cache implementation, please refer to the `ObservationClientOptions` in the generated [API documentation](https://observation.robbeverhelst.com/).
 
 ## Interceptors
 

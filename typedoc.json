@@ -1,13 +1,24 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["src/index.ts"],
+  "entryPoints": [
+    "src/index.ts"
+  ],
   "out": "docs",
-  "plugin": ["typedoc-material-theme"],
+  "plugin": [
+    "typedoc-material-theme"
+  ],
   "name": "observation-js Documentation",
   "readme": "README.md",
   "themeColor": "#4285F4",
-  "exclude": ["**/*.test.ts", "**/node_modules/**"],
-  "sort": ["source-order"],
+  "exclude": [
+    "**/*.test.ts",
+    "**/node_modules/**"
+  ],
+  "sort": [
+    "source-order"
+  ],
   "excludeInternal": false,
-  "includeVersion": true
+  "includeVersion": true,
+  "customFooterHtml": "<script defer src=\"https://analytics.robbeverhelst.be/script.js\" data-website-id=\"f7ee837a-c1ca-4c88-bfcc-bb65fe4a2913\"></script>",
+  "customFooterHtmlDisableWrapper": true
 }
