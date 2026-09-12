@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   deploy-docs:
-    runs-on: arc-observation-js
+    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'arc-observation-js' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
