@@ -29,6 +29,7 @@ const REPLACEABLE: Record<string, string> = {
 };
 
 const FOREIGN_LOCKFILES = [
+  'npm-shrinkwrap.json',
   'package-lock.json',
   'yarn.lock',
   'pnpm-lock.yaml',
