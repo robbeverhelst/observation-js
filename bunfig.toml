@@ -1,8 +1,88 @@
-# bun fmt settings: the same options the old .prettierrc.cts set. bun fmt runs
-# through the pinned canary (see package.json); Bun 1.4.3 ignores this section.
+# bun fmt / bun lint settings. Both run through the pinned canary (see
+# package.json). Bun 1.4.3 (runtime and tests) ignores these sections.
+#
+# The same options the old .prettierrc.cts set.
 [fmt]
 semi = true
 trailingComma = "all"
 singleQuote = true
 printWidth = 80
 tabWidth = 2
+
+[lint]
+# Ported from the old eslint.config.ts (eslint recommended +
+# typescript-eslint recommended + eslint-config-prettier, all errors).
+# bun lint turns these on by default but makes many of them warnings,
+# so each one is set back to error here.
+
+[lint.rules]
+# eslint-config-prettier turned this one off; bun fmt owns layout now.
+"no-unexpected-multiline" = "off"
+"@typescript-eslint/ban-ts-comment" = "error"
+"@typescript-eslint/no-array-constructor" = "error"
+"@typescript-eslint/no-duplicate-enum-values" = "error"
+"@typescript-eslint/no-empty-object-type" = "error"
+"@typescript-eslint/no-explicit-any" = "error"
+"@typescript-eslint/no-extra-non-null-assertion" = "error"
+"@typescript-eslint/no-misused-new" = "error"
+"@typescript-eslint/no-namespace" = "error"
+"@typescript-eslint/no-non-null-asserted-optional-chain" = "error"
+"@typescript-eslint/no-require-imports" = "error"
+"@typescript-eslint/no-this-alias" = "error"
+"@typescript-eslint/no-unnecessary-type-constraint" = "error"
+"@typescript-eslint/no-unsafe-declaration-merging" = "error"
+"@typescript-eslint/no-unsafe-function-type" = "error"
+"@typescript-eslint/no-unused-expressions" = "error"
+"@typescript-eslint/no-unused-vars" = "error"
+"@typescript-eslint/no-wrapper-object-types" = "error"
+"@typescript-eslint/prefer-as-const" = "error"
+"@typescript-eslint/prefer-namespace-keyword" = "error"
+"@typescript-eslint/triple-slash-reference" = "error"
+"for-direction" = "error"
+"no-async-promise-executor" = "error"
+"no-case-declarations" = "error"
+"no-compare-neg-zero" = "error"
+"no-cond-assign" = "error"
+"no-constant-binary-expression" = "error"
+"no-constant-condition" = "error"
+"no-control-regex" = "error"
+"no-debugger" = "error"
+"no-delete-var" = "error"
+"no-dupe-else-if" = "error"
+"no-duplicate-case" = "error"
+"no-empty" = "error"
+"no-empty-character-class" = "error"
+"no-empty-pattern" = "error"
+"no-empty-static-block" = "error"
+"no-ex-assign" = "error"
+"no-extra-boolean-cast" = "error"
+"no-fallthrough" = "error"
+"no-global-assign" = "error"
+"no-invalid-regexp" = "error"
+"no-irregular-whitespace" = "error"
+"no-loss-of-precision" = "error"
+"no-misleading-character-class" = "error"
+"no-nonoctal-decimal-escape" = "error"
+"no-octal" = "error"
+"no-prototype-builtins" = "error"
+"no-regex-spaces" = "error"
+"no-self-assign" = "error"
+"no-shadow-restricted-names" = "error"
+"no-sparse-arrays" = "error"
+"no-unassigned-vars" = "error"
+"no-unsafe-finally" = "error"
+"no-unsafe-optional-chaining" = "error"
+"no-unused-labels" = "error"
+"no-unused-private-class-members" = "error"
+"no-useless-assignment" = "error"
+"no-useless-backreference" = "error"
+"no-useless-catch" = "error"
+"no-useless-escape" = "error"
+"no-var" = "error"
+"prefer-const" = "error"
+"prefer-rest-params" = "error"
+"prefer-spread" = "error"
+"preserve-caught-error" = "error"
+"require-yield" = "error"
+"use-isnan" = "error"
+"valid-typeof" = "error"

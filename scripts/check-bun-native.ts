@@ -36,13 +36,7 @@ const FOREIGN_LOCKFILES = [
   'bun.lockb',
 ];
 
-const ALLOWED: Record<string, string> = {
-  // Temporary: the phase-2 PR replaces these with bun fmt + bun lint.
-  eslint: 'until bun lint lands (phase 2)',
-  prettier: 'until bun fmt lands (phase 2)',
-  husky: 'until bun fmt/lint lands (phase 2)',
-  'lint-staged': 'until bun fmt/lint lands (phase 2)',
-};
+const ALLOWED: Record<string, string> = {};
 
 const DEP_FIELDS = [
   'dependencies',

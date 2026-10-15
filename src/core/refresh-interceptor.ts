@@ -23,8 +23,6 @@ interface QueuedRequest {
  */
 export class RefreshTokenInterceptor {
   private isRefreshing = false;
-  private refreshPromise: Promise<void> | null = null;
-  private readonly maxRetries = 1;
   private failedQueue: QueuedRequest[] = [];
 
   constructor(private client: ObservationClient) {}
