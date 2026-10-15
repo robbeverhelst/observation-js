@@ -208,7 +208,10 @@ export class ObservationClient {
     });
 
     if (!response.ok) {
-      throw new AuthenticationError(response, await this.#readErrorBody(response));
+      throw new AuthenticationError(
+        response,
+        await this.#readErrorBody(response),
+      );
     }
 
     const tokenData = (await response.json()) as TokenResponse;
@@ -247,7 +250,10 @@ export class ObservationClient {
     });
 
     if (!response.ok) {
-      throw new AuthenticationError(response, await this.#readErrorBody(response));
+      throw new AuthenticationError(
+        response,
+        await this.#readErrorBody(response),
+      );
     }
 
     const tokenData = (await response.json()) as TokenResponse;
@@ -382,29 +388,28 @@ export class ObservationClient {
     }
 
     // --- Final Response Handling & Caching Layer: SET ---
-    return promise
-      .then((data) => {
-        const typedData = data as T;
-        if (isCacheable && options.clientCache) {
-          const cacheOptions = this.#options?.cache;
-          const defaultTTL = cacheOptions?.defaultTTL ?? 3600;
-          let ttl: number | undefined;
+    return promise.then((data) => {
+      const typedData = data as T;
+      if (isCacheable && options.clientCache) {
+        const cacheOptions = this.#options?.cache;
+        const defaultTTL = cacheOptions?.defaultTTL ?? 3600;
+        let ttl: number | undefined;
 
-          if (
-            typeof options.clientCache === 'object' &&
-            options.clientCache.ttl
-          ) {
-            ttl = options.clientCache.ttl;
-          } else if (options.clientCache === true) {
-            ttl = defaultTTL;
-          }
-
-          if (ttl) {
-            this.#cache.set(cacheKey, typedData, ttl);
-          }
+        if (
+          typeof options.clientCache === 'object' &&
+          options.clientCache.ttl
+        ) {
+          ttl = options.clientCache.ttl;
+        } else if (options.clientCache === true) {
+          ttl = defaultTTL;
         }
-        return typedData;
-      });
+
+        if (ttl) {
+          this.#cache.set(cacheKey, typedData, ttl);
+        }
+      }
+      return typedData;
+    });
   }
 
   private buildUrl(
@@ -471,10 +476,11 @@ export class ObservationClient {
 
     const response = await fetch(url.toString(), fetchOptions);
     // Attach the original config to the response for the interceptor
-    (response as Response & { config?: RequestInit & { url: string } }).config = {
-      ...fetchOptions,
-      url: url.toString(),
-    };
+    (response as Response & { config?: RequestInit & { url: string } }).config =
+      {
+        ...fetchOptions,
+        url: url.toString(),
+      };
     return response;
   }
 

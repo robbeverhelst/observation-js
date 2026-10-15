@@ -1,6 +1,10 @@
 import { expect, test, spyOn, afterEach } from 'bun:test';
 import { ObservationClient } from '../../src/index';
-import type { MediaUploadResponse, MediaItem, Paginated } from '../../src/types';
+import type {
+  MediaUploadResponse,
+  MediaItem,
+  Paginated,
+} from '../../src/types';
 
 const mockMediaUploadResponse: MediaUploadResponse = {
   name: 'temp_name.jpg',
@@ -229,10 +233,10 @@ test('media.getSimilar should handle paginated results', async () => {
 test('media.upload should handle different blob types', async () => {
   const client = new ObservationClient();
   client.setAccessToken('test-token');
-  
+
   // Test with different blob types separately to avoid body reuse issues
   const imageBlob = new Blob(['image-data'], { type: 'image/jpeg' });
-  
+
   const fetchSpy1 = spyOn(globalThis, 'fetch').mockResolvedValue(
     new Response(JSON.stringify(mockMediaUploadResponse), {
       status: 201,
@@ -246,7 +250,7 @@ test('media.upload should handle different blob types', async () => {
 
   // Test second blob type
   const audioBlob = new Blob(['audio-data'], { type: 'audio/mp3' });
-  
+
   const fetchSpy2 = spyOn(globalThis, 'fetch').mockResolvedValue(
     new Response(JSON.stringify(mockMediaUploadResponse), {
       status: 201,

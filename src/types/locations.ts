@@ -1,9 +1,6 @@
 // Basic GeoJSON types based on the API response
 export type GeoJSONGeometry =
-  | GeoJSONPoint
-  | GeoJSONPolygon
-  | GeoJSONMultiPolygon
-  | GeoJSONLineString;
+  GeoJSONPoint | GeoJSONPolygon | GeoJSONMultiPolygon | GeoJSONLineString;
 
 export interface GeoJSONPoint {
   type: 'Point';

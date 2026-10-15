@@ -127,8 +127,7 @@ export class Locations {
    */
   public async getGeoJSON(
     params:
-      | { coordinates: string; model?: string }
-      | { id: number; model?: string },
+      { coordinates: string; model?: string } | { id: number; model?: string },
   ): Promise<GeoJSONFeatureCollection> {
     return this.#client.publicRequest<GeoJSONFeatureCollection>(
       'locations/geojson/',

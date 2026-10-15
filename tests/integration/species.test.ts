@@ -191,9 +191,7 @@ test('species.getInformation should fetch species information blocks', async () 
   const mockResponse = [
     {
       title: 'Beschrijving',
-      content: [
-        { type: 'html', collapsed: true, body: '<p>Example.</p>' },
-      ],
+      content: [{ type: 'html', collapsed: true, body: '<p>Example.</p>' }],
     },
   ];
 
@@ -268,12 +266,14 @@ test('species.getGroupAttributes should fetch attributes for a species group', a
   const mockResponse = {
     id: 11,
     name: 'Fungi',
-    activity: [
-      { id: 59, text: 'present', is_active: true, is_default: true },
-    ],
+    activity: [{ id: 59, text: 'present', is_active: true, is_default: true }],
     method: [{ id: 347, text: 'unknown', is_active: true, is_default: true }],
-    life_stage: [{ id: 60, text: 'unknown', is_active: true, is_default: true }],
-    substrate: [{ id: 283, text: 'unknown', is_active: true, is_default: true }],
+    life_stage: [
+      { id: 60, text: 'unknown', is_active: true, is_default: true },
+    ],
+    substrate: [
+      { id: 283, text: 'unknown', is_active: true, is_default: true },
+    ],
   };
   const fetchSpy = spyOn(globalThis, 'fetch').mockResolvedValue(
     new Response(JSON.stringify(mockResponse), {

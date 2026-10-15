@@ -50,7 +50,9 @@ const main = async () => {
 
     console.log('--- Observation Created Successfully! ---');
     console.log(`- Observation ID: ${observation.id}`);
-    console.log(`- Species: ${observation.species_detail?.name ?? observation.species}`);
+    console.log(
+      `- Species: ${observation.species_detail?.name ?? observation.species}`,
+    );
     console.log(`- See it online: ${observation.permalink}`);
     console.log(
       '- NOTE: This observation was created as a real record. You may want to delete it from the website.',

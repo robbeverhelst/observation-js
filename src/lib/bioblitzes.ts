@@ -28,9 +28,7 @@ export class BioBlitzes {
    * @returns A promise that resolves to a paginated list of BioBlitz objects.
    * @throws {ApiError} If the request fails.
    */
-  public async list(
-    params?: BioBlitzListParams,
-  ): Promise<Paginated<BioBlitz>> {
+  public async list(params?: BioBlitzListParams): Promise<Paginated<BioBlitz>> {
     const options = {
       method: 'GET' as const,
       ...(params?.coordinates

@@ -129,7 +129,7 @@ For server-side applications or testing, you can use the password grant flow:
 ```typescript
 const client = new ObservationClient({
   platform: 'nl',
-  test: false // Use production environment for OAuth
+  test: false, // Use production environment for OAuth
 });
 
 // Authenticate using password grant

@@ -1,15 +1,15 @@
 coverage:
   ignore:
-    - "tests/**/*"
-    - "**/*.test.ts"
-    - "**/*.test.js"
-    - "**/*.spec.ts"
-    - "**/*.spec.js"
-    - "examples/**/*"
-    - "*.config.*"
-    - "*.md"
+    - 'tests/**/*'
+    - '**/*.test.ts'
+    - '**/*.test.js'
+    - '**/*.spec.ts'
+    - '**/*.spec.js'
+    - 'examples/**/*'
+    - '*.config.*'
+    - '*.md'
 
 comment:
-  layout: "reach,diff,flags,tree"
+  layout: 'reach,diff,flags,tree'
   behavior: default
-  require_changes: false 
+  require_changes: false

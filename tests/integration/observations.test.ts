@@ -165,7 +165,10 @@ test('observations.sync should bulk create observations', async () => {
     {
       species: 150,
       date: '2018-09-12',
-      point: { type: 'Point' as const, coordinates: [4, 52] as [number, number] },
+      point: {
+        type: 'Point' as const,
+        coordinates: [4, 52] as [number, number],
+      },
     },
   ];
   const results = await client.observations.sync(observations);

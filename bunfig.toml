@@ -1,0 +1,8 @@
+# bun fmt settings: the same options the old .prettierrc.cts set. bun fmt runs
+# through the pinned canary (see package.json); Bun 1.4.3 ignores this section.
+[fmt]
+semi = true
+trailingComma = "all"
+singleQuote = true
+printWidth = 80
+tabWidth = 2

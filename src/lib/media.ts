@@ -44,7 +44,7 @@ export class Media {
   /**
    * Fetches similar media items for a given media ID.
    * This endpoint can be used with or without authentication.
-   * 
+   *
    * @param id The unique identifier of the media item.
    * @returns A promise that resolves to a paginated list of similar media items.
    * @throws {ApiError} If the request fails.
@@ -54,11 +54,11 @@ export class Media {
       model: 'Media',
       pk: id,
     };
-    
+
     const request = this.#client.hasAccessToken()
       ? this.#client.request
       : this.#client.publicRequest;
-      
+
     return request<Paginated<MediaItem>>('media/similar/', {
       method: 'GET',
       params,
