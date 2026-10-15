@@ -21,7 +21,7 @@ export default tseslint.config(
       'node_modules',
       'examples',
       'tests',
-      'bun.lockb',
+      'bun.lock',
       '.github',
       '.releaserc.json',
       'CHANGELOG.md',
