@@ -12,6 +12,7 @@
   },
   "main": "dist/index.js",
   "module": "dist/index.js",
+  "packageManager": "bun@1.4.3",
   "type": "module",
   "types": "dist/index.d.ts",
   "files": [
