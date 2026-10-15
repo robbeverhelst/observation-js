@@ -56,12 +56,13 @@ bun test tests/e2e/public-api.e2e.test.ts
 ## Test Environment
 
 E2E tests run against the **test environment** by default:
+
 - `https://waarneming-test.nl` (Netherlands)
-- `https://waarnemingen-test.be` (Belgium)  
+- `https://waarnemingen-test.be` (Belgium)
 - `https://observation-test.org` (International)
 
 This ensures tests don't affect production data.
 
 ## Skipping Tests
 
-If environment variables are not set, E2E tests will be automatically skipped with a warning message. This allows the test suite to run in CI/CD environments where E2E credentials might not be available. 
+If environment variables are not set, E2E tests will be automatically skipped with a warning message. This allows the test suite to run in CI/CD environments where E2E credentials might not be available.

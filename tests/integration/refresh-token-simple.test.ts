@@ -27,10 +27,10 @@ describe('Automatic Token Refresh', () => {
     expect(client.hasAccessToken()).toBe(false);
     expect(client.hasRefreshToken()).toBe(false);
     expect(client.getCurrentAccessToken()).toBe(null);
-    
+
     client.setAccessToken('test-access-token');
     client.setRefreshToken('test-refresh-token');
-    
+
     expect(client.hasAccessToken()).toBe(true);
     expect(client.hasRefreshToken()).toBe(true);
     expect(client.getCurrentAccessToken()).toBe('test-access-token');
@@ -50,10 +50,12 @@ describe('Automatic Token Refresh', () => {
       new Response(JSON.stringify({ detail: 'Token has expired' }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' },
-      })
+      }),
     );
 
-    expect(client.request('test-endpoint')).rejects.toThrow(AuthenticationError);
+    expect(client.request('test-endpoint')).rejects.toThrow(
+      AuthenticationError,
+    );
   });
 
   test('interceptor should handle non-auth errors correctly', async () => {
@@ -68,7 +70,7 @@ describe('Automatic Token Refresh', () => {
       new Response(JSON.stringify({ detail: 'Server error' }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
-      })
+      }),
     );
 
     await expect(client.request('test-endpoint')).rejects.toThrow();
@@ -85,11 +87,11 @@ describe('Automatic Token Refresh', () => {
     // and handle 401 errors transparently without user intervention
     expect(client.hasAccessToken()).toBe(false);
     expect(client.hasRefreshToken()).toBe(false);
-    
+
     // Users can set tokens manually
     client.setAccessToken('some-token');
     client.setRefreshToken('some-refresh-token');
-    
+
     expect(client.hasAccessToken()).toBe(true);
     expect(client.hasRefreshToken()).toBe(true);
   });

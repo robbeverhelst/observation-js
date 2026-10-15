@@ -153,13 +153,16 @@ export class Observations {
   public async sync(
     observations: SyncObservationPayload[],
   ): Promise<SyncObservationResult[]> {
-    return this.#client.request<SyncObservationResult[]>('observations/create/', {
-      method: 'POST',
-      body: JSON.stringify(observations),
-      headers: {
-        'Content-Type': 'application/json',
+    return this.#client.request<SyncObservationResult[]>(
+      'observations/create/',
+      {
+        method: 'POST',
+        body: JSON.stringify(observations),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       },
-    });
+    );
   }
 
   /**
@@ -288,7 +291,9 @@ export class Observations {
     userId?: number,
     params: ObservationSearchParams = {},
   ): Promise<Paginated<Observation>> {
-    const endpoint = userId ? `user/${userId}/observations/` : 'user/observations/';
+    const endpoint = userId
+      ? `user/${userId}/observations/`
+      : 'user/observations/';
     return this.#client.request<Paginated<Observation>>(endpoint, {
       params: this.filterParams(params),
     });

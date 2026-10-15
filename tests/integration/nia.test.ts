@@ -40,7 +40,13 @@ const mockNiaResponse: NiaResponse = {
     },
   ],
   life_stages: [
-    { species_id: 700, id: 29, text: 'Imago', is_active: true, is_default: true },
+    {
+      species_id: 700,
+      id: 29,
+      text: 'Imago',
+      is_active: true,
+      is_default: true,
+    },
     { species_id: 210097, id: 1028, text: 'Imago', is_active: true },
   ],
 };

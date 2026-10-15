@@ -9,7 +9,7 @@ const password = process.env.OAUTH_PASSWORD;
 async function main() {
   const client = new ObservationClient({
     platform: 'nl',
-    test: false
+    test: false,
   });
 
   console.log('--- Fetching Terms of Service and Privacy Policy ---');
@@ -26,7 +26,7 @@ async function main() {
   // If we have OAuth credentials, authenticate and demonstrate all user get methods
   if (clientId && clientSecret && username && password) {
     console.log('\n🔐 Authenticating with OAuth...');
-    
+
     try {
       await client.getAccessTokenWithPassword({
         clientId,
@@ -44,8 +44,12 @@ async function main() {
         console.log(`- ID: ${profile.id}`);
         console.log(`- Name: ${profile.name}`);
         console.log(`- Email: ${profile.email}`);
-        console.log(`- Email confirmed: ${profile.consider_email_confirmed ? 'Yes' : 'No'}`);
-        console.log(`- Mail allowed: ${profile.is_mail_allowed ? 'Yes' : 'No'}`);
+        console.log(
+          `- Email confirmed: ${profile.consider_email_confirmed ? 'Yes' : 'No'}`,
+        );
+        console.log(
+          `- Mail allowed: ${profile.is_mail_allowed ? 'Yes' : 'No'}`,
+        );
         console.log(`- Country: ${profile.country || 'Not set'}`);
         console.log(`- Profile URL: ${profile.url}`);
         console.log(`- Avatar: ${profile.avatar || 'No avatar'}`);
@@ -86,7 +90,9 @@ async function main() {
       }
 
       // 4. Get Magic Login Link (passwordless login)
-      console.log('\n--- 4. Generating Magic Login Link (getMagicLoginLink) ---');
+      console.log(
+        '\n--- 4. Generating Magic Login Link (getMagicLoginLink) ---',
+      );
       try {
         const magicLink = await client.users.getMagicLoginLink();
         console.log('Successfully generated magic login link:');
@@ -98,8 +104,6 @@ async function main() {
           console.error('Failed to generate magic login link:', error);
         }
       }
-
-
     } catch (error) {
       console.error('Authentication failed:', error);
     }

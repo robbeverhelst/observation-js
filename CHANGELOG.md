@@ -1,13 +1,12 @@
 # [2.0.0](https://github.com/robbeverhelst/observation-js/compare/v1.16.0...v2.0.0) (2026-06-17)
 
-
-* feat(api)!: sync types and endpoints with the real waarneming.nl API ([feed55b](https://github.com/robbeverhelst/observation-js/commit/feed55b905e30f8985c6caf99ef196efa8fc1a59))
-
+- feat(api)!: sync types and endpoints with the real waarneming.nl API ([feed55b](https://github.com/robbeverhelst/observation-js/commit/feed55b905e30f8985c6caf99ef196efa8fc1a59))
 
 ### BREAKING CHANGES
 
-* Response and request shapes now match the real API. Highlights:
-- Observations: `species`/`user`/`location` are numbers (IDs) with separate
+- Response and request shapes now match the real API. Highlights:
+
+* Observations: `species`/`user`/`location` are numbers (IDs) with separate
   `*_detail` objects; `photos`/`sounds` are `string[]`; removed fabricated fields
   (`count_text`, `comments_count`, `likes_count`, `is_validated`,
   `model_prediction`, `obscured_by_user`); `url`→`permalink`,
@@ -16,115 +15,102 @@
   `{coordinates, days, radius}`; `getDeleted` returns
   `Paginated<{original_id, deleted_at}>`; create payload uses `species`/`number`;
   `search()` now calls the real list endpoint; added bulk `create`.
-- Species: `photo` (string) not `photos`; `permalink` not `url`; added
+* Species: `photo` (string) not `photos`; `permalink` not `url`; added
   `authority`/`group_name`/`info_text`; `status`/`rarity` optional.
-- Regions: `Region` is `{id,type,name,continent?,iso?}`; `RegionSpeciesList`
+* Regions: `Region` is `{id,type,name,continent?,iso?}`; `RegionSpeciesList`
   reshaped; new flat `RegionSpecies`.
-- Users: `User` and `Terms` reshaped; `UserStats` typed.
-- Locations: `Location` uses `geom`; `SpeciesSeen` fields renamed; `coordinates` params.
-- NIA: `taxon.id` is a string; `model_coverage`/`location_detail`/`species[]` reshaped.
-- Sessions: `Session` reshaped; added `get(uuid)`.
-- Challenges: `getRanking` returns `{ranking: ChallengeRank[]}`; `group`→`group_id`/`template_id`.
-- Groups: `join` is PUT `groups/join/<code>/`; `leave` is DELETE; group-scoped templates.
-- Exports: British spelling `ORGANISATION_OBSERVATIONS`/`organisation_id`.
-- Countries: `list()` returns `CountryList` (no `count`).
+* Users: `User` and `Terms` reshaped; `UserStats` typed.
+* Locations: `Location` uses `geom`; `SpeciesSeen` fields renamed; `coordinates` params.
+* NIA: `taxon.id` is a string; `model_coverage`/`location_detail`/`species[]` reshaped.
+* Sessions: `Session` reshaped; added `get(uuid)`.
+* Challenges: `getRanking` returns `{ranking: ChallengeRank[]}`; `group`→`group_id`/`template_id`.
+* Groups: `join` is PUT `groups/join/<code>/`; `leave` is DELETE; group-scoped templates.
+* Exports: British spelling `ORGANISATION_OBSERVATIONS`/`organisation_id`.
+* Countries: `list()` returns `CountryList` (no `count`).
 
 Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
 
 # [1.16.0](https://github.com/robbeverhelst/observation-js/compare/v1.15.0...v1.16.0) (2026-06-17)
 
-
 ### Bug Fixes
 
-* **ci:** declare @eslint/js as an explicit devDependency ([86454ff](https://github.com/robbeverhelst/observation-js/commit/86454ff75d87a7664f08f52f59f0c7481e67c3bb))
-* **ci:** publish to npm via OIDC trusted publishing ([97f6412](https://github.com/robbeverhelst/observation-js/commit/97f6412e6c4c352f16f3af2e7e9cebbeb8f7b352))
-* **ci:** run semantic-release under Node 22 ([31c2e20](https://github.com/robbeverhelst/observation-js/commit/31c2e2063d2303500f8f32003a140567d3f5d663))
-* **core:** correct token refresh, query params and request handling ([94e4213](https://github.com/robbeverhelst/observation-js/commit/94e421324beb0109f52918f20b72963c8dffcafc))
-* **lint:** satisfy ESLint 10 recommended rules ([bf49429](https://github.com/robbeverhelst/observation-js/commit/bf49429db6045ff5ad069a2706707f3b698f1020))
-* **npm:** add repository metadata for publish provenance ([f7b8966](https://github.com/robbeverhelst/observation-js/commit/f7b896602b31f45467a2bfc06806a33a74ab8bbc))
-* **types:** export all public types and fix SpeciesData.sounds ([1ca6ebd](https://github.com/robbeverhelst/observation-js/commit/1ca6ebd0cc002e672fe146e262b47ff5cff5cf32))
-
+- **ci:** declare @eslint/js as an explicit devDependency ([86454ff](https://github.com/robbeverhelst/observation-js/commit/86454ff75d87a7664f08f52f59f0c7481e67c3bb))
+- **ci:** publish to npm via OIDC trusted publishing ([97f6412](https://github.com/robbeverhelst/observation-js/commit/97f6412e6c4c352f16f3af2e7e9cebbeb8f7b352))
+- **ci:** run semantic-release under Node 22 ([31c2e20](https://github.com/robbeverhelst/observation-js/commit/31c2e2063d2303500f8f32003a140567d3f5d663))
+- **core:** correct token refresh, query params and request handling ([94e4213](https://github.com/robbeverhelst/observation-js/commit/94e421324beb0109f52918f20b72963c8dffcafc))
+- **lint:** satisfy ESLint 10 recommended rules ([bf49429](https://github.com/robbeverhelst/observation-js/commit/bf49429db6045ff5ad069a2706707f3b698f1020))
+- **npm:** add repository metadata for publish provenance ([f7b8966](https://github.com/robbeverhelst/observation-js/commit/f7b896602b31f45467a2bfc06806a33a74ab8bbc))
+- **types:** export all public types and fix SpeciesData.sounds ([1ca6ebd](https://github.com/robbeverhelst/observation-js/commit/1ca6ebd0cc002e672fe146e262b47ff5cff5cf32))
 
 ### Features
 
-* **uploads:** accept Uint8Array for photo and avatar uploads ([4708ab3](https://github.com/robbeverhelst/observation-js/commit/4708ab3b583cec580b629f9550d221539af397ed))
+- **uploads:** accept Uint8Array for photo and avatar uploads ([4708ab3](https://github.com/robbeverhelst/observation-js/commit/4708ab3b583cec580b629f9550d221539af397ed))
 
 # [1.15.0](https://github.com/robbeverhelst/observation-js/compare/v1.14.0...v1.15.0) (2025-06-25)
 
-
 ### Features
 
-* add automatic token refresh functionality with interceptor and related methods ([fb8649d](https://github.com/robbeverhelst/observation-js/commit/fb8649dc231d477894e6ad26c7fbbab32236204b))
+- add automatic token refresh functionality with interceptor and related methods ([fb8649d](https://github.com/robbeverhelst/observation-js/commit/fb8649dc231d477894e6ad26c7fbbab32236204b))
 
 # [1.14.0](https://github.com/robbeverhelst/observation-js/compare/v1.13.0...v1.14.0) (2025-06-24)
 
-
 ### Features
 
-* enhance Species API client with detailed methods for species information and group attributes ([9e43e35](https://github.com/robbeverhelst/observation-js/commit/9e43e358c0c4f4868c2322dc6336d94638ef1886))
+- enhance Species API client with detailed methods for species information and group attributes ([9e43e35](https://github.com/robbeverhelst/observation-js/commit/9e43e358c0c4f4868c2322dc6336d94638ef1886))
 
 # [1.13.0](https://github.com/robbeverhelst/observation-js/compare/v1.12.0...v1.13.0) (2025-06-24)
 
-
 ### Features
 
-* make clientId, clientSecret, and redirectUri optional in ObservationClientOptions; update API endpoints to use /api/v1/ prefix ([8c2b91c](https://github.com/robbeverhelst/observation-js/commit/8c2b91c0793a69d6fe82b21ad81ef09f1950e094))
-* refactor URL parameter handling in ObservationClient; add filterParams method to clean undefined values from request parameters ([29beb52](https://github.com/robbeverhelst/observation-js/commit/29beb52d0212fe5a578855e86b256ca95a947fc7))
+- make clientId, clientSecret, and redirectUri optional in ObservationClientOptions; update API endpoints to use /api/v1/ prefix ([8c2b91c](https://github.com/robbeverhelst/observation-js/commit/8c2b91c0793a69d6fe82b21ad81ef09f1950e094))
+- refactor URL parameter handling in ObservationClient; add filterParams method to clean undefined values from request parameters ([29beb52](https://github.com/robbeverhelst/observation-js/commit/29beb52d0212fe5a578855e86b256ca95a947fc7))
 
 # [1.12.0](https://github.com/robbeverhelst/observation-js/compare/v1.11.0...v1.12.0) (2025-06-18)
 
-
 ### Features
 
-* update build script to use TypeScript compiler and remove emitDeclarationOnly from tsconfig ([acd4787](https://github.com/robbeverhelst/observation-js/commit/acd47874d521f08ab72a3ad859ee5fb88395ccf4))
+- update build script to use TypeScript compiler and remove emitDeclarationOnly from tsconfig ([acd4787](https://github.com/robbeverhelst/observation-js/commit/acd47874d521f08ab72a3ad859ee5fb88395ccf4))
 
 # [1.11.0](https://github.com/robbeverhelst/observation-js/compare/v1.10.0...v1.11.0) (2025-06-17)
 
-
 ### Features
 
-* introduce clientCache option for request caching and update README with usage examples ([bc5af24](https://github.com/robbeverhelst/observation-js/commit/bc5af24237863de3ec4b4c66af681fc6a203e528))
+- introduce clientCache option for request caching and update README with usage examples ([bc5af24](https://github.com/robbeverhelst/observation-js/commit/bc5af24237863de3ec4b4c66af681fc6a203e528))
 
 # [1.10.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.9.0...v1.10.0) (2025-06-10)
 
-
 ### Features
 
-* add MediaItem type and enhance media handling with getSimilar method ([cdc7fe3](https://github.com/RobbeVerhelst/observation-js/commit/cdc7fe3caa5af7070c3348d542c989c5bde995a8))
+- add MediaItem type and enhance media handling with getSimilar method ([cdc7fe3](https://github.com/RobbeVerhelst/observation-js/commit/cdc7fe3caa5af7070c3348d542c989c5bde995a8))
 
 # [1.9.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.8.0...v1.9.0) (2025-06-10)
 
-
 ### Bug Fixes
 
-* update retryAfter parsing in RateLimitError to use parseFloat for improved accuracy ([fd0e4ee](https://github.com/RobbeVerhelst/observation-js/commit/fd0e4eecd859c76ce71abe0853c919ad83086e4b))
-
+- update retryAfter parsing in RateLimitError to use parseFloat for improved accuracy ([fd0e4ee](https://github.com/RobbeVerhelst/observation-js/commit/fd0e4eecd859c76ce71abe0853c919ad83086e4b))
 
 ### Features
 
-* add timeout handling and retry logic for species and countries API calls in cross-platform tests ([b6e514f](https://github.com/RobbeVerhelst/observation-js/commit/b6e514f65c7a244cecf3f062ed1ae4b91133a5ee))
+- add timeout handling and retry logic for species and countries API calls in cross-platform tests ([b6e514f](https://github.com/RobbeVerhelst/observation-js/commit/b6e514f65c7a244cecf3f062ed1ae4b91133a5ee))
 
 # [1.8.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.7.0...v1.8.0) (2025-06-10)
 
-
 ### Features
 
-* enhance performance tests with timeout handling and edge case logging ([5251c2b](https://github.com/RobbeVerhelst/observation-js/commit/5251c2b9469ceb1d66bcd14beeb723b15b05a840))
-* implement rate limit error handling and update species type definitions ([ce68251](https://github.com/RobbeVerhelst/observation-js/commit/ce68251be85ef385cd8dbbd3e6db2e58ec1b7d8b))
+- enhance performance tests with timeout handling and edge case logging ([5251c2b](https://github.com/RobbeVerhelst/observation-js/commit/5251c2b9469ceb1d66bcd14beeb723b15b05a840))
+- implement rate limit error handling and update species type definitions ([ce68251](https://github.com/RobbeVerhelst/observation-js/commit/ce68251be85ef385cd8dbbd3e6db2e58ec1b7d8b))
 
 # [1.7.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.6.0...v1.7.0) (2025-06-10)
 
-
 ### Features
 
-* add integration and e2e test ([8420377](https://github.com/RobbeVerhelst/observation-js/commit/8420377c5b928e29768f87540d74203d80e06a37))
+- add integration and e2e test ([8420377](https://github.com/RobbeVerhelst/observation-js/commit/8420377c5b928e29768f87540d74203d80e06a37))
 
 # [1.6.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.5.0...v1.6.0) (2025-06-10)
 
-
 ### Features
 
-* Migrate ESLint and Prettier to TypeScript configuration ([0ecff32](https://github.com/RobbeVerhelst/observation-js/commit/0ecff32c050176ad5407273e074949c12a06de3d))
+- Migrate ESLint and Prettier to TypeScript configuration ([0ecff32](https://github.com/RobbeVerhelst/observation-js/commit/0ecff32c050176ad5407273e074949c12a06de3d))
 
 # [1.5.0](https://github.com/RobbeVerhelst/observation-js/compare/v1.4.0...v1.5.0) (2025-06-09)
 

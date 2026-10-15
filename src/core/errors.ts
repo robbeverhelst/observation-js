@@ -44,18 +44,21 @@ export class RateLimitError extends ApiError {
   constructor(response: Response, body: unknown) {
     const retryAfter = response.headers.get('Retry-After');
     const resetHeader = response.headers.get('X-RateLimit-Reset');
-    
-    let message = 'Rate limit exceeded. Please wait before making more requests.';
+
+    let message =
+      'Rate limit exceeded. Please wait before making more requests.';
     if (retryAfter) {
       message += ` Retry after ${retryAfter} seconds.`;
     }
 
     super(message, response, body);
     this.name = 'RateLimitError';
-    
+
     // Parse retry timing information
     this.retryAfter = retryAfter ? parseFloat(retryAfter) : undefined;
-    this.resetTime = resetHeader ? new Date(parseInt(resetHeader, 10) * 1000) : undefined;
+    this.resetTime = resetHeader
+      ? new Date(parseInt(resetHeader, 10) * 1000)
+      : undefined;
   }
 
   /**
@@ -88,35 +91,37 @@ export class RateLimitError extends ApiError {
  */
 export async function withRateLimitRetry<T>(
   operation: () => Promise<T>,
-  maxRetries: number = 3
+  maxRetries: number = 3,
 ): Promise<T> {
   let attempt = 0;
-  
+
   while (attempt < maxRetries) {
     try {
       return await operation();
     } catch (error) {
       attempt++;
-      
+
       if (error instanceof RateLimitError) {
         if (attempt >= maxRetries) {
           throw new Error(
             `Rate limit exceeded after ${maxRetries} attempts. ` +
-            `Please wait ${Math.round(error.getRetryDelayMs() / 1000)} seconds before trying again.`,
-            { cause: error }
+              `Please wait ${Math.round(error.getRetryDelayMs() / 1000)} seconds before trying again.`,
+            { cause: error },
           );
         }
-        
+
         const delay = error.getRetryDelayMs();
-        console.warn(`Rate limit hit. Waiting ${Math.round(delay / 1000)}s before retry ${attempt + 1}/${maxRetries}...`);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        console.warn(
+          `Rate limit hit. Waiting ${Math.round(delay / 1000)}s before retry ${attempt + 1}/${maxRetries}...`,
+        );
+        await new Promise((resolve) => setTimeout(resolve, delay));
         continue;
       }
-      
+
       // For non-rate-limit errors, throw immediately
       throw error;
     }
   }
-  
+
   throw new Error('Maximum retries exceeded');
 }

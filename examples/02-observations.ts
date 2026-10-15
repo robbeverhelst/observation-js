@@ -31,7 +31,7 @@ const main = async () => {
 
   const client = new ObservationClient({
     platform: 'nl',
-    test: false // Use production environment for OAuth
+    test: false, // Use production environment for OAuth
   });
 
   try {
@@ -62,19 +62,25 @@ const main = async () => {
     const observation = await client.observations.get(observationId);
     console.log('Observation found:');
     console.log(`- Species: ${observation.species_detail?.name || 'Unknown'}`);
-    console.log(`- Scientific name: ${observation.species_detail?.scientific_name || 'N/A'}`);
+    console.log(
+      `- Scientific name: ${observation.species_detail?.scientific_name || 'N/A'}`,
+    );
     console.log(`- Observer: ${observation.user_detail?.name || 'Unknown'}`);
     console.log(`- Date: ${observation.date}`);
     console.log(`- Time: ${observation.time || 'Not specified'}`);
-    console.log(`- Location: ${observation.location_detail?.name || 'Unknown location'}`);
-    console.log(`- Coordinates: ${observation.point?.coordinates?.join(', ') || 'No coordinates'}`);
+    console.log(
+      `- Location: ${observation.location_detail?.name || 'Unknown location'}`,
+    );
+    console.log(
+      `- Coordinates: ${observation.point?.coordinates?.join(', ') || 'No coordinates'}`,
+    );
     console.log(`- Validation status: ${observation.validation_status}`);
     console.log(`- URL: ${observation.permalink || 'N/A'}`);
-    
+
     if (observation.photos && observation.photos.length > 0) {
       console.log(`- Photos: ${observation.photos.length} photo(s)`);
     }
-    
+
     if (observation.notes) {
       console.log(`- Notes: ${observation.notes}`);
     }
@@ -84,15 +90,24 @@ const main = async () => {
 
     // 1. Get more observations from the same species
     if (observation.species) {
-      console.log(`\n📊 Getting other ${observation.species_detail?.name || 'this species'} observations:`);
+      console.log(
+        `\n📊 Getting other ${observation.species_detail?.name || 'this species'} observations:`,
+      );
       try {
-        const speciesObs = await client.observations.getBySpecies(observation.species, {
-          limit: 3,
-          ordering: '-date'
-        });
-        console.log(`Found ${speciesObs.count} total observations of this species, showing 3 recent ones:`);
+        const speciesObs = await client.observations.getBySpecies(
+          observation.species,
+          {
+            limit: 3,
+            ordering: '-date',
+          },
+        );
+        console.log(
+          `Found ${speciesObs.count} total observations of this species, showing 3 recent ones:`,
+        );
         speciesObs.results.forEach((obs, index) => {
-          console.log(`  ${index + 1}. ${obs.date} - ${obs.location_detail?.name || 'Unknown'} (ID: ${obs.id})`);
+          console.log(
+            `  ${index + 1}. ${obs.date} - ${obs.location_detail?.name || 'Unknown'} (ID: ${obs.id})`,
+          );
         });
       } catch (error) {
         console.log('Could not fetch species observations');
@@ -101,15 +116,24 @@ const main = async () => {
 
     // 2. Get observations from the same location
     if (observation.location) {
-      console.log(`\n📍 Getting other observations from ${observation.location_detail?.name}:`);
+      console.log(
+        `\n📍 Getting other observations from ${observation.location_detail?.name}:`,
+      );
       try {
-        const locationObs = await client.observations.getByLocation(observation.location, {
-          limit: 3,
-          ordering: '-date'
-        });
-        console.log(`Found ${locationObs.count} total observations from this location, showing 3 recent ones:`);
+        const locationObs = await client.observations.getByLocation(
+          observation.location,
+          {
+            limit: 3,
+            ordering: '-date',
+          },
+        );
+        console.log(
+          `Found ${locationObs.count} total observations from this location, showing 3 recent ones:`,
+        );
         locationObs.results.forEach((obs, index) => {
-          console.log(`  ${index + 1}. ${obs.species_detail?.name || 'Unknown'} - ${obs.date} (ID: ${obs.id})`);
+          console.log(
+            `  ${index + 1}. ${obs.species_detail?.name || 'Unknown'} - ${obs.date} (ID: ${obs.id})`,
+          );
         });
       } catch (error) {
         console.log('Could not fetch location observations');
@@ -127,9 +151,13 @@ const main = async () => {
           radius: 2000,
           limit: 3,
         });
-        console.log(`Found ${nearbyObs.count} observations within 2km, showing 3 recent ones:`);
+        console.log(
+          `Found ${nearbyObs.count} observations within 2km, showing 3 recent ones:`,
+        );
         nearbyObs.results.forEach((obs, index) => {
-          console.log(`  ${index + 1}. ${obs.species_detail?.name || 'Unknown'} - ${obs.date} (ID: ${obs.id})`);
+          console.log(
+            `  ${index + 1}. ${obs.species_detail?.name || 'Unknown'} - ${obs.date} (ID: ${obs.id})`,
+          );
         });
       } catch (error) {
         console.log('Could not fetch nearby observations');
@@ -141,16 +169,21 @@ const main = async () => {
     try {
       const userObs = await client.observations.getByUser(undefined, {
         limit: 3,
-        ordering: '-date'
+        ordering: '-date',
       });
-      console.log(`You have ${userObs.count} total observations, showing 3 recent ones:`);
+      console.log(
+        `You have ${userObs.count} total observations, showing 3 recent ones:`,
+      );
       userObs.results.forEach((obs, index) => {
-        console.log(`  ${index + 1}. ${obs.species_detail?.name || 'Unknown'} - ${obs.date} (ID: ${obs.id})`);
+        console.log(
+          `  ${index + 1}. ${obs.species_detail?.name || 'Unknown'} - ${obs.date} (ID: ${obs.id})`,
+        );
       });
     } catch (error) {
-      console.log('Could not fetch your observations (authentication required)');
+      console.log(
+        'Could not fetch your observations (authentication required)',
+      );
     }
-
   } catch (error) {
     console.error('Failed to fetch observation:');
     if (error instanceof ApiError && error.response) {
