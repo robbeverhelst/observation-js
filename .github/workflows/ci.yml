@@ -24,6 +24,9 @@ jobs:
       - name: Lint
         run: bun run lint
 
+      - name: Check Bun-native dependencies
+        run: bun run check:bun-native
+
       - name: Build
         run: bun run build
 

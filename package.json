@@ -23,9 +23,10 @@
     "access": "public"
   },
   "scripts": {
-    "ci": "bun run lint && bun run build && bun test",
+    "ci": "bun run check:bun-native && bun run lint && bun run build && bun test",
     "build": "tsc",
     "test": "bun test",
+    "check:bun-native": "bun run scripts/check-bun-native.ts",
     "test:integration": "bun test tests/integration/",
     "test:e2e": "bun test tests/e2e/",
     "lint": "eslint 'src/**/*.ts'",
