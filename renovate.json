@@ -6,6 +6,8 @@
     ":semanticCommitTypeAll(chore)",
     "helpers:pinGitHubActionDigests"
   ],
+  "osvVulnerabilityAlerts": true,
+  "lockFileMaintenance": { "enabled": true },
   "timezone": "UTC",
   "schedule": ["every weekend"],
   "labels": ["dependencies", "automated"],
