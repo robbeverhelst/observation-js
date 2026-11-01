@@ -82,7 +82,7 @@ jobs:
         # semantic-release's engine (>=24.10) and ships npm >=11 for OIDC.
         uses: actions/setup-node@v6
         with:
-          node-version: '24'
+          node-version: '26'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Release
