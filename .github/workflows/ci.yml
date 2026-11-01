@@ -80,7 +80,7 @@ jobs:
         # Only the publish step runs on Node: bun publish cannot do npm
         # trusted publishing (OIDC/provenance) yet. Node 24 satisfies
         # semantic-release's engine (>=24.10) and ships npm >=11 for OIDC.
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
