@@ -7,23 +7,36 @@
     "helpers:pinGitHubActionDigests"
   ],
   "osvVulnerabilityAlerts": true,
-  "lockFileMaintenance": { "enabled": true },
+  "lockFileMaintenance": {
+    "enabled": true
+  },
   "timezone": "UTC",
-  "schedule": ["every weekend"],
-  "labels": ["dependencies", "automated"],
+  "schedule": [
+    "after 1am and before 7am every weekend"
+  ],
+  "labels": [
+    "dependencies",
+    "automated"
+  ],
   "prConcurrentLimit": 0,
   "prHourlyLimit": 0,
   "rebaseWhen": "behind-base-branch",
   "packageRules": [
     {
       "description": "Auto-merge patch updates",
-      "matchUpdateTypes": ["patch"],
+      "matchUpdateTypes": [
+        "patch"
+      ],
       "automerge": true
     },
     {
       "description": "Hold TypeScript 7 (native compiler, no JS API) until typedoc's peer range supports it",
-      "matchPackageNames": ["typescript"],
-      "matchDepTypes": ["devDependencies"],
+      "matchPackageNames": [
+        "typescript"
+      ],
+      "matchDepTypes": [
+        "devDependencies"
+      ],
       "allowedVersions": "<7.0.0"
     }
   ]
