@@ -1,9 +1,8 @@
 ## [2.0.1](https://github.com/robbeverhelst/observation-js/compare/v2.0.0...v2.0.1) (2026-11-10)
 
-
 ### Bug Fixes
 
-* **deps:** pin dev TypeScript to ~6.0.3 so typedoc docs build works ([#66](https://github.com/robbeverhelst/observation-js/issues/66)) ([e89fe74](https://github.com/robbeverhelst/observation-js/commit/e89fe74e617ee2b67538115490a4f2314f7752e4))
+- **deps:** pin dev TypeScript to ~6.0.3 so typedoc docs build works ([#66](https://github.com/robbeverhelst/observation-js/issues/66)) ([e89fe74](https://github.com/robbeverhelst/observation-js/commit/e89fe74e617ee2b67538115490a4f2314f7752e4))
 
 # [2.0.0](https://github.com/robbeverhelst/observation-js/compare/v1.16.0...v2.0.0) (2026-06-17)
 

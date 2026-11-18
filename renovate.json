@@ -7,9 +7,11 @@
     "helpers:pinGitHubActionDigests"
   ],
   "osvVulnerabilityAlerts": true,
-  "lockFileMaintenance": { "enabled": true },
+  "lockFileMaintenance": {
+    "enabled": true
+  },
   "timezone": "UTC",
-  "schedule": ["every weekend"],
+  "schedule": ["after 1am and before 7am every weekend"],
   "labels": ["dependencies", "automated"],
   "prConcurrentLimit": 0,
   "prHourlyLimit": 0,
