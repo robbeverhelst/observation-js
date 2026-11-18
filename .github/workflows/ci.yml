@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ${{ github.event.pull_request.head.repo.fork && 'ubuntu-latest' || 'arc-observation-js' }}
+    runs-on: arc-observation-js
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
